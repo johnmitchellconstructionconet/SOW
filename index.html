@@ -174,12 +174,12 @@
   .clean-list li{font-size:12.5px;line-height:1.55;margin-bottom:9px;padding-left:16px;position:relative;color:#2c2c2c;}
   .clean-list li::before{content:'';position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--primary);}
   .empty-trade-note{font-size:11.5px;color:#999;font-style:italic;padding-left:16px;}
-  .status-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 7px;border-radius:3px;margin-left:7px;letter-spacing:.03em;text-transform:uppercase;vertical-align:middle;color:#fff;}
-  .status-badge.Confirmed{background:var(--st-confirmed);}
-  .status-badge.Reported{background:var(--st-reported);}
-  .status-badge.Assumed{background:var(--st-assumed);}
-  .status-badge.Unknown{background:var(--st-unknown);}
-  .status-badge.Investigation-Required{background:var(--st-invest);}
+  .status-badge{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:3px;margin-left:6px;letter-spacing:.01em;vertical-align:middle;}
+  .status-badge.Confirmed{background:rgba(46,125,50,0.10);color:#2e7d32;}
+  .status-badge.Reported{background:rgba(21,101,192,0.10);color:#1565c0;}
+  .status-badge.Assumed{background:rgba(176,64,53,0.10);color:#B04035;}
+  .status-badge.Unknown{background:rgba(117,117,117,0.12);color:#757575;}
+  .status-badge.Investigation-Required{background:rgba(142,36,170,0.10);color:#8e24aa;}
 
   .sheet-thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
   .sheet-thumb{border:2px solid #ddd;border-radius:6px;padding:4px;cursor:pointer;background:#fff;text-align:center;width:110px;}
@@ -203,6 +203,23 @@
   .assume-review-table th{background:var(--navy);color:#fff;text-align:left;padding:6px 8px;font-size:10.5px;text-transform:uppercase;}
   .assume-review-table td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;}
   .assume-review-table select{width:150px;}
+
+  .assume-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .assume-toolbar select{width:auto;padding:6px 10px;font-size:12.5px;}
+  .assume-summary{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;}
+  .assume-chip{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;background:#f2efe6;color:#777;}
+  .assume-chip.st-Confirmed{background:rgba(46,125,50,0.12);color:#2e7d32;}
+  .assume-chip.st-Assumed{background:rgba(176,64,53,0.12);color:#B04035;}
+  .assume-trade-card{border:1px solid #eee;border-radius:8px;margin-bottom:14px;background:#fff;overflow:hidden;}
+  .assume-trade-head{background:#f8f6f0;padding:10px 16px;font-size:13px;font-weight:700;color:var(--navy);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;}
+  .assume-trade-count{font-size:11px;color:#999;font-weight:600;}
+  .assume-row{display:flex;align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid #f5f3ee;font-size:12.5px;border-left:3px solid #ddd;}
+  .assume-row:last-child{border-bottom:none;}
+  .assume-row-text{flex:1;color:#333;}
+  .assume-row select{width:140px;flex-shrink:0;font-size:11px;padding:4px 6px;}
+  .assume-row.st-Confirmed{border-left-color:var(--st-confirmed);}
+  .assume-row.st-Assumed{border-left-color:var(--st-assumed);}
+  .assume-empty-note{color:#999;padding:14px 16px;font-size:12.5px;}
 
   #planPrintView{display:none;}
   .plan-print-page{background:#fff;margin:0 auto 20px;box-shadow:0 1px 6px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;overflow:hidden;}
@@ -499,11 +516,18 @@
   <div class="tabpanel" id="tab_assume">
     <div class="panel">
       <h2>Assumptions Review</h2>
-      <div class="helptext">Every field you've filled in across every included trade, in one place, with its status. Change the status here and it updates the same control back in Scope Builder — this is a different view of the same data, not a separate copy.</div>
-      <table class="assume-review-table" id="assumeTable">
-        <thead><tr><th>Trade</th><th>Field / Value</th><th>Status</th></tr></thead>
-        <tbody id="assumeTableBody"></tbody>
-      </table>
+      <div class="helptext">Every field you've filled in across every included trade, grouped by trade, with its status. Change the status here and it updates the same control back in Scope Builder — this is a different view of the same data, not a separate copy.</div>
+      <div class="assume-toolbar">
+        <label style="margin:0;font-weight:600;font-size:12px;">Filter by status:</label>
+        <select id="assumeStatusFilter" onchange="renderAssumptionsTab()">
+          <option value="all">All statuses</option>
+          <option value="">Not tracked</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Assumed">Assumed</option>
+        </select>
+        <div class="assume-summary" id="assumeSummary"></div>
+      </div>
+      <div id="assumeCardsContainer"></div>
     </div>
   </div>
 
@@ -514,8 +538,14 @@
       <button class="btn secondary" onclick="resetScopeLibraryToDefault()">Reset Scope Library to Defaults</button>
     </div>
 
+    <div class="rules-box">
+      <div class="rules-toggle" onclick="document.getElementById('scopeAdminRulesContent').style.display = document.getElementById('scopeAdminRulesContent').style.display==='none' ? 'block':'none';">▸ Before you add something, check these (click to expand)</div>
+      <div id="scopeAdminRulesContent" style="display:block;margin-top:10px;"></div>
+    </div>
+
     <div class="panel">
       <h2>Add an Option to an Existing Field</h2>
+      <div class="helptext"><b>First ask:</b> is the new item an <b>alternative</b> to the choices already listed (only one applies at a time), or is it an <b>independent add-on</b> that could apply alongside any of them (like "lighted," "heated," or "with grab bar")? If it's an add-on, it usually belongs as its own separate field, not another option in this list — see "Add a New Field" below with Pick Any as the control type instead.</div>
       <div class="grid">
         <div class="field"><label>Trade</label>
           <select id="adminTradeSelect" onchange="renderAdminFieldList()"></select>
@@ -529,6 +559,7 @@
 
     <div class="panel">
       <h2>Add a New Field to This Trade</h2>
+      <div class="helptext">Use this for independent add-ons/modifiers (pick a Pick Any control type) as well as for entirely new decisions this trade needs. Don't fold an add-on into an existing single-choice field — see the reminder above.</div>
       <div class="grid">
         <div class="field"><label>Field Name</label><input type="text" id="adminNewFieldName" placeholder="e.g. Skylight condition"></div>
         <div class="field"><label>Control Type</label>
@@ -647,6 +678,15 @@ function renderAdminFieldList(){
   renderAdminOptionAdder();
 }
 
+const CTYPE_SWITCH_MAP = { pickone: 'pickany', perloc: 'permulti' };
+const CTYPE_LABELS = {
+  pickone: 'Pick one — only one choice can be selected at a time',
+  pickany: 'Pick any — multiple choices can be selected at once',
+  perloc: 'Per location — one choice per row (add a new row for each instance)',
+  permulti: 'Pick any per location — multiple choices per row',
+  input: 'Required input — free text'
+};
+
 function renderAdminOptionAdder(){
   const wrap = document.getElementById('adminOptionAdder');
   wrap.innerHTML = '';
@@ -655,10 +695,47 @@ function renderAdminOptionAdder(){
   const section = SECTIONS.find(s=>s.id===tradeId);
   if(!section || isNaN(fIdx)) return;
   const field = section.fields[fIdx];
+
+  const typeNote = document.createElement('div');
+  typeNote.className = 'helptext';
+  typeNote.style.marginTop = '4px';
+  typeNote.innerHTML = '<b>Control type:</b> ' + esc(CTYPE_LABELS[field.ctype] || field.ctype);
+  wrap.appendChild(typeNote);
+
   if(field.ctype === 'input'){
-    wrap.innerHTML = '<div class="helptext">This is a free-text field — there is no fixed option list to add to.</div>';
+    const note = document.createElement('div');
+    note.className = 'helptext';
+    note.textContent = 'This is a free-text field — there is no fixed option list to add to.';
+    wrap.appendChild(note);
     return;
   }
+
+  if(CTYPE_SWITCH_MAP[field.ctype]){
+    const switchBtn = document.createElement('button');
+    switchBtn.className = 'btn secondary tiny';
+    switchBtn.style.marginBottom = '10px';
+    switchBtn.textContent = 'Allow multiple selections for this field';
+    switchBtn.onclick = ()=>{
+      if(!confirm('This changes "'+field.name+'" so more than one option can be picked at once (for example, a niche that is also lighted). Any single choice already made stays saved but will need to be re-checked as a checkbox after this switch. Continue?')) return;
+      const newType = CTYPE_SWITCH_MAP[field.ctype];
+      field.ctype = newType;
+      field.control = (newType === 'pickany') ? 'Pick any' : 'Pick any per '+(field.locGroup ? field.locGroup.replace(/^Per /i,'') : 'location');
+      saveSectionsOverride();
+      document.getElementById('tradeContainer').innerHTML = '';
+      Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+      buildTradeUI();
+      renderAdminFieldList();
+      alert('"'+field.name+'" now allows multiple selections.');
+    };
+    wrap.appendChild(switchBtn);
+  } else {
+    const already = document.createElement('div');
+    already.className = 'helptext';
+    already.style.marginBottom='6px';
+    already.textContent = 'This field already allows multiple selections.';
+    wrap.appendChild(already);
+  }
+
   const row = document.createElement('div');
   row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginTop = '10px';
   const inp = document.createElement('input');
@@ -782,32 +859,61 @@ function setStatusValue(id, value){
 }
 
 function renderAssumptionsTab(){
-  const tbody = document.getElementById('assumeTableBody');
-  tbody.innerHTML = '';
-  let any = false;
+  const container = document.getElementById('assumeCardsContainer');
+  const filterSel = document.getElementById('assumeStatusFilter');
+  const filterVal = filterSel ? filterSel.value : 'all';
+  container.innerHTML = '';
+  const counts = { '': 0, 'Confirmed': 0, 'Assumed': 0 };
+  let anyRowAtAll = false;
+  let anyRowShown = false;
+
   SECTIONS.forEach(section=>{
     if(includeState[section.id] !== 'yes') return;
+    let rows = [];
     section.fields.forEach((field, fIdx)=>{
-      const objs = getFieldLineObjs(section, field, fIdx);
-      objs.forEach(o=>{
-        any = true;
-        const tr = document.createElement('tr');
-        const tdTrade = document.createElement('td'); tdTrade.textContent = section.title;
-        const tdText = document.createElement('td'); tdText.textContent = o.text;
-        const tdStatus = document.createElement('td');
-        const sel = document.createElement('select');
-        STATUS_OPTS.forEach(s=>{ const opt=document.createElement('option'); opt.value=s; opt.textContent = s || 'Not tracked'; if(s===o.status) opt.selected=true; sel.appendChild(opt); });
-        sel.onchange = ()=> setStatusValue(o.statusElId, sel.value);
-        tdStatus.appendChild(sel);
-        tr.appendChild(tdTrade); tr.appendChild(tdText); tr.appendChild(tdStatus);
-        tbody.appendChild(tr);
-      });
+      getFieldLineObjs(section, field, fIdx).forEach(o=> rows.push(o));
     });
+    if(!rows.length) return;
+    rows.forEach(o=>{ anyRowAtAll = true; counts[o.status || ''] = (counts[o.status || ''] || 0) + 1; });
+    const filteredRows = (filterVal === 'all') ? rows : rows.filter(o => (o.status||'') === filterVal);
+    if(!filteredRows.length) return;
+    anyRowShown = true;
+
+    const card = document.createElement('div');
+    card.className = 'assume-trade-card';
+    const head = document.createElement('div');
+    head.className = 'assume-trade-head';
+    head.innerHTML = '<span>'+esc(section.title)+'</span><span class="assume-trade-count">'+filteredRows.length+' item'+(filteredRows.length>1?'s':'')+'</span>';
+    card.appendChild(head);
+
+    filteredRows.forEach(o=>{
+      const row = document.createElement('div');
+      row.className = 'assume-row ' + (o.status ? 'st-'+slugStatus(o.status) : 'st-none');
+      const textSpan = document.createElement('span');
+      textSpan.className = 'assume-row-text';
+      textSpan.textContent = o.text;
+      const sel = document.createElement('select');
+      STATUS_OPTS.forEach(s=>{ const opt=document.createElement('option'); opt.value=s; opt.textContent = s || 'Not tracked'; if(s===o.status) opt.selected=true; sel.appendChild(opt); });
+      sel.onchange = ()=>{ setStatusValue(o.statusElId, sel.value); renderAssumptionsTab(); };
+      row.appendChild(textSpan);
+      row.appendChild(sel);
+      card.appendChild(row);
+    });
+    container.appendChild(card);
   });
-  if(!any){
-    const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="3" style="color:#999;">No fields filled in yet — go to Scope Builder and include a trade to see it here.</td>';
-    tbody.appendChild(tr);
+
+  const summary = document.getElementById('assumeSummary');
+  if(summary){
+    summary.innerHTML =
+      '<span class="assume-chip st-Confirmed">Confirmed: '+(counts['Confirmed']||0)+'</span>'+
+      '<span class="assume-chip st-Assumed">Assumed: '+(counts['Assumed']||0)+'</span>'+
+      '<span class="assume-chip">Not tracked: '+(counts['']||0)+'</span>';
+  }
+
+  if(!anyRowAtAll){
+    container.innerHTML = '<div class="assume-empty-note">No fields filled in yet — go to Scope Builder and include a trade to see it here.</div>';
+  } else if(!anyRowShown){
+    container.innerHTML = '<div class="assume-empty-note">No items match this filter.</div>';
   }
 }
 
@@ -873,12 +979,14 @@ function buildStatusSelect(id){
 }
 
 function buildRulesPanel(){
-  const c = document.getElementById('rulesContent');
-  DESIGN_RULES.forEach(r=>{
-    const row = document.createElement('div');
-    row.className = 'rule-row';
-    row.innerHTML = '<b>'+esc(r.field)+':</b> '+esc(r.rule);
-    c.appendChild(row);
+  const targets = ['rulesContent', 'scopeAdminRulesContent'].map(id=>document.getElementById(id)).filter(Boolean);
+  targets.forEach(c=>{
+    DESIGN_RULES.forEach(r=>{
+      const row = document.createElement('div');
+      row.className = 'rule-row';
+      row.innerHTML = '<b>'+esc(r.field)+':</b> '+esc(r.rule);
+      c.appendChild(row);
+    });
   });
 }
 
@@ -1969,6 +2077,34 @@ function generateDoc(){
     pageHtml += pageFooterHtml() + `</div>`;
     pagesHtml += pageHtml;
   });
+
+  // Trades explicitly marked "Include: No" — shown on the document itself so exclusion
+  // is a stated fact, not an absence someone has to notice and interpret.
+  const excludedByCat = {};
+  SECTIONS.forEach(s=>{
+    if(includeState[s.id] === 'no' && userSetInclude[s.id]){
+      const c = s.cat || 'Other';
+      excludedByCat[c] = excludedByCat[c] || [];
+      excludedByCat[c].push(s.title);
+    }
+  });
+  const excludedCats = Object.keys(excludedByCat);
+  if(excludedCats.length){
+    const excludedTotal = excludedCats.reduce((n,c)=>n+excludedByCat[c].length,0);
+    tocHtml += `<div class="toc-category">Excluded From This Scope</div>`;
+    let exPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Excluded From This Scope</span><span class="cat-count">${excludedTotal} trade${excludedTotal>1?'s':''}</span></div>`;
+    exPage += `<div class="cat-general-note">The trades below were reviewed for this project and are confirmed <b>NOT</b> part of this scope of work. If any become needed, they require a change order or scope revision.</div>`;
+    excludedCats.forEach(cat=>{
+      exPage += `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">${esc(cat)}</div><ul class="clean-list">`;
+      excludedByCat[cat].forEach(title=>{
+        exPage += `<li>${esc(title)} <span class="status-badge" style="background:rgba(117,117,117,0.14);color:#666;">NOT INCLUDED</span></li>`;
+        tocHtml += `<div class="toc-item">${esc(title)} — Not Included</div>`;
+      });
+      exPage += `</ul></div>`;
+    });
+    exPage += pageFooterHtml() + `</div>`;
+    pagesHtml += exPage;
+  }
   tocHtml += `<div class="toc-category">Project Closeout</div><div class="toc-item">Final Walkthrough & Completion – Trade Requirements</div><div class="toc-item">Final Cleanup</div>`;
   document.getElementById('docTOC').innerHTML = tocHtml;
 
