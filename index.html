@@ -223,6 +223,18 @@
 </head>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div id="pinGateOverlay" style="position:fixed;inset:0;background:#575757;z-index:99999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:36px 40px;width:320px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
+    <div style="font-size:16px;font-weight:700;color:#575757;margin-bottom:4px;">Mitchell Construction & Design</div>
+    <div style="font-size:12px;color:#888;margin-bottom:20px;">Scope of Work Generator</div>
+    <input type="text" id="pinGateName" placeholder="Your name" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
+    <input type="password" id="pinGateInput" placeholder="PIN" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;" onkeydown="if(event.key==='Enter') attemptPinLogin();">
+    <button class="btn" style="width:100%;" onclick="attemptPinLogin()">Enter</button>
+    <div id="pinGateError" style="color:#B04035;font-size:12px;margin-top:10px;display:none;">Incorrect PIN. Try again.</div>
+  </div>
+</div>
 
 <div id="dashboardView">
   <div class="dash-topbar no-print">
@@ -593,17 +605,16 @@
 let SECTIONS = [{"id": "1_1_excavation_land_management", "title": "1.1 Excavation & Land Management", "fields": [{"name": "Foundation excavation approach", "control": "Pick one", "ctype": "pickone", "options": ["Crawlspace", "Slab-on-grade", "Full basement", "Walkout basement", "Combination basement/crawlspace"], "note": "Plan reference; excavation depths; transition points", "locGroup": null}, {"name": "Topsoil handling", "control": "Pick one", "ctype": "pickone", "options": ["Stockpile on-site", "Spread on-site", "Haul off-site"], "note": "Stockpile location; estimated quantity", "locGroup": null}, {"name": "Excess spoil handling", "control": "Pick one", "ctype": "pickone", "options": ["Spread and grade on-site", "Haul off-site", "Import/export balance to be determined"], "note": "Disposal location; dump fees; dirt budget", "locGroup": null}, {"name": "Construction access", "control": "Pick any", "ctype": "pickany", "options": ["Temporary gravel drive", "Stabilized entrance", "Culvert installation", "Retop existing drive"], "note": "Length, width, material, culvert size", "locGroup": null}, {"name": "Tree/vegetation work", "control": "Pick any", "ctype": "pickany", "options": ["Selective tree removal", "Clearing/grubbing", "Protect designated trees", "Stump removal"], "note": "Marked locations", "locGroup": null}, {"name": "Utility trenching", "control": "Pick any", "ctype": "pickany", "options": ["Water", "Electric", "Gas/propane", "Well", "Communications", "Drainage"], "note": "Linear footage, depth, route, by whom", "locGroup": null}, {"name": "Grading stage", "control": "Pick any", "ctype": "pickany", "options": ["Initial rough grade", "Post-foundation rough grade", "Final grade", "Topsoil placement", "Seed/straw", "Hydroseed"], "note": "Limits of disturbance; finish elevations", "locGroup": null}, {"name": "Driveway work", "control": "Pick any", "ctype": "pickany", "options": ["New gravel drive", "New concrete drive", "New asphalt drive", "Retop existing gravel", "Approach shaping only"], "note": "Dimensions and material", "locGroup": null}, {"name": "Special excavation", "control": "Pick any", "ctype": "pickany", "options": ["Pool shell", "Egress well", "Exterior basement stair", "Below-grade addition", "Foundation opening/cut"], "note": "Plan/detail reference; shoring responsibility", "locGroup": null}, {"name": "Erosion control", "control": "Pick any", "ctype": "pickany", "options": ["Silt fence", "Inlet protection", "Construction entrance", "SWPPP measures"], "note": "Jurisdiction requirements", "locGroup": null}, {"name": "Site protection requirements", "control": "Pick any", "ctype": "pickany", "options": ["Protect structures", "Protect utilities", "Protect landscaping", "Protect well/septic"], "note": "Specific locations", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_2_footing_foundation", "title": "1.2 Footing & Foundation", "fields": [{"name": "Foundation system", "control": "Pick one", "ctype": "pickone", "options": ["Crawlspace", "Slab-on-grade with trench footing/stem wall", "Full basement", "Walkout basement", "Combination basement/crawlspace"], "note": "", "locGroup": null}, {"name": "Foundation wall material", "control": "Pick one", "ctype": "pickone", "options": ["Poured concrete", "ICF", "CMU/block"], "note": "", "locGroup": null}, {"name": "Foundation wall height", "control": "Pick one", "ctype": "pickone", "options": ["4 ft", "5 ft", "6 ft", "7 ft", "8 ft", "9 ft", "10 ft", "Varies by wall \u2014 specify in notes", "Other"], "note": "", "locGroup": null}, {"name": "Footing type", "control": "Pick one", "ctype": "pickone", "options": ["Continuous strip footing", "Trench footing", "Pad footing", "Engineered specialty footing"], "note": "Structural reference", "locGroup": null}, {"name": "Porch foundation", "control": "Per location", "ctype": "perloc", "options": ["Poured wall", "Frost footing/piers", "Slab thickening", "Other engineered system"], "note": "Porch location", "locGroup": "Per location"}, {"name": "Porch foundation wall height", "control": "Per location", "ctype": "perloc", "options": ["4 ft", "5 ft", "6 ft", "7 ft", "8 ft"], "note": "", "locGroup": "Per location"}, {"name": "Foundation openings", "control": "Pick any", "ctype": "pickany", "options": ["Crawlspace access", "Egress opening", "Exterior stair opening", "Utility penetration", "Garage/man-door opening"], "note": "Size and location", "locGroup": null}, {"name": "Retaining walls", "control": "Pick any", "ctype": "pickany", "options": ["Poured concrete", "Segmental block", "Boulder/stone", "Engineered specialty"], "note": "Height, length, finish", "locGroup": null}, {"name": "Foundation coordination", "control": "Pick any", "ctype": "pickany", "options": ["Termite treatment", "Embedded anchors", "Sleeves", "Hold-downs", "Brick ledge", "Stone ledge"], "note": "Plan/detail reference", "locGroup": null}, {"name": "Zero-entry condition", "control": "Pick any", "ctype": "pickany", "options": ["Garage", "Porch(es)", "Other"], "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_2_1_flatwork", "title": "1.2.1 Flatwork", "fields": [{"name": "Concrete area", "control": "Per location", "ctype": "perloc", "options": ["Garage slab", "Living slab", "Porch", "Approach", "Driveway", "Sidewalk", "AC pad", "Equipment pad", "Hot tub pad", "Trash pad", "Storm shelter pad", "Pool deck", "Other"], "note": "Location and square footage", "locGroup": "Per location"}, {"name": "Finish", "control": "Per location", "ctype": "perloc", "options": ["Broom", "Smooth/troweled", "Stamped", "Stained", "Exposed aggregate", "Polished", "Epoxy-ready"], "note": "Color/pattern where applicable", "locGroup": "Per location"}, {"name": "Entry condition", "control": "Per location", "ctype": "perloc", "options": ["Standard step", "Zero-entry/flush", "Sloped transition"], "note": "Elevation/detail", "locGroup": "Per location"}, {"name": "Thickness", "control": "Per location", "ctype": "perloc", "options": ["4 in. standard", "5 in.", "6 in.", "Engineered/custom"], "note": "Load requirement", "locGroup": "Per location"}, {"name": "Reinforcement", "control": "Per location", "ctype": "perloc", "options": ["Fiber only", "Rebar", "Welded wire mesh", "Rebar + fiber", "Engineered reinforcing"], "note": "Size/spacing", "locGroup": "Per location"}, {"name": "Special slab condition", "control": "Pick any", "ctype": "pickany", "options": ["Heavy-lift area", "Thickened edge", "Integral footing", "Steel pan deck", "Radiant tubing coordination", "Trench drain", "Floor drain"], "note": "Detail/specification", "locGroup": null, "perOptionLocation": true}, {"name": "Concrete accessories", "control": "Pick any", "ctype": "pickany", "options": ["Control joints", "Isolation joints", "Sleeves", "Vapor barrier", "Insulation below slab", "Sealer"], "note": "Locations/specification", "locGroup": null, "perOptionLocation": true}], "cat": "Sitework & Structure"}, {"id": "storm_shelter", "title": "1.2.2 Storm Shelter", "fields": [{"name": "Location type", "control": "Pick one", "ctype": "pickone", "options": ["Above slab interior", "Below slab interior/garage", "Below slab \u2014 under porch", "Exterior standalone"], "note": "", "locGroup": null}, {"name": "Capacity", "control": "Pick one", "ctype": "pickone", "options": ["2-4 persons", "5-8 persons", "9+ persons", "Custom"], "note": "", "locGroup": null}, {"name": "Construction", "control": "Pick one", "ctype": "pickone", "options": ["Precast", "Poured-in-place", "Steel safe-room system"], "note": "", "locGroup": null}, {"name": "Access", "control": "Pick one", "ctype": "pickone", "options": ["Hatch", "Standard door", "Hidden/integrated door"], "note": "", "locGroup": null}, {"name": "Special requirements", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_3_waterproofing", "title": "1.3 Waterproofing", "fields": [{"name": "Waterproofing system", "control": "Pick one", "ctype": "pickone", "options": ["Spray-applied membrane", "Sheet membrane", "Cementitious", "Drainage board system", "Other specified system"], "note": "", "locGroup": null}, {"name": "Locations", "control": "Pick any", "ctype": "pickany", "options": ["Basement walls", "Below-grade addition", "Retaining wall", "Foundation joint", "Exterior stairwell", "Window well", "Garage wall"], "note": "Plan/elevation reference", "locGroup": null}, {"name": "Drainage components", "control": "Pick any", "ctype": "pickany", "options": ["Perimeter drain tile", "Sump connection", "Drainage board", "Protection board", "Gravel drainage layer"], "note": "Discharge point", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_4_demolition", "title": "1.4 Demolition", "fields": [{"name": "Demolition approach", "control": "Pick one", "ctype": "pickone", "options": ["Full structure demolition", "Substantial interior gut", "Selective demolition by area", "Exterior-only demolition", "Trade-specific demolition"], "note": "", "locGroup": null}, {"name": "Occupancy condition", "control": "Pick one", "ctype": "pickone", "options": ["Vacant", "Occupied in separate area", "Occupied within work area/phased"], "note": "", "locGroup": null}, {"name": "Debris handling", "control": "Pick one", "ctype": "pickone", "options": ["Haul to landfill", "On-site burial where approved", "Separate recyclable/salvage streams"], "note": "Approved disposal location", "locGroup": null}, {"name": "Salvage requirements", "control": "Pick any", "ctype": "pickany", "options": ["Salvage for owner", "Salvage for reuse", "Protect in place", "Carefully remove and store"], "note": "Item, tagging, storage location", "locGroup": null}, {"name": "Temporary protection", "control": "Pick any", "ctype": "pickany", "options": ["Dust partitions", "Negative air", "Floor protection", "Weather protection", "Temporary security", "Temporary shoring"], "note": "Limits and duration", "locGroup": null}, {"name": "Hazardous material basis", "control": "Pick one", "ctype": "pickone", "options": ["Testing complete/no known hazards", "Testing required", "Excluded pending discovery"], "note": "Report/reference", "locGroup": null}, {"name": "Utility disconnection", "control": "Pick any", "ctype": "pickany", "options": ["Electric", "Gas", "Water", "Sewer/septic", "HVAC", "Low voltage"], "note": "Responsible party and sequence", "locGroup": null}, {"name": "Trade self-disconnect before demo", "control": "Pick any", "ctype": "pickany", "options": ["Electrical", "Plumbing", "Mechanical/HVAC", "Gas", "Low voltage", "Other"], "note": "Trades disconnecting their own equipment before the general demo crew proceeds", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_5_framing", "title": "1.5 Framing", "fields": [{"name": "Exterior wall framing", "control": "Pick one", "ctype": "pickone", "options": ["2x4", "2x6", "Double-stud", "Engineered wall system", "Existing wall retained/furred"], "note": "", "locGroup": null}, {"name": "Wall sheathing", "control": "Pick one", "ctype": "pickone", "options": ["OSB", "Plywood", "ZIP System", "Other structural sheathing"], "note": "", "locGroup": null}, {"name": "Wall sheathing thickness", "control": "Pick one", "ctype": "pickone", "options": ["1/2 in.", "5/8 in."], "note": "", "locGroup": null}, {"name": "Roof decking", "control": "Pick one", "ctype": "pickone", "options": ["OSB", "Plywood", "ZIP System", "1x boards", "Existing decking retained"], "note": "", "locGroup": null}, {"name": "Roof decking thickness", "control": "Pick one", "ctype": "pickone", "options": ["1/2 in.", "5/8 in."], "note": "", "locGroup": null}, {"name": "Floor system", "control": "Pick one", "ctype": "pickone", "options": ["I-joists", "Floor trusses", "Dimensional lumber", "Slab-on-grade/no framed floor", "Existing floor retained"], "note": "", "locGroup": null}, {"name": "Subfloor material", "control": "Pick one", "ctype": "pickone", "options": ["3/4 in. tongue & groove AdvanTech (standard)", "Other \u2014 specify brand/spec in notes"], "note": "", "locGroup": null}, {"name": "Roof structure", "control": "Pick one", "ctype": "pickone", "options": ["Engineered trusses", "Stick-framed", "Timber frame", "Combination", "Existing roof modified"], "note": "", "locGroup": null}, {"name": "Ceiling form", "control": "Per room/area", "ctype": "perloc", "options": ["Flat", "Vaulted", "Tray", "Coffered", "Barrel", "Sloped", "Other specialty"], "note": "", "locGroup": "Per room/area"}, {"name": "Interior wall height", "control": "Per room/area", "ctype": "perloc", "options": ["8 ft", "9 ft", "10 ft", "12 ft", "To structure", "Custom"], "note": "", "locGroup": "Per room/area"}, {"name": "Door opening height", "control": "Per opening type", "ctype": "perloc", "options": ["6 ft 8 in.", "7 ft", "8 ft", "Custom"], "note": "", "locGroup": "Per opening type"}, {"name": "Door opening shape", "control": "Per opening", "ctype": "perloc", "options": ["Square", "Arched", "Cased opening/no door"], "note": "", "locGroup": "Per opening"}, {"name": "Stair riser condition", "control": "Pick one", "ctype": "pickone", "options": ["Closed", "Open"], "note": "", "locGroup": null}, {"name": "Special framing", "control": "Pick any per specialty area", "ctype": "permulti", "options": ["Exposed beams", "Decorative beams", "Dormer", "Fireplace framing", "Shower niche", "Shower bench", "Pony wall", "Curved wall", "Ceiling treatment backing", "Cabinet backing", "TV backing", "Other \u2014 specify in notes"], "note": "Location/detail", "locGroup": "Pick any per specialty area"}, {"name": "Envelope framing details", "control": "Pick any", "ctype": "pickany", "options": ["Sloped window sills", "Sill pan/stretch tape", "Boxed soffits", "Taped sheathing seams", "Wall-to-slab liquid flashing", "Rainscreen furring"], "note": "Manufacturer/detail reference", "locGroup": null}, {"name": "Existing-structure work", "control": "Pick any", "ctype": "pickany", "options": ["Field verification", "Structural repair allowance", "Wall furring", "Floor leveling", "Roof tie-in", "Temporary shoring"], "note": "Known conditions and allowance", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "windows", "title": "1.6 Windows", "fields": [{"name": "Frame material", "control": "Pick one", "ctype": "pickone", "options": ["Vinyl", "Fiberglass", "Aluminum", "Wood", "Wood-clad", "Steel"], "note": "", "locGroup": null}, {"name": "Interior frame color/finish", "control": "Pick one", "ctype": "pickone", "options": ["White", "Black", "Bronze", "Stainable wood", "Custom"], "note": "", "locGroup": null}, {"name": "Exterior frame color/finish", "control": "Pick one", "ctype": "pickone", "options": ["White", "Black", "Bronze", "Custom color", "Clad finish"], "note": "", "locGroup": null}, {"name": "Operation type", "control": "Per opening", "ctype": "perloc", "options": ["Fixed", "Single-hung", "Double-hung", "Casement", "Awning", "Slider", "Hopper", "Specialty shape"], "note": "", "locGroup": "Per opening"}, {"name": "Grilles", "control": "Per opening/group", "ctype": "perloc", "options": ["None", "Between-glass", "Simulated divided lite", "True divided lite"], "note": "Pattern", "locGroup": "Per opening/group"}, {"name": "Glass package", "control": "Per opening/group", "ctype": "perloc", "options": ["Clear", "Low-E standard", "Tempered", "Laminated", "Privacy/textured", "Impact-rated", "Triple-pane"], "note": "", "locGroup": "Per opening/group"}, {"name": "Screen type", "control": "Per operable window", "ctype": "perloc", "options": ["Standard", "Retractable", "No screen", "Specialty"], "note": "", "locGroup": "Per operable window"}, {"name": "Interior finish coordination", "control": "Pick one", "ctype": "pickone", "options": ["Drywall return", "Wood extension jamb/trim", "Mixed by location"], "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_7_water_source_well", "title": "1.7 Water Source / Well", "fields": [{"name": "Water source", "control": "Pick one", "ctype": "pickone", "options": ["New drilled well", "Existing well retained", "Existing well relocated/modified", "Rural water district", "Municipal water", "Other"], "note": "", "locGroup": null}, {"name": "Well house", "control": "Pick one", "ctype": "pickone", "options": ["Not required", "Exterior well house", "Inside garage/basement/mechanical room"], "note": "", "locGroup": null}, {"name": "Temporary water service", "control": "Pick one", "ctype": "pickone", "options": ["Not required", "Maintain existing service", "Temporary tank/line", "Other temporary setup"], "note": "Maximum downtime", "locGroup": null}, {"name": "Unused well disposition", "control": "Pick one", "ctype": "pickone", "options": ["None", "Cap", "Abandon per code"], "note": "Permit/authority", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_9_wastewater_septic", "title": "1.9 Wastewater / Septic", "fields": [{"name": "Wastewater system", "control": "Pick one", "ctype": "pickone", "options": ["Conventional gravity septic", "Aerobic treatment", "Lagoon", "Municipal sewer", "Existing system retained/modified"], "note": "", "locGroup": null}, {"name": "System capacity basis", "control": "Required input", "ctype": "input", "options": ["Bedroom count", "Fixture count", "Soil report", "Jurisdiction criteria"], "note": "Attach report/reference", "locGroup": null}, {"name": "Existing system work", "control": "Pick any", "ctype": "pickany", "options": ["Abandon", "Relocate", "Connect to", "Repair", "Expand"], "note": "Condition and responsibility", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "propane_tank", "title": "1.9.1 Propane Tank", "fields": [{"name": "Ownership", "control": "Pick one", "ctype": "pickone", "options": ["Rent/lease from supplier", "Purchase/owner-owned"], "note": "", "locGroup": null}, {"name": "Placement", "control": "Pick one", "ctype": "pickone", "options": ["Above ground", "Buried"], "note": "", "locGroup": null}, {"name": "Capacity", "control": "Pick one", "ctype": "pickone", "options": ["250 gal", "500 gal", "1,000 gal", "1,500 gal", "Multiple tanks/custom"], "note": "", "locGroup": null}, {"name": "Quantity", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Tank accessories", "control": "Pick any", "ctype": "pickany", "options": ["Concrete pad", "Bollards", "Screen/fence", "Underground dome", "Regulator", "Trenching/line"], "note": "Location/setbacks", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "2_1_hvac_venting", "title": "2.1 HVAC & Venting", "fields": [{"name": "Primary system configuration", "control": "Pick one", "ctype": "pickone", "options": ["Single central system", "Multiple central systems", "Zoned central system", "Ductless mini-split system", "Geothermal system", "Hybrid/combination"], "note": "", "locGroup": null}, {"name": "Primary heating technology", "control": "Pick one", "ctype": "pickone", "options": ["Gas furnace", "Electric heat pump", "Dual-fuel heat pump", "Electric resistance", "Geothermal heat pump", "Other"], "note": "", "locGroup": null}, {"name": "Cooling technology", "control": "Pick one", "ctype": "pickone", "options": ["Central DX air conditioning", "Heat pump cooling", "Ductless mini-split", "Geothermal", "None"], "note": "", "locGroup": null}, {"name": "Number of systems/zones", "control": "Required input", "ctype": "input", "options": null, "note": "Identify areas served", "locGroup": null}, {"name": "Supplemental conditioning", "control": "Per area", "ctype": "perloc", "options": ["Mini-split head", "Radiant heater", "Unit heater", "Fireplace as supplemental only", "None"], "note": "Location", "locGroup": "Per area"}, {"name": "Ventilation", "control": "Pick any", "ctype": "pickany", "options": ["Bath exhaust", "Kitchen hood exhaust", "Dryer exhaust", "ERV", "HRV", "Whole-house ventilation", "Make-up air"], "note": "Termination location/capacity", "locGroup": null}, {"name": "Humidity control", "control": "Pick any", "ctype": "pickany", "options": ["Whole-house dehumidifier", "Humidifier", "Crawlspace dehumidifier"], "note": "Area served", "locGroup": null}, {"name": "Controls", "control": "Pick any", "ctype": "pickany", "options": ["Standard thermostat", "Smart thermostat", "Multi-zone controls", "Remote sensors"], "note": "Quantity/location", "locGroup": null}, {"name": "Fuel source", "control": "Pick any", "ctype": "pickany", "options": ["Natural gas", "Propane", "Electric"], "note": "Appliance/system served", "locGroup": null}, {"name": "Equipment sizing inputs", "control": "Required input", "ctype": "input", "options": ["Manual J/S or engineering", "Envelope assumptions", "Window data", "Occupancy assumptions"], "note": "Responsible party/deadline", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_2_electrical", "title": "2.2 Electrical", "fields": [{"name": "Service size", "control": "Pick one", "ctype": "pickone", "options": ["100A", "200A", "320/400A", "Engineered/custom"], "note": "", "locGroup": null}, {"name": "Panel strategy", "control": "Pick one", "ctype": "pickone", "options": ["New main panel", "Reuse existing panel", "Reuse existing + new subpanel", "New panel for addition", "Multiple new panels"], "note": "", "locGroup": null}, {"name": "Service entrance", "control": "Pick one", "ctype": "pickone", "options": ["Underground", "Overhead", "From existing service", "Utility-design required"], "note": "", "locGroup": null}, {"name": "Underground/overhead run length", "control": "Required input", "ctype": "input", "options": null, "note": "Length of the utility-to-house service run", "locGroup": null}, {"name": "SER length (house to panel)", "control": "Required input", "ctype": "input", "options": null, "note": "Service entrance riser length from point of attachment/meter to panel", "locGroup": null}, {"name": "Temporary power", "control": "Pick any", "ctype": "pickany", "options": ["Temporary construction service", "Maintain power to occupied area", "Maintain well power", "Maintain refrigeration/freezer power", "Phased switchover"], "note": "Loads and duration", "locGroup": null}, {"name": "General lighting package", "control": "Pick one", "ctype": "pickone", "options": ["Recessed lighting baseline", "Decorative fixtures only at plan locations", "Mixed recessed/decorative", "Lighting design pending allowance"], "note": "", "locGroup": null}, {"name": "Fixture finish/color direction", "control": "Required input", "ctype": "input", "options": null, "note": "Per fixture category if different", "locGroup": null}, {"name": "Specialty lighting", "control": "Pick any", "ctype": "pickany", "options": ["Vanity", "Sconce", "Pendant", "Under-cabinet", "In-cabinet", "Toe-kick", "Stair", "Floor receptacle/lighting", "Art lighting", "Cove lighting", "Closet lighting"], "note": "Locations and control", "locGroup": null}, {"name": "Exterior lighting type", "control": "Pick any", "ctype": "pickany", "options": ["Wall-mounted", "Ceiling-mounted", "Soffit downlight", "Landscape", "Permanent holiday/accent"], "note": "Locations and switching", "locGroup": null}, {"name": "Lighting controls", "control": "Pick any", "ctype": "pickany", "options": ["Standard switches", "Dimmers", "Occupancy sensors", "Smart controls", "3-way/4-way", "Central lighting control"], "note": "Locations/system", "locGroup": null}, {"name": "Island receptacle method", "control": "Pick one", "ctype": "pickone", "options": ["Pop-up", "Side-mounted", "End-panel mounted", "Overhang support/other code-compliant method", "No island"], "note": "", "locGroup": null}, {"name": "Dedicated circuits", "control": "Pick any", "ctype": "pickany", "options": ["Range/cooktop", "Wall oven", "Dryer", "Water heater", "HVAC", "Mini-split", "Garage equipment", "EV charger", "Hot tub", "Pool", "Well", "Generator", "Other 240V load"], "note": "Voltage/amperage/equipment spec", "locGroup": null}, {"name": "Backup power", "control": "Pick one", "ctype": "pickone", "options": ["None", "Portable-generator inlet", "Critical-load standby generator", "Whole-home standby generator"], "note": "Fuel, kW, transfer-switch location", "locGroup": null}, {"name": "Low-voltage rough-ins by electrician", "control": "Pick any", "ctype": "pickany", "options": ["Security cameras", "Doorbell", "Gate", "TV power", "Wi-Fi access point power", "Audio power", "Fountain/water feature", "Landscape transformer"], "note": "Separate from cabling scope", "locGroup": null}, {"name": "Special receptacles/devices", "control": "Pick any", "ctype": "pickany", "options": ["Bidet outlet", "Air switch", "Floor receptacle", "USB/USB-C", "In-cabinet outlet", "Holiday-light receptacles", "Exterior switched receptacles"], "note": "Locations", "locGroup": null}, {"name": "Surge protection", "control": "Pick one", "ctype": "pickone", "options": ["None", "Main panel only", "Main and subpanels", "Whole-house + point-of-use"], "note": "", "locGroup": null}, {"name": "Electrical walkthrough", "control": "Required input", "ctype": "input", "options": ["Required", "Not required"], "note": "Deadline before rough-in; decision owner", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "home_audio", "title": "2.2.1 Home Audio", "fields": [{"name": "System level", "control": "Pick one", "ctype": "pickone", "options": ["Prewire only", "Partial installed system", "Whole-home installed system"], "note": "", "locGroup": null}, {"name": "Speaker location", "control": "Pick any", "ctype": "pickany", "options": ["Interior", "Exterior", "Dedicated theater"], "note": "", "locGroup": null}, {"name": "Speaker type", "control": "Pick any", "ctype": "pickany", "options": ["In-wall", "In-ceiling", "Surface-mounted", "Landscape", "Soundbar"], "note": "", "locGroup": null}, {"name": "Zone control", "control": "Pick one", "ctype": "pickone", "options": ["Single zone", "Multi-zone", "App-controlled multi-zone"], "note": "", "locGroup": null}, {"name": "Equipment location", "control": "Pick one", "ctype": "pickone", "options": ["No central rack", "Closet rack", "Dedicated equipment cabinet", "Mechanical/IT room"], "note": "", "locGroup": null}, {"name": "TV/audio locations", "control": "Per location", "ctype": "perloc", "options": ["Power only", "Power + data", "Full AV prewire", "Installed equipment"], "note": "Room/wall", "locGroup": "Per location"}], "cat": "Core Building Systems"}, {"id": "wi_fi_low_voltage_smart_home", "title": "2.2.2 Wi-Fi / Low Voltage / Smart Home", "fields": [{"name": "Network wiring level", "control": "Pick one", "ctype": "pickone", "options": ["Router only/basic", "Cat6 prewire", "Full wired network", "Managed enterprise-style network"], "note": "", "locGroup": null}, {"name": "Wi-Fi coverage", "control": "Pick one", "ctype": "pickone", "options": ["Single router", "Multiple access points", "Indoor/outdoor managed coverage"], "note": "", "locGroup": null}, {"name": "Hardwired data locations", "control": "Per location", "ctype": "perloc", "options": ["Data jack", "TV location", "Office", "Access point", "Camera", "Gate/intercom", "Equipment"], "note": "Quantity/location", "locGroup": "Per location"}, {"name": "Security camera system", "control": "Pick one", "ctype": "pickone", "options": ["Prewire only", "Owner-furnished cameras", "Installed standalone system", "Integrated system"], "note": "", "locGroup": null}, {"name": "Security system", "control": "Pick one", "ctype": "pickone", "options": ["None", "Prewire", "Installed alarm", "Integrated alarm/access control"], "note": "", "locGroup": null}, {"name": "Smart-home level", "control": "Pick one", "ctype": "pickone", "options": ["Basic devices only", "Selected integrated systems", "Whole-home automation platform"], "note": "", "locGroup": null}, {"name": "Integrated functions", "control": "Pick any", "ctype": "pickany", "options": ["Lighting", "Thermostats", "Door locks", "Shades", "Audio", "Security", "Cameras", "Gate", "Irrigation", "Pool", "Generator monitoring"], "note": "Platform/installer", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_3_plumbing", "title": "2.3 Plumbing", "fields": [{"name": "Plumbing project approach", "control": "Pick one", "ctype": "pickone", "options": ["Full new construction", "Slab-on-grade/in-slab rough-in", "Full renovation replacement", "Partial remodel/reuse existing", "Addition tied to existing"], "note": "", "locGroup": null}, {"name": "Water heater fuel", "control": "Pick one", "ctype": "pickone", "options": ["Gas", "Electric", "Heat-pump water heater", "Other"], "note": "", "locGroup": null}, {"name": "Water heater style", "control": "Pick one", "ctype": "pickone", "options": ["Tank", "Tankless", "Hybrid/heat-pump", "Boiler/indirect"], "note": "", "locGroup": null}, {"name": "Water heater capacity", "control": "Required input", "ctype": "input", "options": ["40 gal", "50 gal", "80 gal", "GPM/BTU for tankless", "Engineered/custom"], "note": "Quantity and location", "locGroup": null}, {"name": "Water treatment", "control": "Pick any", "ctype": "pickany", "options": ["Water softener", "Whole-house sediment filter", "Carbon filter", "UV", "Reverse osmosis", "Other"], "note": "Equipment location and who furnishes", "locGroup": null}, {"name": "Hot-water recirculation", "control": "Pick one", "ctype": "pickone", "options": ["None", "Dedicated return loop", "Demand recirculation", "Pump-only on existing piping"], "note": "", "locGroup": null}, {"name": "Kitchen sink material", "control": "Pick one", "ctype": "pickone", "options": ["Stainless steel", "Cast iron/enamel", "Fireclay", "Composite granite", "Copper", "Other"], "note": "", "locGroup": null}, {"name": "Kitchen faucet operation", "control": "Pick one", "ctype": "pickone", "options": ["Manual pull-down", "Touch", "Touchless", "Bridge", "Other"], "note": "", "locGroup": null}, {"name": "Toilet height", "control": "Pick one", "ctype": "pickone", "options": ["Standard", "Chair/comfort height"], "note": "", "locGroup": null}, {"name": "Bidet condition", "control": "Pick one", "ctype": "pickone", "options": ["None", "Bidet seat prep", "Bidet seat furnished/installed", "Integrated bidet toilet"], "note": "", "locGroup": null}, {"name": "Tub type", "control": "Per tub", "ctype": "perloc", "options": ["Freestanding", "Alcove", "Drop-in", "Undermount", "Jetted", "None"], "note": "", "locGroup": "Per tub"}, {"name": "Tub filler mount", "control": "Per tub", "ctype": "perloc", "options": ["Deck-mounted", "Floor-mounted/freestanding", "Wall-mounted"], "note": "", "locGroup": "Per tub"}, {"name": "Shower type", "control": "Pick any per shower", "ctype": "perloc", "options": ["Tub/shower combo", "Walk-in shower", "Prefabricated shower", "Onyx/solid-surface system", "Custom tile shower"], "note": "", "locGroup": "Pick any per shower"}, {"name": "Shower entry", "control": "Pick any per shower", "ctype": "perloc", "options": ["Curbed", "Curbless/zero-entry", "Tub threshold"], "note": "", "locGroup": "Pick any per shower"}, {"name": "Shower components", "control": "Pick any per shower", "ctype": "permulti", "options": ["Standard wall head", "Rain head", "Hand shower", "Body sprays", "Electronic control", "Thermostatic valve", "Grab bar", "Bench", "Niche"], "note": "Quantity/layout", "locGroup": "Pick any per shower"}, {"name": "Special plumbing fixtures", "control": "Pick any", "ctype": "pickany", "options": ["Pot filler", "Wall-mounted faucet", "Bar sink", "Pantry sink", "Laundry sink", "Dog wash", "Floor drain", "Garage drain", "Pressure-washer hookup", "Ice maker", "Outdoor shower"], "note": "Location", "locGroup": null}, {"name": "Gas piping", "control": "Pick any", "ctype": "pickany", "options": ["Range", "Fireplace", "Grill", "Fire pit", "Generator", "Pool heater", "HVAC", "Dryer", "Other"], "note": "BTU/load and route", "locGroup": null}, {"name": "Plumbing walkthrough", "control": "Required input", "ctype": "input", "options": ["Required", "Not required"], "note": "Deadline before rough-in", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_4_insulation", "title": "2.4 Insulation", "fields": [{"name": "Exterior wall insulation", "control": "Pick one", "ctype": "pickone", "options": ["Fiberglass batt", "Mineral wool", "Open-cell spray foam", "Closed-cell spray foam", "Blown-in/cellulose", "Hybrid system"], "note": "", "locGroup": null}, {"name": "Roof/attic insulation", "control": "Pick one", "ctype": "pickone", "options": ["Attic-floor blown-in", "Roof-deck open-cell foam", "Roof-deck closed-cell foam", "Batt/mineral wool", "Hybrid system"], "note": "", "locGroup": null}, {"name": "Floor/crawlspace insulation", "control": "Pick one", "ctype": "pickone", "options": ["Floor batts", "Crawlspace wall foam", "Rigid foam", "None/conditioned slab"], "note": "", "locGroup": null}, {"name": "Garage envelope status", "control": "Pick one", "ctype": "pickone", "options": ["Unconditioned/excluded", "Insulated only", "Fully conditioned envelope"], "note": "", "locGroup": null}, {"name": "Sound control", "control": "Pick any", "ctype": "pickany", "options": ["Bathroom walls", "Bedroom-adjacent walls", "Laundry walls", "Mechanical room", "Media room", "Plumbing walls", "Floor/ceiling assemblies"], "note": "Exact walls/areas", "locGroup": null}, {"name": "Air/vapor control", "control": "Pick any", "ctype": "pickany", "options": ["Vapor barrier", "Air sealing package", "Rim-joist foam", "Fire-blocking support", "Blower-door target"], "note": "Climate/design basis", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_5_drywall", "title": "2.5 Drywall", "fields": [{"name": "Drywall finish level", "control": "Pick one", "ctype": "pickone", "options": ["Level 3", "Level 4", "Level 5"], "note": "", "locGroup": null}, {"name": "Wall texture", "control": "Pick one", "ctype": "pickone", "options": ["Smooth/no texture", "Light orange peel", "Medium orange peel", "Knockdown", "Match existing"], "note": "", "locGroup": null}, {"name": "Ceiling texture", "control": "Pick one", "ctype": "pickone", "options": ["Smooth/no texture", "Light orange peel", "Tree bark", "Knockdown", "Match existing"], "note": "", "locGroup": null}, {"name": "Corner style", "control": "Pick one", "ctype": "pickone", "options": ["Square", "Bullnose", "Specialty/profiled"], "note": "", "locGroup": null}, {"name": "Window interior treatment", "control": "Pick one", "ctype": "pickone", "options": ["Drywall return", "Wood trim", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Garage finish", "control": "Pick one", "ctype": "pickone", "options": ["Same as living space", "Taped/fire-code only", "Level 3", "Level 4", "Other"], "note": "", "locGroup": null}, {"name": "Remodel repair scope", "control": "Pick any", "ctype": "pickany", "options": ["Patch openings", "Blend existing texture", "Scrape popcorn", "Skim-coat existing", "Repair trade damage", "Fur existing walls"], "note": "Areas and acceptance basis", "locGroup": null}, {"name": "Special openings", "control": "Pick any", "ctype": "pickany", "options": ["Arched openings", "Niches", "Reveals", "Shadow bead", "Control joints"], "note": "Locations/details", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_8_masonry", "title": "2.8 Masonry", "fields": [{"name": "Masonry work approach", "control": "Pick one", "ctype": "pickone", "options": ["New veneer", "Repair/extend existing", "Clean/refinish existing", "Combination"], "note": "", "locGroup": null}, {"name": "Primary masonry material", "control": "Pick one", "ctype": "pickone", "options": ["Brick", "Natural stone", "Manufactured stone veneer", "CMU", "Other"], "note": "", "locGroup": null}, {"name": "Exterior applications", "control": "Pick any per masonry area", "ctype": "permulti", "options": ["Wainscot", "Full-height wall", "Gable", "Chimney", "Porch column", "Exterior corner accent", "Mailbox", "Retaining/landscape wall"], "note": "Height/locations", "locGroup": "Per masonry area"}, {"name": "Interior applications", "control": "Pick any per masonry area", "ctype": "permulti", "options": ["Fireplace surround", "Hearth", "Accent wall", "Wine room", "Other"], "note": "Dimensions/location", "locGroup": "Per masonry area"}, {"name": "Masonry square footage", "control": "Per masonry area", "ctype": "perloc", "options": null, "note": "Enter sq ft for this area", "locGroup": "Per masonry area"}, {"name": "Mortar/joint style", "control": "Required input", "ctype": "input", "options": null, "note": "Sample/mockup requirement", "locGroup": null}, {"name": "Special finish", "control": "Pick any", "ctype": "pickany", "options": ["Whitewash", "Limewash", "German smear", "Sealer", "Cleaning only"], "note": "Approved sample", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "fireplace", "title": "2.8.1 Fireplace", "fields": [{"name": "Fuel type", "control": "Per fireplace", "ctype": "perloc", "options": ["Gas", "Wood-burning", "Electric", "Pellet"], "note": "", "locGroup": "Per fireplace"}, {"name": "Unit type", "control": "Per fireplace", "ctype": "perloc", "options": ["Direct-vent", "Vent-free", "Masonry", "Insert", "Linear", "Traditional box", "Other"], "note": "", "locGroup": "Per fireplace"}, {"name": "Surround material", "control": "Per fireplace", "ctype": "perloc", "options": ["Stone", "Brick", "Tile", "Slab", "Plaster", "Wood/trim", "None"], "note": "", "locGroup": "Per fireplace"}, {"name": "Hearth", "control": "Per fireplace", "ctype": "perloc", "options": ["None", "Raised", "Flush", "Floating"], "note": "Material/dimensions", "locGroup": "Per fireplace"}, {"name": "Mantel", "control": "Per fireplace", "ctype": "perloc", "options": ["None", "Wood", "Stone/slab", "Metal", "Custom"], "note": "", "locGroup": "Per fireplace"}, {"name": "Add-ons", "control": "Pick any per fireplace", "ctype": "permulti", "options": ["Blower", "TV/power rough-in", "Fireplace lighting", "Built-ins", "Wood storage", "Gas log set"], "note": "Specifications", "locGroup": "Per fireplace"}], "cat": "Core Building Systems"}, {"id": "2_9_flooring", "title": "2.9 Flooring", "fields": [{"name": "Flooring material", "control": "Per area", "ctype": "perloc", "options": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate", "Carpet", "Tile", "Sheet vinyl", "Polished concrete", "Epoxy flake", "Other"], "note": "Room/area schedule", "locGroup": "Per area"}, {"name": "Hardwood finish condition", "control": "Per area", "ctype": "perloc", "options": ["Site-finished/raw", "Prefinished"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood"]}}, {"name": "Hardwood species", "control": "Per area", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood"]}}, {"name": "Plank width", "control": "Per area", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate"]}}, {"name": "Installation pattern", "control": "Per area", "ctype": "perloc", "options": ["Straight", "Diagonal", "Herringbone", "Chevron", "Random width", "Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate", "Tile"]}}, {"name": "Carpet style", "control": "Per area", "ctype": "perloc", "options": ["Plush", "Berber", "Frieze", "Loop", "Pattern/Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Carpet"]}}, {"name": "Carpet pad", "control": "Per area", "ctype": "perloc", "options": ["Standard", "Upgraded/specialty", "Moisture barrier", "Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Carpet"]}}, {"name": "Garage floor coating", "control": "Per area", "ctype": "perloc", "options": ["None", "Epoxy flake", "Solid-color epoxy", "Polyaspartic flake", "Polished concrete"], "note": "Coverage and wall curb treatment", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Epoxy flake", "Polished concrete"]}}, {"name": "Stair finish", "control": "Per component", "ctype": "perloc", "options": ["Treads", "Risers", "Landing", "Skirt boards"], "note": "Material/finish per component", "locGroup": "Per component"}, {"name": "Transitions", "control": "Pick any per area", "ctype": "permulti", "options": ["Flush transition", "Reducer", "Metal profile", "Wood threshold", "Stone threshold"], "note": "Locations", "locGroup": "Per area"}], "cat": "Core Building Systems"}, {"id": "3_1_trim_carpentry", "title": "3.1 Trim Carpentry", "fields": [{"name": "Trim types at this location", "control": "Pick any per trim area", "ctype": "permulti", "options": ["Door casing", "Window casing", "Baseboard", "Closet shelving", "Crown molding", "Beam/ceiling treatment", "Custom shelving", "Accent wall", "Stair parts", "Other"], "note": "", "locGroup": "Per trim area"}, {"name": "Trim grade", "control": "Per trim area", "ctype": "perloc", "options": ["Paint-grade", "Stain-grade"], "note": "", "locGroup": "Per trim area"}, {"name": "Wood species (if stain-grade)", "control": "Per trim area", "ctype": "perloc", "options": null, "note": "Free text \u2014 species used at this location", "locGroup": "Per trim area"}, {"name": "Door casing profile", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Custom"], "note": "", "locGroup": null}, {"name": "Door casing assembly method", "control": "Pick one", "ctype": "pickone", "options": ["Picture-frame (mitered)", "Farmhouse header", "Reveal/no casing", "Custom"], "note": "", "locGroup": null}, {"name": "Window casing profile", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Custom"], "note": "", "locGroup": null}, {"name": "Window casing assembly method", "control": "Pick one", "ctype": "pickone", "options": ["Picture-frame (mitered)", "Farmhouse header", "Reveal/no casing", "Custom"], "note": "", "locGroup": null}, {"name": "Window sill treatment", "control": "Pick one", "ctype": "pickone", "options": ["Casing wraps to sill (no separate stool)", "Stool and apron", "Flat sill/no apron", "Custom"], "note": "", "locGroup": null}, {"name": "Baseboard style", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Flush/reveal", "Custom"], "note": "", "locGroup": null}, {"name": "Trim dimensions", "control": "Required input", "ctype": "input", "options": ["Casing width", "Base height", "Thickness", "Header components"], "note": "Can vary by location", "locGroup": null}, {"name": "Crown molding", "control": "Per room", "ctype": "perloc", "options": ["None", "Standard crown", "Built-up crown", "Cove", "Custom"], "note": "", "locGroup": "Per room"}, {"name": "Closet build-out level", "control": "Per closet", "ctype": "perloc", "options": ["Rod and shelf", "Double-hang", "Adjustable shelving", "Built-in dresser", "Shoe shelving", "Fully custom"], "note": "", "locGroup": "Per closet"}, {"name": "Shelving grade", "control": "Pick one", "ctype": "pickone", "options": ["Paint-grade", "Stain-grade", "Prefinished laminate", "Wire"], "note": "", "locGroup": null}, {"name": "Shelving style", "control": "Pick one", "ctype": "pickone", "options": ["Cleated", "Floating", "Cabinet-integrated", "Adjustable track"], "note": "", "locGroup": null}, {"name": "Stair railing material", "control": "Pick one", "ctype": "pickone", "options": ["Wood", "Metal", "Cable", "Glass", "Combination"], "note": "", "locGroup": null}, {"name": "Stair newel material", "control": "Pick one", "ctype": "pickone", "options": ["Wood", "Metal", "None/custom"], "note": "", "locGroup": null}, {"name": "Special trim features", "control": "Pick any", "ctype": "pickany", "options": ["Decorative beams", "Structural beam wrap", "Coffered ceiling", "Wall paneling", "Ceiling paneling", "Mantel", "Mudroom cleats", "Bench", "Built-in bookshelves", "Window seat", "Wainscot"], "note": "Location/detail", "locGroup": null, "perOptionLocation": true}], "cat": "Interior & Exterior Finishes"}, {"id": "interior_exterior_doors", "title": "3.1.1 Interior & Exterior Doors", "fields": [{"name": "Interior door core", "control": "Pick one", "ctype": "pickone", "options": ["Hollow-core", "Solid-core", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Interior door profile", "control": "Pick one", "ctype": "pickone", "options": ["Flush", "1-panel", "2-panel", "5-panel", "Shaker", "Other"], "note": "", "locGroup": null}, {"name": "Interior door height", "control": "Per opening group", "ctype": "perloc", "options": ["6 ft 8 in.", "7 ft", "8 ft", "Custom"], "note": "", "locGroup": "Per opening group"}, {"name": "Interior door material", "control": "Pick one", "ctype": "pickone", "options": ["Molded composite", "MDF", "Paint-grade wood", "Stain-grade wood", "Metal/glass specialty"], "note": "", "locGroup": null}, {"name": "Pocket door core", "control": "Pick one", "ctype": "pickone", "options": ["Hollow-core", "Solid-core", "Specialty glass/wood"], "note": "", "locGroup": null}, {"name": "Pocket door hardware", "control": "Pick one", "ctype": "pickone", "options": ["Standard track", "Soft-close track", "Concealed premium system"], "note": "", "locGroup": null}, {"name": "Front door leaf configuration", "control": "Pick one", "ctype": "pickone", "options": ["Single", "Double/French"], "note": "", "locGroup": null}, {"name": "Front door side condition", "control": "Pick one", "ctype": "pickone", "options": ["No sidelights", "One sidelight", "Two sidelights"], "note": "", "locGroup": null}, {"name": "Front door transom", "control": "Pick one", "ctype": "pickone", "options": ["None", "Rectangular", "Arched", "Custom"], "note": "", "locGroup": null}, {"name": "Exterior door material", "control": "Per door", "ctype": "perloc", "options": ["Fiberglass", "Steel", "Wood", "Aluminum/glass", "Other"], "note": "", "locGroup": "Per door"}, {"name": "Exterior door glass", "control": "Per door", "ctype": "perloc", "options": ["None", "Full-lite", "Half-lite", "Top-lite", "Custom"], "note": "", "locGroup": "Per door"}, {"name": "Special doors", "control": "Pick any", "ctype": "pickany", "options": ["Barn door", "Murphy/hidden door", "Safe-room door", "Storm shelter door", "Pivot door", "Folding/sliding glass wall"], "note": "Location/spec", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "garage_doors", "title": "3.1.2 Garage Doors", "fields": [{"name": "Door material", "control": "Pick one", "ctype": "pickone", "options": ["Steel", "Wood", "Aluminum/glass", "Composite"], "note": "", "locGroup": null}, {"name": "Panel style", "control": "Pick one", "ctype": "pickone", "options": ["Flush/square", "Raised panel", "Carriage-house", "Full-view glass", "Custom"], "note": "", "locGroup": null}, {"name": "Door construction/insulation", "control": "Pick one", "ctype": "pickone", "options": ["Non-insulated", "2-layer", "3-layer insulated", "High-R-value premium"], "note": "", "locGroup": null}, {"name": "Window condition", "control": "Pick one", "ctype": "pickone", "options": ["No windows", "Top-panel windows", "Full-view/glass panels"], "note": "", "locGroup": null}, {"name": "Window pattern", "control": "Required input", "ctype": "input", "options": ["Standard square", "Arched", "Stockton", "Custom"], "note": "", "locGroup": null}, {"name": "Operator type", "control": "Pick one", "ctype": "pickone", "options": ["Overhead trolley", "Side-mount/jackshaft", "Commercial/high-lift"], "note": "", "locGroup": null}, {"name": "Color/finish", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Quantity and size", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_2_paint_stain", "title": "3.2 Paint & Stain", "fields": [{"name": "Wall coating system", "control": "Pick one", "ctype": "pickone", "options": ["Primer + 1 finish coat", "Primer + 2 finish coats", "Repaint/2 finish coats", "Specialty coating"], "note": "", "locGroup": null}, {"name": "Ceiling coating system", "control": "Pick one", "ctype": "pickone", "options": ["Primer + 1 finish coat", "Primer + 2 finish coats", "Repaint", "Specialty coating"], "note": "", "locGroup": null}, {"name": "Component finish", "control": "Per component", "ctype": "perloc", "options": ["Paint", "Clear stain", "Opaque stain", "Natural clear coat", "Factory-finished/no field finish"], "note": "Walls, ceilings, trim, doors, beams, shelving, railings, mantel, exterior elements", "locGroup": "Per component"}, {"name": "Paint sheen", "control": "Per surface", "ctype": "perloc", "options": ["Flat", "Matte", "Eggshell", "Satin", "Semi-gloss", "Gloss"], "note": "", "locGroup": "Per surface"}, {"name": "Stain system", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Exterior paint scope", "control": "Pick one", "ctype": "pickone", "options": ["New exterior complete", "Addition only", "Blend/repaint affected elevations", "Full repaint existing + new"], "note": "", "locGroup": null}, {"name": "Cabinet refinishing", "control": "Pick any", "ctype": "pickany", "options": ["Paint existing cabinets", "Restain existing cabinets", "Refinish island only", "Hardware removal/reinstall"], "note": "Areas and finish standard", "locGroup": null}, {"name": "Prep requirements", "control": "Pick any", "ctype": "pickany", "options": ["Fill nail holes", "Sand", "Caulk", "Prime bare material", "Spot-prime", "Soft wash", "Scrape loose coating", "Repair minor defects"], "note": "Define exclusions for major substrate repair", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_3_hardware_accessories", "title": "3.3 Hardware & Accessories", "fields": [{"name": "Interior door hardware style", "control": "Pick one", "ctype": "pickone", "options": ["Lever", "Knob", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Interior hardware finish", "control": "Pick one", "ctype": "pickone", "options": ["Oil-rubbed bronze", "Brushed nickel/chrome", "Matte black", "Brushed brass/gold", "Other"], "note": "", "locGroup": null}, {"name": "Exterior lock type", "control": "Per door", "ctype": "perloc", "options": ["Standard keyed lockset", "Smart lock", "Keypad", "Multipoint lock", "Passage/no lock"], "note": "", "locGroup": "Per door"}, {"name": "Door stops", "control": "Pick one", "ctype": "pickone", "options": ["Hinge-pin", "Baseboard", "Floor", "Wall", "Mixed"], "note": "", "locGroup": null}, {"name": "Bathroom accessories", "control": "Pick any", "ctype": "pickany", "options": ["Towel bar", "Towel ring", "Robe hook", "Toilet-paper holder", "Grab bar", "Shower rod"], "note": "Per-bath schedule", "locGroup": null}, {"name": "Mirrors", "control": "Per location", "ctype": "perloc", "options": ["Framed mirror", "Frameless mirror", "Medicine cabinet", "Backlit mirror", "Client-furnished"], "note": "Dimensions and install responsibility", "locGroup": "Per location"}, {"name": "Miscellaneous install", "control": "Pick any", "ctype": "pickany", "options": ["Closet rods", "Window hardware", "Screens", "Cabinet hardware", "Appliance panels", "Specialty accessories"], "note": "Furnished by/installed by", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_4_tile", "title": "3.4 Tile", "fields": [{"name": "Tile application", "control": "Per area", "ctype": "perloc", "options": ["Floor", "Shower wall", "Shower floor", "Tub surround", "Kitchen backsplash", "Pantry backsplash", "Laundry backsplash", "Fireplace", "Accent wall", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Tile material", "control": "Per area", "ctype": "perloc", "options": ["Porcelain", "Ceramic", "Natural stone", "Glass", "Mosaic", "Cement", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Tile size", "control": "Per area", "ctype": "perloc", "options": ["12x24", "24x24", "24x48", "12x12", "6x24", "4x8 (subway)", "3x6 (subway)", "2x2 mosaic", "Custom \u2014 specify in notes"], "note": "", "locGroup": "Per area"}, {"name": "Layout pattern", "control": "Per area", "ctype": "perloc", "options": ["Straight stack", "Offset/brick", "1/3 offset", "Herringbone", "Chevron", "Diagonal", "Random", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Grout type", "control": "Per area", "ctype": "perloc", "options": ["Epoxy", "Sanded", "Non-sanded"], "note": "", "locGroup": "Per area"}, {"name": "Shower entry", "control": "Per shower", "ctype": "perloc", "options": ["Curbed", "Curbless/zero-entry"], "note": "", "locGroup": "Per shower"}, {"name": "Shower bench position", "control": "Per shower", "ctype": "perloc", "options": ["Corner", "In-line/full-width", "L-shaped", "None"], "note": "", "locGroup": "Per shower"}, {"name": "Shower bench construction", "control": "Per shower", "ctype": "perloc", "options": ["Floor-supported", "Floating", "Prefabricated"], "note": "", "locGroup": "Per shower"}, {"name": "Niche configuration", "control": "Per shower", "ctype": "perloc", "options": ["None", "Standard single niche", "Tall niche", "Multiple niches", "Custom"], "note": "Size/location/layout", "locGroup": "Per shower"}, {"name": "Heated floor", "control": "Per area", "ctype": "perloc", "options": ["Yes", "No"], "note": "Thermostat location/system", "locGroup": "Per area"}, {"name": "Edge treatment", "control": "Per area", "ctype": "perloc", "options": ["Metal profile", "Bullnose", "Mitered edge", "Stone/quartz cap", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Waterproofing system", "control": "Per wet area", "ctype": "perloc", "options": ["Cement backer board (Hardie/Durock)", "Foam substrate board (Wedi)", "Foam substrate board (Schluter Kerdi board)", "Sheet membrane over standard backer", "Liquid membrane over standard backer", "Other approved system"], "note": "", "locGroup": "Per wet area"}], "cat": "Interior & Exterior Finishes"}, {"id": "shower_glass", "title": "3.4.1 Shower Glass", "fields": [{"name": "Opening condition", "control": "Per shower", "ctype": "perloc", "options": ["Full-height opening", "Pony-wall opening", "Partition-only/open shower"], "note": "", "locGroup": "Per shower"}, {"name": "Frame type", "control": "Per shower", "ctype": "perloc", "options": ["Framed", "Semi-frameless", "Frameless"], "note": "", "locGroup": "Per shower"}, {"name": "Door configuration", "control": "Per shower", "ctype": "perloc", "options": ["No door/fixed panel only", "Hinged door only", "Hinged door + fixed panel", "Sliding door", "Multiple panels/custom"], "note": "", "locGroup": "Per shower"}, {"name": "Glass type", "control": "Per shower", "ctype": "perloc", "options": ["Clear", "Low-iron clear", "Rain/textured", "Frosted/privacy"], "note": "", "locGroup": "Per shower"}, {"name": "Glass height", "control": "Per shower", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per shower"}, {"name": "Hardware finish", "control": "Per shower", "ctype": "perloc", "options": ["Oil-rubbed bronze", "Brushed nickel/chrome", "Matte black", "Brushed brass/gold", "Other"], "note": "", "locGroup": "Per shower"}, {"name": "Cutouts/notches", "control": "Pick any per shower", "ctype": "permulti", "options": ["Control access", "Niche opening", "Bench notch", "Towel-bar mount", "Other"], "note": "Dimensions/location", "locGroup": "Per shower"}, {"name": "Protective treatment", "control": "Per shower", "ctype": "perloc", "options": ["None", "Factory-applied protective coating"], "note": "", "locGroup": "Per shower"}], "cat": "Interior & Exterior Finishes"}, {"id": "3_5_cabinetry", "title": "3.5 Cabinetry", "fields": [{"name": "Cabinet wood/material", "control": "Per area", "ctype": "perloc", "options": ["Paint-grade hardwood/MDF", "Alder", "Knotty alder", "Red oak", "White oak", "Maple", "Walnut", "Laminate/TFL", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Cabinet finish", "control": "Per area", "ctype": "perloc", "options": ["Paint", "Stain", "Natural clear", "Factory laminate", "Mixed"], "note": "", "locGroup": "Per area"}, {"name": "Door profile", "control": "Pick one", "ctype": "pickone", "options": ["Shaker", "Slab", "Raised panel", "Applied molding", "Other"], "note": "", "locGroup": null}, {"name": "Cabinet construction style", "control": "Pick one", "ctype": "pickone", "options": ["Framed", "Frameless"], "note": "", "locGroup": null}, {"name": "Door/drawer overlay", "control": "Pick one", "ctype": "pickone", "options": ["Full overlay", "Partial overlay", "Inset"], "note": "", "locGroup": null}, {"name": "Cabinet height", "control": "Per area", "ctype": "perloc", "options": ["Standard upper height", "To ceiling", "Stacked uppers", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Range hood enclosure", "control": "Pick one", "ctype": "pickone", "options": ["Cabinet-integrated/built-in", "Decorative wood hood", "Exposed appliance hood", "None"], "note": "", "locGroup": null}, {"name": "End panels", "control": "Pick any", "ctype": "pickany", "options": ["Finished exposed ends", "Furniture ends", "Applied panels", "Waterfall panel"], "note": "", "locGroup": null}, {"name": "Special cabinetry", "control": "Pick any", "ctype": "pickany", "options": ["Built-in desk", "Make-up vanity", "Glass-front cabinets", "Wine rack", "Locker/cubby", "Bookshelves", "Laundry cabinetry", "Pantry cabinetry", "Appliance garage", "Banquette"], "note": "Location", "locGroup": null}, {"name": "Storage accessories", "control": "Pick any", "ctype": "pickany", "options": ["Trash pull-out", "Spice pull-out", "Tray dividers", "Cutlery insert", "Peg drawer", "Rollouts", "Mixer lift", "Blind-corner accessory"], "note": "Location/quantity", "locGroup": null}, {"name": "Lighting integration", "control": "Pick any", "ctype": "pickany", "options": ["Under-cabinet", "In-cabinet", "Toe-kick", "Above-cabinet"], "note": "Electrical coordination", "locGroup": null}, {"name": "Pantry approach", "control": "Pick one", "ctype": "pickone", "options": ["Open shelving", "Base/upper cabinets", "Full-height pantry cabinets", "Combination"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_6_countertops", "title": "3.6 Countertops", "fields": [{"name": "Countertop material", "control": "Per area", "ctype": "perloc", "options": ["Granite", "Quartz", "Quartzite", "Marble", "Solid surface", "Butcher block", "Porcelain slab", "Stainless steel", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Surface finish", "control": "Per area", "ctype": "perloc", "options": ["Polished", "Honed", "Leathered", "Brushed/textured"], "note": "", "locGroup": "Per area"}, {"name": "Edge profile", "control": "Per area", "ctype": "perloc", "options": ["Eased", "Square", "Beveled", "Bullnose", "Ogee", "Mitered/thickened", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Thickness", "control": "Per area", "ctype": "perloc", "options": ["2 cm", "3 cm", "Built-up/custom"], "note": "", "locGroup": "Per area"}, {"name": "Backsplash", "control": "Per area", "ctype": "perloc", "options": ["Same as countertop material", "None", "4 in. splash", "Full-height slab", "Tile by others", "Custom height"], "note": "", "locGroup": "Per area"}, {"name": "Sink condition", "control": "Per sink", "ctype": "perloc", "options": ["Undermount", "Top-mount", "Farm/apron", "Integrated", "Vessel"], "note": "", "locGroup": "Per sink"}, {"name": "Special countertop features", "control": "Pick any", "ctype": "pickany", "options": ["Waterfall edge", "Thickened island edge", "Integrated sink", "Drainboard grooves", "Fireplace sill", "Shower curb cap", "Pony-wall cap", "Window sill", "Floating shelf"], "note": "Location", "locGroup": null}, {"name": "Cutouts", "control": "Pick any", "ctype": "pickany", "options": ["Faucet", "Soap dispenser", "Air switch", "Filter faucet", "Cooktop", "Outlet/pop-up", "Other"], "note": "Quantity/spec", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "appliances", "title": "3.6.1 Appliances", "fields": [{"name": "Range/cooking configuration", "control": "Pick one", "ctype": "pickone", "options": ["Freestanding range", "Slide-in range", "Cooktop + wall oven", "Rangetop + wall oven", "Range + additional oven"], "note": "", "locGroup": null}, {"name": "Range/cooktop fuel", "control": "Pick one", "ctype": "pickone", "options": ["Gas", "Electric", "Induction", "Dual fuel"], "note": "", "locGroup": null}, {"name": "Wall oven configuration", "control": "Pick one", "ctype": "pickone", "options": ["None", "Single", "Double", "Combination oven/microwave", "Steam oven"], "note": "", "locGroup": null}, {"name": "Dishwasher", "control": "Per unit", "ctype": "perloc", "options": ["Standard front", "Panel-ready", "Drawer dishwasher"], "note": "Quantity", "locGroup": "Per unit"}, {"name": "Microwave type", "control": "Pick one", "ctype": "pickone", "options": ["Built-in", "Over-range", "Drawer", "Countertop", "Combination wall unit"], "note": "", "locGroup": null}, {"name": "Refrigerator type", "control": "Pick one", "ctype": "pickone", "options": ["Standard-depth", "Counter-depth", "Built-in", "Column refrigerator/freezer", "Panel-ready"], "note": "", "locGroup": null}, {"name": "Refrigerator features", "control": "Pick any", "ctype": "pickany", "options": ["Ice maker", "Water dispenser", "Internal dispenser", "No dispenser", "Panel-ready front"], "note": "", "locGroup": null}, {"name": "Washer/dryer arrangement", "control": "Pick one", "ctype": "pickone", "options": ["Side-by-side", "Stacked", "Laundry center", "Multiple sets"], "note": "", "locGroup": null}, {"name": "Dryer fuel", "control": "Pick one", "ctype": "pickone", "options": ["Electric", "Gas", "Heat-pump/ventless"], "note": "", "locGroup": null}, {"name": "Vent hood type", "control": "Pick one", "ctype": "pickone", "options": ["Exposed decorative", "Cabinet-integrated", "Insert/liner", "Downdraft", "Recirculating"], "note": "", "locGroup": null}, {"name": "Special appliances", "control": "Pick any", "ctype": "pickany", "options": ["Ice maker", "Wine cooler", "Beverage refrigerator", "Freezer", "Second refrigerator", "Coffee system", "Warming drawer", "Outdoor appliances"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_7_exterior_wall_envelope", "title": "3.7 Exterior Wall Envelope", "fields": [{"name": "Primary siding material", "control": "Per elevation/area", "ctype": "perloc", "options": ["LP SmartSide/engineered wood", "Fiber cement", "Vinyl", "Natural wood", "Metal", "Stucco/EIFS", "Other"], "note": "", "locGroup": "Per elevation/area"}, {"name": "Siding profile", "control": "Per elevation/area", "ctype": "perloc", "options": ["Horizontal lap", "Board-and-batten", "Shake/shingle", "Panel", "Mixed per elevation"], "note": "", "locGroup": "Per elevation/area"}, {"name": "Siding finish", "control": "Pick one", "ctype": "pickone", "options": ["Prefinished", "Field-painted", "Field-stained", "Natural/clear finish"], "note": "", "locGroup": null}, {"name": "Porch ceiling material", "control": "Per porch", "ctype": "perloc", "options": ["Painted panel/soffit", "Car siding/T&G wood", "Metal", "Fiber cement", "Other"], "note": "", "locGroup": "Per porch"}, {"name": "Soffit material", "control": "Pick one", "ctype": "pickone", "options": ["Vented aluminum", "Non-vented aluminum", "Fiber cement", "Wood", "Vinyl", "Other"], "note": "", "locGroup": null}, {"name": "Fascia material", "control": "Pick one", "ctype": "pickone", "options": ["Aluminum-wrapped", "Fiber cement", "Wood", "Metal", "Other"], "note": "", "locGroup": null}, {"name": "Gable treatment", "control": "Per gable", "ctype": "perloc", "options": ["Match field siding", "Board-and-batten", "Shake", "Metal accent", "Masonry", "Decorative truss/other"], "note": "", "locGroup": "Per gable"}, {"name": "Exterior trim", "control": "Pick any", "ctype": "pickany", "options": ["Window trim", "Door trim", "Corners", "Band boards", "Frieze", "Water table", "Column wraps", "Beam wraps"], "note": "Material/width/color", "locGroup": null}, {"name": "Metal wraps", "control": "Pick any", "ctype": "pickany", "options": ["Garage jambs", "Exterior door jambs", "Fascia", "Other exposed wood"], "note": "Material/color", "locGroup": null}, {"name": "Gutters", "control": "Pick one", "ctype": "pickone", "options": ["None", "Standard aluminum", "Oversized aluminum", "Copper", "Specialty"], "note": "", "locGroup": null}, {"name": "Gutter accessories", "control": "Pick any", "ctype": "pickany", "options": ["Leaf guards", "Buried downspout lines", "Rain chains", "Collection barrels", "Heat cable"], "note": "Locations", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_8_roofing", "title": "3.8 Roofing", "fields": [{"name": "Roofing material", "control": "Per roof area", "ctype": "perloc", "options": ["Asphalt shingle", "Standing-seam metal", "Exposed-fastener metal", "Synthetic slate/shake", "Natural slate", "Tile", "Refer to plans/drawings", "Other"], "note": "", "locGroup": "Per roof area"}, {"name": "Roofing scope extent", "control": "Pick one", "ctype": "pickone", "options": ["Full roof replacement/new roof", "New additions only", "Repair/tie-in only", "Mixed by roof area"], "note": "", "locGroup": null}, {"name": "Underlayment", "control": "Pick one", "ctype": "pickone", "options": ["Synthetic underlayment", "Full ice-and-water membrane", "Mixed by area", "Manufacturer system"], "note": "", "locGroup": null}, {"name": "Roof color", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Drip edge color/material", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Snow/ice accessories", "control": "Pick any", "ctype": "pickany", "options": ["Snow guards", "Heat cable", "Enhanced ice barrier"], "note": "Locations", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "decks", "title": "3.9 Decks", "fields": [{"name": "Decking material", "control": "Per deck", "ctype": "perloc", "options": ["Pressure-treated wood", "Cedar", "Composite", "PVC", "Aluminum", "Other"], "note": "", "locGroup": "Per deck"}, {"name": "Railing material", "control": "Per deck", "ctype": "perloc", "options": ["Wood", "Aluminum", "Steel", "Cable", "Glass", "Composite", "None"], "note": "", "locGroup": "Per deck"}, {"name": "Deck structure", "control": "Per deck", "ctype": "perloc", "options": ["Wood framed", "Steel framed", "Concrete/steel pan", "Existing structure reused"], "note": "", "locGroup": "Per deck"}, {"name": "Special features", "control": "Pick any per deck", "ctype": "permulti", "options": ["Stairs", "Skirting", "Drainage system below deck", "Lighting", "Built-in bench", "Privacy screen"], "note": "Locations/details", "locGroup": "Per deck"}], "cat": "Interior & Exterior Finishes"}, {"id": "pool", "title": "3.9.1 Pool", "fields": [{"name": "Pool construction", "control": "Pick one", "ctype": "pickone", "options": ["Vinyl liner", "Fiberglass shell", "Gunite/concrete"], "note": "", "locGroup": null}, {"name": "Pool dimensions", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Shape", "control": "Pick one", "ctype": "pickone", "options": ["Rectangle", "Freeform", "L-shape", "Custom"], "note": "", "locGroup": null}, {"name": "Depth profile", "control": "Pick one", "ctype": "pickone", "options": ["Uniform/shallow", "Shallow-to-deep", "Sport pool", "Custom"], "note": "", "locGroup": null}, {"name": "Heating", "control": "Pick one", "ctype": "pickone", "options": ["None", "Gas", "Electric heat pump", "Solar"], "note": "", "locGroup": null}, {"name": "Entry features", "control": "Pick any", "ctype": "pickany", "options": ["Steps", "Tanning ledge", "Beach entry", "Ladder", "Handrail"], "note": "", "locGroup": null}, {"name": "Water features", "control": "Pick any", "ctype": "pickany", "options": ["Bubblers", "Waterfall", "Deck jets", "Sheer descent", "Spa spillover", "Other"], "note": "", "locGroup": null}, {"name": "Pool deck material", "control": "Pick one", "ctype": "pickone", "options": ["Broom concrete", "Stamped concrete", "Pavers", "Natural stone", "Porcelain pavers", "Other"], "note": "", "locGroup": null}, {"name": "Safety/barrier", "control": "Pick any", "ctype": "pickany", "options": ["Code fence", "Automatic cover", "Manual cover", "Alarm", "Safety gate"], "note": "", "locGroup": null}, {"name": "Associated systems", "control": "Pick any", "ctype": "pickany", "options": ["Integrated spa", "Outdoor kitchen", "Fire feature", "Equipment enclosure", "Automation", "Lighting"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "landscaping", "title": "3.9.2 Landscaping", "fields": [{"name": "Landscape package level", "control": "Pick one", "ctype": "pickone", "options": ["Seed/straw only", "Basic planting package", "Full landscape package", "Design-build custom"], "note": "", "locGroup": null}, {"name": "Ground cover", "control": "Per area", "ctype": "perloc", "options": ["Seed/straw", "Hydroseed", "Sod", "Rock", "Mulch", "Native planting"], "note": "", "locGroup": "Per area"}, {"name": "Plantings", "control": "Pick any", "ctype": "pickany", "options": ["Trees", "Shrubs", "Perennials", "Annuals", "Ornamental grasses", "Privacy screening"], "note": "", "locGroup": null}, {"name": "Irrigation", "control": "Pick one", "ctype": "pickone", "options": ["None", "Partial yard", "Full yard", "Drip only", "Smart-zoned system"], "note": "", "locGroup": null}, {"name": "Hardscape", "control": "Pick any", "ctype": "pickany", "options": ["Patio", "Walkway", "Steps", "Retaining wall", "Boulder wall", "Edging", "Pergola/arbor"], "note": "Material and area", "locGroup": null}, {"name": "Features", "control": "Pick any", "ctype": "pickany", "options": ["Water feature", "Fire feature", "Garden beds", "Fence", "Outdoor lighting", "Drainage improvements"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}];
 const DESIGN_RULES = [{"field": "Separate selection from scope", "rule": "A material/style choice should not also contain labor, location, quantity, or responsibility. Capture those in separate fields."}, {"field": "Separate product from performance", "rule": "Example: \u201cmetal roof\u201d is a material. Standing seam vs exposed fastener is the system. Color is separate."}, {"field": "Separate type from location", "rule": "Repeat selections per room/elevation/opening where different choices are possible."}, {"field": "Separate mutually exclusive choices from add-ons", "rule": "Do not place \u201cbench, niche, grab bar\u201d in the same pick-one row. Each is an independent add-on."}, {"field": "Separate known fact from pricing assumption", "rule": "Site conditions and plan gaps should be labeled Confirmed, Reported, Assumed, Unknown, or Investigation Required."}, {"field": "Require quantities and locations", "rule": "Every add-on that can repeat needs quantity and location fields."}, {"field": "Require furnished-by / installed-by", "rule": "Selections involving fixtures, appliances, hardware, accessories, or specialty systems must identify procurement and installation responsibility."}, {"field": "Conditional logic", "rule": "Only show dependent fields after the parent option is selected. Example: shower bench position/support only appears when Bench = Yes."}, {"field": "Avoid \u201cstandard\u201d without definition", "rule": "Use an approved baseline specification or define the exact profile, capacity, finish level, dimensions, or allowance."}];
 const DEFAULT_SECTIONS_JSON = JSON.stringify(SECTIONS);
-try{
-  const savedSections = localStorage.getItem('mcd_sections_custom');
-  if(savedSections){ SECTIONS = JSON.parse(savedSections); }
-}catch(e){ console.warn('Could not load custom scope library, using defaults.', e); }
-function saveSectionsOverride(){
-  try{ localStorage.setItem('mcd_sections_custom', JSON.stringify(SECTIONS)); }catch(e){ alert('Could not save — your browser storage may be full or restricted.'); }
+// Scope library is now shared across the whole team via Supabase — loaded in initApp() after login.
+async function saveSectionsOverride(){
+  try{
+    await supabaseClient.from('scope_library').upsert({id:1, sections: SECTIONS, updated_at: new Date().toISOString()});
+  }catch(e){ alert('Could not save scope library to Supabase — check your connection.'); }
 }
-function resetScopeLibraryToDefault(){
-  if(!confirm('This removes every custom trade, field, and option you have added and restores the built-in defaults. Continue?')) return;
-  localStorage.removeItem('mcd_sections_custom');
+async function resetScopeLibraryToDefault(){
+  if(!confirm('This removes every custom trade, field, and option your whole team has added and restores the built-in defaults. Continue?')) return;
   SECTIONS = JSON.parse(DEFAULT_SECTIONS_JSON);
+  await supabaseClient.from('scope_library').upsert({id:1, sections: null, updated_at: new Date().toISOString()});
   document.getElementById('tradeContainer').innerHTML = '';
   Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
   buildTradeUI();
@@ -817,17 +828,23 @@ function setMode(mode){
   document.getElementById('modeRFP').classList.toggle('active', mode==='RFP');
   document.getElementById('modeSOW').classList.toggle('active', mode==='SOW');
 }
-function handleLogoUpload(e){
+async function handleLogoUpload(e){
   const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (evt)=>{ logoDataUrl = evt.target.result; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; saveCompanySettingsGlobal(); };
-  reader.readAsDataURL(file);
+  const path = 'company/logo_'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const url = await uploadToStorage(file, path);
+  if(!url) return;
+  logoDataUrl = url;
+  const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block';
+  saveCompanySettingsGlobal();
 }
-function handleAerialUpload(e){
+async function handleAerialUpload(e){
   const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (evt)=>{ aerialDataUrl = evt.target.result; const p=document.getElementById('aerialPreview'); p.src=aerialDataUrl; p.style.display='block'; };
-  reader.readAsDataURL(file);
+  const jobPrefix = currentJobId || 'unfiled';
+  const path = jobPrefix+'/aerial_'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const url = await uploadToStorage(file, path);
+  if(!url) return;
+  aerialDataUrl = url;
+  const p=document.getElementById('aerialPreview'); p.src=aerialDataUrl; p.style.display='block';
 }
 function updateColors(){
   const p=document.getElementById('colorPrimary').value, n=document.getElementById('colorNavy').value, c=document.getElementById('colorCream').value;
@@ -1110,51 +1127,56 @@ function handleAreaPlanUpload(e){
   });
 }
 
+const MAX_SHEET_DIMENSION = 2200; // px cap — keeps uploaded sheets small without losing print/zoom usefulness
+
 function handleImageFile(file){
-  const reader = new FileReader();
-  reader.onload = (evt)=> addSheetFromDataUrl(file.name, evt.target.result);
-  reader.readAsDataURL(file);
+  addSheetFromBlob(file.name, file);
 }
 
-function handlePdfFile(file){
-  const reader = new FileReader();
-  reader.onload = async (evt)=>{
-    if(!window.pdfjsLib){
-      alert('PDF reader did not load (no internet access to the CDN?). Export the page as a PNG/JPG and upload that instead.');
-      return;
+async function handlePdfFile(file){
+  if(!window.pdfjsLib){
+    alert('PDF reader did not load (no internet access to the CDN?). Export the page as a PNG/JPG and upload that instead.');
+    return;
+  }
+  try{
+    const arrayBuffer = await file.arrayBuffer();
+    const typedarray = new Uint8Array(arrayBuffer);
+    const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
+    for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+      const page = await pdf.getPage(pageNum);
+      const baseViewport = page.getViewport({scale: 2});
+      const scale = Math.min(2, MAX_SHEET_DIMENSION / Math.max(baseViewport.width, baseViewport.height));
+      const viewport = page.getViewport({scale: Math.max(scale, 0.5)});
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = viewport.width;
+      tempCanvas.height = viewport.height;
+      const ctx = tempCanvas.getContext('2d');
+      await page.render({canvasContext: ctx, viewport: viewport}).promise;
+      const blob = await new Promise(res=> tempCanvas.toBlob(res, 'image/jpeg', 0.88));
+      const label = pdf.numPages > 1 ? (file.name + ' — p' + pageNum) : file.name;
+      await addSheetFromBlob(label, blob);
     }
-    try{
-      const typedarray = new Uint8Array(evt.target.result);
-      const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
-      for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
-        const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({scale: 2});
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = viewport.width;
-        tempCanvas.height = viewport.height;
-        const ctx = tempCanvas.getContext('2d');
-        await page.render({canvasContext: ctx, viewport: viewport}).promise;
-        const dataUrl = tempCanvas.toDataURL('image/png');
-        const label = pdf.numPages > 1 ? (file.name + ' — p' + pageNum) : file.name;
-        addSheetFromDataUrl(label, dataUrl);
-      }
-    } catch(err){
-      alert('Could not read this PDF (' + err.message + '). Try exporting the page as a PNG/JPG and uploading that instead.');
-    }
-  };
-  reader.readAsArrayBuffer(file);
+  } catch(err){
+    alert('Could not read this PDF (' + err.message + '). Try exporting the page as a PNG/JPG and uploading that instead.');
+  }
 }
 
-function addSheetFromDataUrl(name, dataUrl){
+async function addSheetFromBlob(name, blob){
   const id = 'sheet_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  const jobPrefix = currentJobId || 'unfiled';
+  const ext = (blob.type === 'image/png') ? 'png' : 'jpg';
+  const path = jobPrefix+'/'+id+'.'+ext;
+  const url = await uploadToStorage(blob, path);
+  if(!url) return;
   const img = new Image();
+  img.crossOrigin = 'anonymous';
   img.onload = ()=>{
-    planSheets.push({id, name, imageDataUrl: dataUrl, img, sheetType: 'Floor Plan'});
+    planSheets.push({id, name, imageDataUrl: url, storagePath: path, img, sheetType: 'Floor Plan'});
     renderSheetThumbs();
     if(!activeSheetId){ setActiveSheet(id); }
     updateBuilderTabState();
   };
-  img.src = dataUrl;
+  img.src = url;
 }
 
 function renderSheetThumbs(){
@@ -2059,18 +2081,58 @@ window.onafterprint = function(){
 };
 
 let currentJobId = null;
+let currentUserName = null;
+let autosaveTimer = null;
 
-function loadCompanySettingsGlobal(){
+const SUPABASE_URL = 'https://yywllqappxmdqnveokvs.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5d2xscWFwcHhtZHFudmVva3ZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyNDk3NTIsImV4cCI6MjEwMDgyNTc1Mn0.Ly5oomKaCOD6BzUm5Yskc2805GDjpmKmlR_2AjnMqAw';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const STORAGE_BUCKET = 'project-files';
+
+// ===== PIN gate =====
+async function attemptPinLogin(){
+  const name = document.getElementById('pinGateName').value.trim();
+  const pin = document.getElementById('pinGateInput').value.trim();
+  const errEl = document.getElementById('pinGateError');
+  const TEAM_PIN = '0321';
+  if(!name || !pin){ errEl.textContent='Enter your name and the PIN.'; errEl.style.display='block'; return; }
+  if(pin !== TEAM_PIN){
+    errEl.textContent = 'Incorrect PIN. Try again.';
+    errEl.style.display='block';
+    document.getElementById('pinGateInput').value='';
+    return;
+  }
+  currentUserName = name;
+  sessionStorage.setItem('mcd_session_user', name);
+  document.getElementById('pinGateOverlay').style.display = 'none';
+  initApp();
+}
+
+// ===== Storage helpers =====
+async function uploadToStorage(fileOrBlob, path){
   try{
-    const raw = localStorage.getItem('mcd_company_settings');
-    if(!raw) return;
-    const cs = JSON.parse(raw);
+    const { error } = await supabaseClient.storage.from(STORAGE_BUCKET).upload(path, fileOrBlob, { upsert: true });
+    if(error){ alert('Upload failed: ' + error.message); return null; }
+    const { data } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    return data.publicUrl;
+  }catch(e){ alert('Upload failed: ' + e.message); return null; }
+}
+async function deleteFromStorage(path){
+  try{ await supabaseClient.storage.from(STORAGE_BUCKET).remove([path]); }catch(e){}
+}
+
+// ===== Company settings (shared, Supabase) =====
+async function loadCompanySettingsGlobal(){
+  try{
+    const { data, error } = await supabaseClient.from('company_settings').select('data').eq('id',1).single();
+    if(error || !data || !data.data) return;
+    const cs = data.data;
     ['companyName','companyTagline','colorPrimary','colorNavy','colorCream','footerLine'].forEach(k=>{
       if(cs[k]!=null){ const el=document.getElementById(k); if(el) el.value = cs[k]; }
     });
     if(cs.logoDataUrl){ logoDataUrl = cs.logoDataUrl; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; }
     updateColors();
-  }catch(e){}
+  }catch(e){ console.warn('Could not load company settings', e); }
   updateDashboardBrand();
 }
 function updateDashboardBrand(){
@@ -2082,7 +2144,7 @@ function updateDashboardBrand(){
     else { logoEl.style.display = 'none'; }
   }
 }
-function saveCompanySettingsGlobal(){
+async function saveCompanySettingsGlobal(){
   const cs = {
     companyName: document.getElementById('companyName').value,
     companyTagline: document.getElementById('companyTagline').value,
@@ -2092,25 +2154,34 @@ function saveCompanySettingsGlobal(){
     footerLine: document.getElementById('footerLine').value,
     logoDataUrl: logoDataUrl
   };
-  try{ localStorage.setItem('mcd_company_settings', JSON.stringify(cs)); }catch(e){}
+  try{
+    await supabaseClient.from('company_settings').upsert({id:1, data: cs, updated_at: new Date().toISOString()});
+  }catch(e){ console.warn('Could not save company settings', e); }
   updateDashboardBrand();
 }
 
-function getJobsList(){
-  try{ return JSON.parse(localStorage.getItem('mcd_jobs_list')||'[]'); }catch(e){ return []; }
-}
-function saveJobsList(list){
-  try{ localStorage.setItem('mcd_jobs_list', JSON.stringify(list)); }catch(e){ alert('Could not save project list — browser storage may be full or restricted.'); }
+// ===== Jobs list (Supabase) =====
+async function getJobsListAsync(){
+  try{
+    const { data, error } = await supabaseClient.from('sow_projects').select('id,project_name,address,pm_name,mode,status,included_trade_count,total_trade_count,updated_at');
+    if(error){ console.warn(error); return []; }
+    return data.map(r=>({
+      id:r.id, name:r.project_name, address:r.address, pmName:r.pm_name, mode:r.mode,
+      status:r.status, includedTradeCount:r.included_trade_count, totalTradeCount:r.total_trade_count,
+      updatedAt: new Date(r.updated_at).getTime()
+    }));
+  }catch(e){ console.warn(e); return []; }
 }
 
 let dashStatusFilter = 'active';
+let cachedJobsList = [];
 
 function setDashStatusFilter(f){
   dashStatusFilter = f;
   ['active','closed','all'].forEach(k=>{
     document.getElementById('statusTab'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active', k===f);
   });
-  renderDashboard();
+  renderDashboardFromCache();
 }
 
 function focusNewJobForm(){
@@ -2123,14 +2194,18 @@ function showToolShellForSettings(){
   document.getElementById('toolShell').style.display = 'block';
 }
 
-function setJobStatus(id, status){
-  const list = getJobsList();
-  const job = list.find(j=>j.id===id);
-  if(job){ job.status = status; saveJobsList(list); renderDashboard(); }
+async function setJobStatus(id, status){
+  await supabaseClient.from('sow_projects').update({status, updated_at:new Date().toISOString()}).eq('id', id);
+  await renderDashboard();
 }
 
-function renderDashboard(){
-  const list = getJobsList();
+async function renderDashboard(){
+  cachedJobsList = await getJobsListAsync();
+  renderDashboardFromCache();
+}
+
+function renderDashboardFromCache(){
+  const list = cachedJobsList;
   const total = list.length;
   const rfpCount = list.filter(j=> (j.mode||'RFP') === 'RFP').length;
   const sowCount = list.filter(j=> j.mode === 'SOW').length;
@@ -2183,36 +2258,41 @@ function renderDashboard(){
   });
 }
 
-function createNewJob(){
+async function createNewJob(){
   const name = document.getElementById('dashNewJobName').value.trim();
   if(!name){ alert('Project name is required.'); return; }
   const address = document.getElementById('dashNewJobAddress').value.trim();
   const id = 'job_' + Date.now() + '_' + Math.floor(Math.random()*10000);
-  const list = getJobsList();
-  list.push({id, name, address, updatedAt: Date.now()});
-  saveJobsList(list);
+  const { error } = await supabaseClient.from('sow_projects').insert({
+    id, project_name:name, address, updated_by: currentUserName, updated_at: new Date().toISOString()
+  });
+  if(error){ alert('Could not create project: ' + error.message); return; }
   document.getElementById('dashNewJobName').value = '';
   document.getElementById('dashNewJobAddress').value = '';
   resetToolStateBlank();
   document.getElementById('projName').value = name;
   document.getElementById('projAddress').value = address;
   currentJobId = id;
-  saveCurrentJob();
+  await saveCurrentJob();
   showToolShell();
 }
 
 function deleteJob(id){
-  if(!confirm('Delete this project? This cannot be undone.')) return;
-  localStorage.removeItem('mcd_job_'+id);
-  saveJobsList(getJobsList().filter(j=>j.id!==id));
-  renderDashboard();
+  const job = cachedJobsList.find(j=>j.id===id);
+  const name = job ? job.name : 'this project';
+  if(!confirm('Delete "'+name+'"? This removes all of its saved trades, plan sheets, and area markers, and cannot be undone.')) return;
+  (async ()=>{
+    await supabaseClient.from('sow_projects').delete().eq('id', id);
+    await renderDashboard();
+  })();
 }
 
-function openJob(id){
-  const raw = localStorage.getItem('mcd_job_'+id);
+async function openJob(id){
   currentJobId = id;
-  if(raw){
-    try{ restoreProject(JSON.parse(raw)); }catch(e){ console.error(e); resetToolStateBlank(); }
+  const { data, error } = await supabaseClient.from('sow_projects').select('data').eq('id', id).single();
+  if(error){ alert('Could not load project: ' + error.message); resetToolStateBlank(); }
+  else if(data && data.data){
+    try{ restoreProject(data.data); }catch(e){ console.error(e); resetToolStateBlank(); }
   } else {
     resetToolStateBlank();
   }
@@ -2348,7 +2428,8 @@ function serializeCurrentProject(){
   data.userSetInclude = JSON.parse(JSON.stringify(userSetInclude));
   data.matrixRows = JSON.parse(JSON.stringify(matrixRows));
   data.areaRegister = JSON.parse(JSON.stringify(areaRegister));
-  data.planSheets = planSheets.map(s=>({id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, sheetType:s.sheetType}));
+  // planSheets now hold Storage URLs (imageDataUrl) + storagePath, not base64 — stays small
+  data.planSheets = planSheets.map(s=>({id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, storagePath:s.storagePath, sheetType:s.sheetType}));
   data.aerialDataUrl = aerialDataUrl;
   data.currentMode = currentMode;
   data.fieldStates = serializeFieldStates();
@@ -2362,7 +2443,7 @@ function restoreProject(data){
   userSetInclude = {}; Object.assign(userSetInclude, data.userSetInclude||{});
   matrixRows = {}; Object.assign(matrixRows, data.matrixRows||{});
   areaRegister = (data.areaRegister||[]).slice();
-  planSheets = (data.planSheets||[]).map(s=>{ const img = new Image(); img.src = s.imageDataUrl; return {id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, sheetType:s.sheetType, img}; });
+  planSheets = (data.planSheets||[]).map(s=>{ const img = new Image(); img.crossOrigin='anonymous'; img.src = s.imageDataUrl; return {id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, storagePath:s.storagePath, sheetType:s.sheetType, img}; });
   activeSheetId = planSheets.length ? planSheets[0].id : null;
   aerialDataUrl = data.aerialDataUrl || '';
   currentMode = data.currentMode || 'RFP';
@@ -2399,43 +2480,64 @@ function restoreProject(data){
   refreshAllPreviews();
 }
 
-function saveCurrentJob(){
+async function saveCurrentJob(){
   if(!currentJobId) return;
   const data = serializeCurrentProject();
-  try{
-    localStorage.setItem('mcd_job_'+currentJobId, JSON.stringify(data));
-  }catch(e){
-    alert('Could not save this project — your browser storage may be full. Try removing an old plan sheet image, or export what you need before continuing.');
-    return;
-  }
-  const list = getJobsList();
-  const job = list.find(j=>j.id===currentJobId);
-  if(job){
-    job.name = document.getElementById('projName').value || job.name;
-    job.address = document.getElementById('projAddress').value || job.address;
-    job.pmName = document.getElementById('pmName').value || job.pmName;
-    job.updatedAt = Date.now();
-    job.mode = currentMode;
-    job.includedTradeCount = Object.values(includeState).filter(v=>v==='yes').length;
-    job.totalTradeCount = SECTIONS.length;
-    if(!job.status) job.status = 'Active';
-    saveJobsList(list);
-  }
-  saveCompanySettingsGlobal();
+  const includedTradeCount = Object.values(includeState).filter(v=>v==='yes').length;
+  const payload = {
+    id: currentJobId,
+    project_name: document.getElementById('projName').value || 'Untitled Project',
+    address: document.getElementById('projAddress').value || null,
+    pm_name: document.getElementById('pmName').value || null,
+    mode: currentMode,
+    included_trade_count: includedTradeCount,
+    total_trade_count: SECTIONS.length,
+    updated_by: currentUserName,
+    updated_at: new Date().toISOString(),
+    data
+  };
+  const { error } = await supabaseClient.from('sow_projects').upsert(payload);
+  if(error){ console.error(error); return false; }
+  return true;
 }
 
+function scheduleAutosave(){
+  if(!currentJobId) return;
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(()=>{ saveCurrentJob(); }, 1800);
+}
 window.addEventListener('beforeunload', function(){
-  if(currentJobId){ try{ saveCurrentJob(); }catch(e){} }
+  if(currentJobId){ clearTimeout(autosaveTimer); saveCurrentJob(); }
 });
 
-buildRulesPanel();
-buildTradeUI();
-updateBuilderTabState();
-initCanvasInteractions();
-drawCanvas();
-loadCompanySettingsGlobal();
-renderScopeAdminPanel();
-renderDashboard();
+// ===== App init (runs after PIN login) =====
+async function initApp(){
+  buildRulesPanel();
+  try{
+    const { data } = await supabaseClient.from('scope_library').select('sections').eq('id',1).single();
+    if(data && data.sections){ SECTIONS = data.sections; }
+  }catch(e){ console.warn('Using default scope library', e); }
+  buildTradeUI();
+  updateBuilderTabState();
+  initCanvasInteractions();
+  drawCanvas();
+  await loadCompanySettingsGlobal();
+  renderScopeAdminPanel();
+  await renderDashboard();
+  // Wire autosave now that #toolShell exists in the DOM
+  const shell = document.getElementById('toolShell');
+  if(shell){
+    shell.addEventListener('input', scheduleAutosave);
+    shell.addEventListener('change', scheduleAutosave);
+  }
+}
+
+const savedUser = sessionStorage.getItem('mcd_session_user');
+if(savedUser){
+  currentUserName = savedUser;
+  document.getElementById('pinGateOverlay').style.display = 'none';
+  initApp();
+}
 </script>
 </body>
 </html>
