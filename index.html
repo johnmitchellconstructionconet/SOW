@@ -647,9 +647,7 @@ async function resetScopeLibraryToDefault(){
   if(!confirm('This removes every custom trade, field, and option your whole team has added and restores the built-in defaults. Continue?')) return;
   SECTIONS = JSON.parse(DEFAULT_SECTIONS_JSON);
   await supabaseClient.from('scope_library').upsert({id:1, sections: null, updated_at: new Date().toISOString()});
-  document.getElementById('tradeContainer').innerHTML = '';
-  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
-  buildTradeUI();
+  rebuildScopeUIPreservingAnswers();
   renderScopeAdminPanel();
   alert('Scope library reset to defaults.');
 }
@@ -722,9 +720,7 @@ function renderAdminOptionAdder(){
       field.ctype = newType;
       field.control = (newType === 'pickany') ? 'Pick any' : 'Pick any per '+(field.locGroup ? field.locGroup.replace(/^Per /i,'') : 'location');
       saveSectionsOverride();
-      document.getElementById('tradeContainer').innerHTML = '';
-      Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
-      buildTradeUI();
+      rebuildScopeUIPreservingAnswers();
       renderAdminFieldList();
       alert('"'+field.name+'" now allows multiple selections.');
     };
@@ -749,9 +745,7 @@ function renderAdminOptionAdder(){
     field.options = field.options || [];
     field.options.push(val);
     saveSectionsOverride();
-    document.getElementById('tradeContainer').innerHTML = '';
-    Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
-    buildTradeUI();
+    rebuildScopeUIPreservingAnswers();
     renderAdminFieldList();
     inp.value = '';
     alert('Added "'+val+'" to '+field.name+'. It now shows up in Scope Builder.');
@@ -787,9 +781,7 @@ function addNewFieldToTrade(){
   };
   section.fields.push(field);
   saveSectionsOverride();
-  document.getElementById('tradeContainer').innerHTML = '';
-  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
-  buildTradeUI();
+  rebuildScopeUIPreservingAnswers();
   renderScopeAdminPanel();
   document.getElementById('adminNewFieldName').value = '';
   document.getElementById('adminNewFieldOptions').value = '';
@@ -805,9 +797,7 @@ function addNewTrade(){
   const id = 'custom_' + title.toLowerCase().replace(/[^a-z0-9]+/g,'_') + '_' + Date.now();
   SECTIONS.push({ id, title, cat, fields: [] });
   saveSectionsOverride();
-  document.getElementById('tradeContainer').innerHTML = '';
-  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
-  buildTradeUI();
+  rebuildScopeUIPreservingAnswers();
   renderScopeAdminPanel();
   document.getElementById('adminTradeSelect').value = id;
   renderAdminFieldList();
@@ -1022,6 +1012,31 @@ function buildTradeUI(){
   Object.keys(byCat).forEach(cat=>{ if(!rendered.has(cat)) renderCatGroup(cat); });
 }
 function catSlug(cat){ return cat.replace(/[^a-zA-Z0-9]+/g,'_'); }
+
+// Rebuilding the trade UI (e.g. after adding a custom field/option/trade in Manage Scope
+// Items) wipes and recreates every control from scratch. Without this, any answer that
+// isn't stored in a separate JS variable — every Pick one, Pick any, and free-text field —
+// would be lost, because their only "state" is the DOM itself. This snapshots those
+// answers first and reapplies them, plus the per-trade Include Yes/No state, after rebuild.
+function rebuildScopeUIPreservingAnswers(){
+  const snapshot = serializeFieldStates();
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  restoreFieldStates(snapshot);
+  refreshLocationSelects();
+  SECTIONS.forEach(section=>{
+    const tradeDiv = document.getElementById('trade_'+section.id);
+    if(!tradeDiv) return;
+    const isYes = includeState[section.id] === 'yes';
+    tradeDiv.classList.toggle('included', isYes);
+    const yBtn = tradeDiv.querySelector('.include-toggle .yes');
+    const nBtn = tradeDiv.querySelector('.include-toggle .no');
+    if(yBtn) yBtn.classList.toggle('active', isYes);
+    if(nBtn) nBtn.classList.toggle('active', !isYes);
+  });
+  refreshAllPreviews();
+}
 
 function renderSection(section){
   const div = document.createElement('div');
