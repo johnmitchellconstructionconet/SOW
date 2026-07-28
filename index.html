@@ -1,0 +1,2441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MC&D Scope of Work Generator</title>
+<style>
+  :root{--primary:#c3ad88;--navy:#575757;--cream:#f0f0f0;--rust:#B04035;--ink:#575757;
+        --st-confirmed:#2e7d32;--st-reported:#1565c0;--st-assumed:#B04035;--st-unknown:#757575;--st-invest:#8e24aa;}
+  *{box-sizing:border-box;}
+  body{font-family: Inter, -apple-system, Segoe UI, Roboto, Arial, sans-serif;background:var(--cream);color:var(--ink);margin:0;padding:0;}
+  header.app-header{background:var(--navy);color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  header.app-header h1{margin:0;font-size:19px;font-weight:600;}
+  header.app-header .sub{font-size:12px;opacity:.7;}
+  .mode-toggle{display:flex;gap:8px;background:rgba(255,255,255,.08);padding:4px;border-radius:8px;}
+  .mode-toggle button{border:none;background:transparent;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;opacity:.6;}
+  .mode-toggle button.active{background:var(--primary);color:var(--navy);opacity:1;}
+  .tabbar{display:flex;gap:4px;background:var(--navy);padding:0 28px;border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap;}
+  .tabbar button{border:none;background:transparent;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;}
+  .tabbar button.active{color:#fff;border-bottom:3px solid var(--primary);}
+  .tabbar button.locked{opacity:.4;cursor:not-allowed;}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+  .panel{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .panel h2{margin:0 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);border-bottom:2px solid var(--primary);padding-bottom:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;}
+  input[type=text], input[type=date], input[type=number], textarea, select{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;background:#fafafa;}
+  textarea{min-height:70px;resize:vertical;}
+  .field{margin-bottom:10px;}
+  .color-row{display:flex;align-items:center;gap:10px;}
+  input[type=color]{width:44px;height:32px;border:1px solid #ddd;border-radius:6px;padding:2px;cursor:pointer;}
+  .logo-preview{max-height:60px;max-width:200px;border:1px dashed #ccc;padding:6px;border-radius:6px;background:#fafafa;}
+  .helptext{font-size:12px;color:#777;margin-top:-4px;margin-bottom:10px;}
+  .filecheck-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
+  .filecheck-row label{display:flex;align-items:center;gap:6px;font-weight:400;font-size:13px;color:#333;}
+  .btn{background:var(--primary);color:var(--navy);border:none;padding:12px 22px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;}
+  .btn.secondary{background:transparent;border:1px solid var(--navy);color:var(--navy);}
+  .btn.tiny{padding:5px 10px;font-size:11px;border-radius:14px;}
+  .actions{position:sticky;bottom:0;background:var(--cream);padding:16px 0;display:flex;gap:10px;justify-content:center;border-top:1px solid #e2ddd0;flex-wrap:wrap;}
+
+  /* trade sections */
+  .cat-note-wrap{margin:10px 0 4px;padding:10px 12px;background:#fbfaf6;border:1px dashed #ddd6c4;border-radius:6px;}
+  .cat-note-wrap label{font-size:11px;color:#888;margin-bottom:5px;}
+  .cat-note-wrap textarea{font-size:12px;}
+  .trade-cat{margin-top:20px;font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2ddd0;padding-bottom:4px;}
+  .trade{border:1px solid #eee;border-radius:8px;margin:10px 0;background:#fdfcfa;}
+  .trade-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;cursor:pointer;}
+  .trade-title{font-weight:700;font-size:14px;color:var(--navy);}
+  .include-toggle{display:flex;gap:6px;align-items:center;}
+  .include-toggle button{font-size:11px;padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;cursor:pointer;color:#888;}
+  .include-toggle button.yes.active{background:#2e7d32;color:#fff;border-color:#2e7d32;}
+  .include-toggle button.no.active{background:#aaa;color:#fff;border-color:#aaa;}
+  .chev{font-size:12px;color:#999;}
+  .trade-body{display:none;padding:4px 14px 14px;}
+  .trade.open .trade-body{display:block;}
+  .trade.included{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary) inset;}
+
+  .fld{border-top:1px solid #f1ede3;padding:10px 0;}
+  .fld:first-child{border-top:none;}
+  .fld-name{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:6px;display:block;}
+  .fld-ctl-tag{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-left:6px;}
+  .opt-row{display:flex;align-items:flex-start;gap:7px;padding:3px 0;font-size:12.5px;}
+  .opt-list{margin-bottom:6px;}
+  input[type=radio],input[type=checkbox]{width:14px;height:14px;cursor:pointer;flex-shrink:0;margin-top:2px;}
+  .fld-meta-row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+  .fld-meta-row input[type=text]{flex:1;min-width:160px;font-size:12px;padding:6px 8px;}
+  .status-select{width:150px;font-size:11px;padding:5px 6px;flex-shrink:0;}
+
+  .fld-meta-row textarea{flex:1;min-width:160px;font-size:12px;padding:6px 8px;resize:vertical;}
+  select.planref-select{width:180px;flex-shrink:0;font-size:11px;}
+  .matrix-cell textarea{width:100%;resize:vertical;}
+
+  .status-select.st-Confirmed{border-left:4px solid var(--st-confirmed);}
+  .status-select.st-Reported{border-left:4px solid var(--st-reported);}
+  .status-select.st-Assumed{border-left:4px solid var(--st-assumed);}
+  .status-select.st-Unknown{border-left:4px solid var(--st-unknown);}
+  .status-select.st-Investigation-Required{border-left:4px solid var(--st-invest);}
+
+  .row-list{margin-top:6px;}
+
+  .matrix-row{border:1px solid #e6e1d4;border-radius:8px;padding:10px;margin-bottom:10px;background:#faf8f2;}
+  .matrix-loc-header{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+  .matrix-loc-header select{min-width:200px;flex:1;}
+  .matrix-cells{display:flex;flex-wrap:wrap;gap:10px;}
+  .matrix-cell{background:#fff;border:1px solid #eee;border-radius:6px;padding:8px;min-width:170px;flex:1;}
+  .matrix-cell-label{font-size:10.5px;font-weight:700;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.02em;}
+  .matrix-cell select{margin-bottom:5px;}
+
+  .row-item{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px;padding:8px;background:#f8f6f0;border-radius:6px;flex-wrap:wrap;}
+  .row-item input[type=text]{flex:1;min-width:120px;}
+  .row-item select{flex:1;min-width:140px;}
+  .row-item .opt-checks{display:flex;flex-direction:column;gap:2px;flex:2;min-width:200px;font-size:11.5px;background:#fff;padding:4px;border-radius:4px;}
+  .row-item .rm-btn{background:var(--rust);color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;}
+  .add-row-btn{font-size:11px;padding:5px 12px;border-radius:12px;border:1px solid var(--primary);background:#fff;color:var(--navy);cursor:pointer;margin-top:4px;}
+
+  .assembled-preview{background:var(--cream);border-left:3px solid var(--primary);padding:8px 10px;font-size:11.5px;white-space:pre-wrap;border-radius:4px;margin-top:10px;color:#444;max-height:160px;overflow-y:auto;}
+
+  .rules-box{background:#fff;border:1px solid #eee;border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:12px;}
+  .rules-box h3{margin:0 0 8px;font-size:13px;color:var(--navy);}
+  .rules-box .rule-row{margin-bottom:6px;}
+  .rules-box .rule-row b{color:var(--navy);}
+  .rules-toggle{cursor:pointer;color:var(--primary);font-size:12px;font-weight:600;}
+
+  #docView{display:none;}
+  #docView.showing{display:block;}
+  .doc-page{background:#fff;width:850px;margin:0 auto 20px;padding:50px 60px;box-shadow:0 1px 6px rgba(0,0,0,.15);min-height:1100px;}
+  .doc-page{position:relative;}
+  .doc-page-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--primary);padding-bottom:9px;margin-bottom:24px;font-size:10.5px;color:var(--navy);}
+  .doc-page-header .dph-project{font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+  .doc-page-header .dph-address{color:#999;font-weight:500;}
+  .doc-page-footer{position:absolute;bottom:28px;left:60px;right:60px;text-align:center;font-size:9.5px;color:#aaa;border-top:1px solid #eee;padding-top:9px;letter-spacing:.02em;}
+
+
+  .dash-topbar{display:flex;align-items:center;justify-content:space-between;background:#f2efe6;border-bottom:1px solid #e2ddd0;padding:14px 28px;}
+  .dash-brand{display:flex;align-items:center;gap:12px;font-size:14px;color:#555;}
+  .dash-logo{height:32px;}
+  .dash-brand-sep{color:#ccc;}
+  .dash-brand-sub{color:#555;}
+  #dashBrandName{font-weight:700;color:var(--navy);}
+  .dash-topbar-actions{display:flex;gap:10px;}
+  .btn.tiny{padding:7px 14px;font-size:12px;border-radius:6px;}
+  .dash-title{font-size:26px;color:var(--navy);font-weight:700;margin:24px 0 18px;}
+  .dash-stat-row{display:flex;gap:16px;margin-bottom:22px;}
+  .dash-stat-tile{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 22px;flex:1;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .dash-stat-num{font-size:30px;font-weight:800;color:var(--navy);}
+  .dash-stat-tile.accent .dash-stat-num{color:var(--rust);}
+  .dash-stat-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:2px;}
+  .dash-status-tabs{display:flex;gap:2px;background:#fff;border:1px solid #e2ddd0;border-radius:8px;padding:4px;width:fit-content;margin-bottom:18px;}
+  .dash-status-tab{border:none;background:transparent;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;color:#777;cursor:pointer;}
+  .dash-status-tab.active{background:var(--navy);color:#fff;}
+  .dash-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .dash-job-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;}
+  .dash-job-card:hover{border-color:var(--primary);}
+  .dash-job-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .dash-job-card-name{font-size:15.5px;font-weight:700;color:var(--navy);}
+  .dash-job-status-select{font-size:11px;padding:3px 8px;border-radius:12px;border:1px solid #ddd;background:#f5f3ee;color:#555;font-weight:600;}
+  .dash-job-meta{font-size:12px;color:#888;margin-bottom:12px;line-height:1.5;}
+  .dash-progress-track{height:6px;background:#f0ede3;border-radius:3px;overflow:hidden;margin-bottom:10px;}
+  .dash-progress-fill{height:100%;background:var(--primary);}
+  .dash-job-stats{display:flex;gap:14px;font-size:11.5px;color:#666;flex-wrap:wrap;}
+  .dash-job-stats b{color:var(--navy);}
+  .dash-job-card-delete{background:none;border:none;color:#c9a;font-size:11px;cursor:pointer;margin-top:8px;text-decoration:underline;}
+  .cover-brand-block{text-align:center;padding-top:10px;margin-bottom:34px;}
+  .cover-logo{max-height:76px;margin-bottom:18px;}
+  .cover-title{font-size:25px;font-weight:600;color:var(--navy);margin:6px 0 4px;letter-spacing:.01em;}
+  .cover-tagline{font-style:italic;color:var(--primary);margin-bottom:0;font-size:13.5px;letter-spacing:.02em;}
+  .cover-doctype-rule{width:70px;height:2px;background:var(--primary);margin:0 auto 14px;}
+  .cover-doctype-label{text-align:center;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.14em;margin-bottom:32px;}
+  .cover-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin-bottom:26px;padding:22px 26px;background:var(--cream);border-radius:8px;}
+  .cover-meta-item{font-size:12.5px;}
+  .cover-meta-item .cmi-label{display:block;font-size:9.5px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+  .cover-meta-item .cmi-value{color:var(--navy);font-weight:600;}
+  .cover-aerial-wrap{margin-bottom:16px;}
+  .cover-aerial-caption{font-size:10px;color:#999;text-align:center;margin-top:6px;letter-spacing:.03em;text-transform:uppercase;}
+  .aerial-box{width:100%;max-height:320px;object-fit:contain;background:#fafafa;border-radius:6px;border:1px solid #e6e1d4;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .directions-box{background:var(--cream);border-left:3px solid var(--primary);padding:12px 16px;font-size:12px;margin-top:6px;white-space:pre-wrap;border-radius:0 6px 6px 0;}
+  h2.section-head{color:var(--navy);border-bottom:2px solid var(--primary);padding-bottom:6px;}
+  .toc-category{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-top:14px;margin-bottom:2px;}
+  .toc-item{font-size:13px;padding:4px 0 4px 14px;border-bottom:1px dotted #eee;color:#333;}
+  .doc-category-banner{background:var(--navy);color:#fff;border-radius:8px;padding:12px 18px;margin:0 0 20px;display:flex;align-items:baseline;justify-content:space-between;}
+  .doc-category-banner .cat-label{font-size:15px;font-weight:700;letter-spacing:.02em;}
+  .doc-category-banner .cat-count{font-size:11px;color:var(--primary);font-weight:600;}
+  .cat-general-note{background:var(--cream);border-left:3px solid var(--primary);padding:10px 14px;font-size:12px;line-height:1.5;margin-bottom:18px;border-radius:0 6px 6px 0;color:#333;}
+  .trade-card{border:1px solid #e6e1d4;border-radius:8px;padding:16px 20px;margin-bottom:16px;background:#fffdf8;page-break-inside:avoid;}
+  .trade-card h3{margin:0 0 12px;font-size:14px;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--primary);display:flex;align-items:center;gap:10px;}
+  .trade-num-badge{background:var(--primary);color:var(--navy);width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+  .loc-room-group{margin-top:16px;padding:12px 14px;background:#fbfaf4;border:1px solid #ece6d6;border-radius:8px;}
+  .loc-room-group:first-of-type{margin-top:16px;}
+  .loc-room-label{font-size:13.5px;font-weight:800;color:var(--navy);letter-spacing:.02em;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--primary);}
+  .loc-sub-label{font-size:10.5px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px;}
+  .loc-room-group .clean-list:first-of-type{margin-top:0;}
+  .clean-list{margin:0;padding:0;list-style:none;}
+  .clean-list li{font-size:12.5px;line-height:1.55;margin-bottom:9px;padding-left:16px;position:relative;color:#2c2c2c;}
+  .clean-list li::before{content:'';position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--primary);}
+  .empty-trade-note{font-size:11.5px;color:#999;font-style:italic;padding-left:16px;}
+  .status-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 7px;border-radius:3px;margin-left:7px;letter-spacing:.03em;text-transform:uppercase;vertical-align:middle;color:#fff;}
+  .status-badge.Confirmed{background:var(--st-confirmed);}
+  .status-badge.Reported{background:var(--st-reported);}
+  .status-badge.Assumed{background:var(--st-assumed);}
+  .status-badge.Unknown{background:var(--st-unknown);}
+  .status-badge.Investigation-Required{background:var(--st-invest);}
+
+  .sheet-thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .sheet-thumb{border:2px solid #ddd;border-radius:6px;padding:4px;cursor:pointer;background:#fff;text-align:center;width:110px;}
+  .sheet-thumb.active{border-color:var(--primary);}
+  .sheet-thumb img{width:100%;height:70px;object-fit:cover;border-radius:4px;}
+  .sheet-thumb .thumb-label{font-size:10px;color:#555;margin-top:3px;word-break:break-word;}
+  .canvas-wrap{overflow:auto;border:1px solid #ddd;border-radius:6px;background:#f5f3ee;max-height:640px;}
+  #planCanvas{display:block;cursor:crosshair;}
+  .area-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .area-table th{background:var(--navy);color:#fff;text-align:left;padding:6px 8px;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;}
+  .area-table td{padding:6px 8px;border-bottom:1px solid #eee;}
+  .area-table tr:hover{background:#faf8f2;}
+  .area-table .del-btn{background:var(--rust);color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:10px;cursor:pointer;}
+  .area-table .edit-btn{background:var(--primary);color:var(--navy);border:none;border-radius:4px;padding:3px 8px;font-size:10px;cursor:pointer;margin-right:4px;}
+
+
+  .canvas-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:8px;background:#f8f6f0;border-radius:6px;}
+  .sheet-page-indicator{font-size:11px;color:#666;font-weight:600;min-width:70px;text-align:center;}
+  .toolbar-sep{width:1px;height:20px;background:#ddd;margin:0 4px;}
+  .assume-review-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .assume-review-table th{background:var(--navy);color:#fff;text-align:left;padding:6px 8px;font-size:10.5px;text-transform:uppercase;}
+  .assume-review-table td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;}
+  .assume-review-table select{width:150px;}
+
+  #planPrintView{display:none;}
+  .plan-print-page{background:#fff;margin:0 auto 20px;box-shadow:0 1px 6px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .plan-print-page img{max-width:100%;max-height:100%;object-fit:contain;}
+  .plan-print-page.size-letter{width:8.5in;height:11in;}
+  .plan-print-page.size-tabloid{width:11in;height:17in;}
+  .plan-print-page.size-ansiD{width:24in;height:36in;}
+  @media print{
+    body *{visibility:hidden;}
+    body:not(.printing-plans) #docView, body:not(.printing-plans) #docView *{visibility:visible;}
+    body:not(.printing-plans) #docView{position:absolute;top:0;left:0;display:block !important;}
+    body.printing-plans #planPrintView, body.printing-plans #planPrintView *{visibility:visible;}
+    body.printing-plans #planPrintView{position:absolute;top:0;left:0;display:block !important;}
+    .doc-page, .plan-print-page{box-shadow:none;margin:0;page-break-after:always;}
+    .no-print{display:none !important;}
+  }
+</style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<div id="dashboardView">
+  <div class="dash-topbar no-print">
+    <div class="dash-brand">
+      <img id="dashLogo" class="dash-logo" style="display:none;">
+      <span id="dashBrandName">Mitchell Construction & Design</span>
+      <span class="dash-brand-sep">|</span>
+      <span class="dash-brand-sub">Scope of Work Generator</span>
+    </div>
+    <div class="dash-topbar-actions">
+      <button class="btn secondary tiny" onclick="showTab('settings'); showToolShellForSettings();">Company Settings</button>
+      <button class="btn secondary tiny" onclick="showTab('scopeadmin'); showToolShellForSettings();">Manage Scope Items</button>
+      <button class="btn" onclick="focusNewJobForm()">+ New Project</button>
+    </div>
+  </div>
+
+  <div class="wrap no-print">
+    <h1 class="dash-title">Projects</h1>
+
+    <div class="dash-stat-row">
+      <div class="dash-stat-tile">
+        <div class="dash-stat-num" id="statTotalProjects">0</div>
+        <div class="dash-stat-label">Projects</div>
+      </div>
+      <div class="dash-stat-tile">
+        <div class="dash-stat-num" id="statRfpStage">0</div>
+        <div class="dash-stat-label">In RFP Stage</div>
+      </div>
+      <div class="dash-stat-tile accent">
+        <div class="dash-stat-num" id="statSowStage">0</div>
+        <div class="dash-stat-label">In Final SOW Stage</div>
+      </div>
+    </div>
+
+    <div class="panel" id="newJobPanel" style="display:none;">
+      <h2>New Project</h2>
+      <div class="grid">
+        <div class="field"><label>Project Name</label><input type="text" id="dashNewJobName" placeholder="e.g. Morris Residence"></div>
+        <div class="field"><label>Address</label><input type="text" id="dashNewJobAddress" placeholder="Street, City MO Zip"></div>
+      </div>
+      <button class="btn" onclick="createNewJob()">Create Project</button>
+      <button class="btn secondary" onclick="document.getElementById('newJobPanel').style.display='none';">Cancel</button>
+    </div>
+
+    <div class="dash-status-tabs">
+      <button class="dash-status-tab active" id="statusTabActive" onclick="setDashStatusFilter('active')">Active <span></span></button>
+      <button class="dash-status-tab" id="statusTabClosed" onclick="setDashStatusFilter('closed')">Closed <span></span></button>
+      <button class="dash-status-tab" id="statusTabAll" onclick="setDashStatusFilter('all')">All <span></span></button>
+    </div>
+
+    <div class="dash-cards-grid" id="jobsCardsGrid"></div>
+    <div class="helptext" id="jobsEmptyNote" style="display:none;margin-top:14px;">No projects yet — click "+ New Project" to get started.</div>
+  </div>
+</div>
+
+<div id="toolShell" style="display:none;">
+
+<header class="app-header no-print">
+  <div>
+    <h1>MC&D Scope of Work Generator</h1>
+    <div class="sub">v6 &middot; Field-based: Pick one / Pick any / Per-location / Required input</div>
+  </div>
+  <div class="mode-toggle">
+    <button id="modeRFP" class="active" onclick="setMode('RFP')">RFP</button>
+    <button id="modeSOW" onclick="setMode('SOW')">Final SOW</button>
+  </div>
+</header>
+
+<div class="tabbar no-print">
+  <button id="tabBtnSettings" onclick="showTab('settings')">Company Settings</button>
+  <button id="tabBtnBuilder" class="locked" onclick="showTab('builder')" title="Upload plan sheets first">Scope Builder</button>
+  <button id="tabBtnAreas" class="active" onclick="showTab('areas')">1. Plan &amp; Areas (start here)</button>
+  <button id="tabBtnAssume" onclick="showTab('assume')">Assumptions Review</button>
+  <button id="tabBtnScopeAdmin" onclick="showTab('scopeadmin')">Manage Scope Items</button>
+  <button class="no-print" style="margin-left:auto;background:transparent;border:none;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;" onclick="backToDashboard()">&larr; Save &amp; Back to Dashboard</button>
+</div>
+
+<div class="wrap no-print">
+
+  <div class="tabpanel" id="tab_settings">
+    <div class="panel">
+      <h2>Company Branding</h2>
+      <div class="grid">
+        <div class="field"><label>Company Name</label><input type="text" id="companyName" value="Mitchell Construction & Design" onchange="saveCompanySettingsGlobal()"></div>
+        <div class="field"><label>Tagline</label><input type="text" id="companyTagline" value="Building an Elevated Experience" onchange="saveCompanySettingsGlobal()"></div>
+        <div class="field"><label>Logo (upload image)</label><input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)"></div>
+        <div class="field"><label>Logo Preview</label><img id="logoPreview" class="logo-preview" src="" style="display:none;"></div>
+      </div>
+      <div class="grid" style="margin-top:6px;">
+        <div class="field"><label>Primary / Accent Color</label><div class="color-row"><input type="color" id="colorPrimary" value="#c3ad88" oninput="updateColors()"><span id="colorPrimaryHex">#c3ad88</span></div></div>
+        <div class="field"><label>Navy / Headline Color</label><div class="color-row"><input type="color" id="colorNavy" value="#575757" oninput="updateColors()"><span id="colorNavyHex">#575757</span></div></div>
+        <div class="field"><label>Background / Cream Color</label><div class="color-row"><input type="color" id="colorCream" value="#f0f0f0" oninput="updateColors()"><span id="colorCreamHex">#f0f0f0</span></div></div>
+      </div>
+      <div class="field" style="margin-top:6px;">
+        <label>Office Footer Line</label>
+        <input type="text" id="footerLine" value="4200 S Quail Creek Ave STE B, Springfield MO 65810 | 417.322.6789 | www.mitchellconstructionco.net" onchange="saveCompanySettingsGlobal()">
+      </div>
+      <div class="helptext">Applies to every project generated in this session.</div>
+    </div>
+    <div class="panel">
+      <h2>Default Closeout Language (Company-Wide)</h2>
+      <div class="field"><label>Final Walkthrough & Completion – Trade Requirements</label><textarea id="closeoutWalkthrough"></textarea></div>
+      <div class="field"><label>Final Cleanup</label><textarea id="closeoutCleanup"></textarea></div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="tab_builder">
+    <div class="panel">
+      <h2>Project Information</h2>
+      <div class="grid">
+        <div class="field"><label>Project Name</label><input type="text" id="projName" placeholder="e.g. Blackburn"></div>
+        <div class="field"><label>Project Address</label><input type="text" id="projAddress" placeholder="Street, City MO Zip"></div>
+        <div class="field"><label>County</label><input type="text" id="projCounty"></div>
+        <div class="field"><label>Permit #</label><input type="text" id="projPermit" value="TBD"></div>
+        <div class="field"><label>Project Manager</label><input type="text" id="pmName" value="John Mitchell"></div>
+        <div class="field"><label>PM Cell</label><input type="text" id="pmCell" value="417.818.3223"></div>
+        <div class="field"><label>Office Manager</label><input type="text" id="omName" value="Kennedy Adamson"></div>
+        <div class="field"><label>Office Manager Cell</label><input type="text" id="omCell" value="417.300.0468"></div>
+        <div class="field"><label>Up-to-date Plans (date or link)</label><input type="text" id="plansDate"></div>
+        <div class="field"><label>Approved Date</label><input type="date" id="approvedDate"></div>
+        <div class="field"><label>Finalized Date</label><input type="date" id="finalizedDate"></div>
+        <div class="field"><label>Project Type</label>
+          <select id="projType"><option>New Custom Home</option><option>Full Renovation</option><option>Addition</option><option>Remodel (Occupied)</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Front Page — Site Location</h2>
+      <div class="grid">
+        <div class="field"><label>Aerial / Site Image</label><input type="file" id="aerialUpload" accept="image/*" onchange="handleAerialUpload(event)"></div>
+        <div class="field"><label>Preview</label><img id="aerialPreview" class="logo-preview" style="max-height:80px;display:none;"></div>
+      </div>
+      <div class="field"><label>Directions to Property</label><textarea id="directionsText" placeholder="Start at... Head north on... Gate code:..."></textarea></div>
+    </div>
+
+    <div class="panel">
+      <h2>General Notes & Requirements (Company-Wide)</h2>
+      <div class="filecheck-row">
+        <label><input type="checkbox" id="gnWalkthrough" checked> "All trades refer to Final Walkthrough & Completion Requirements"</label>
+        <label><input type="checkbox" id="gnCleanout" checked> "Clean out concrete in dedicated location per P/M"</label>
+        <label><input type="checkbox" id="gnHOA"> Include HOA note</label>
+      </div>
+      <div class="field" style="margin-top:10px;"><label>Utilities / HOA / Site Note</label><textarea id="utilitiesNote" rows="2" placeholder="Enter for a new line"></textarea></div>
+      <div class="field"><label>Additional General Notes (project-specific)</label><textarea id="extraGeneralNotes"></textarea></div>
+    </div>
+
+    <div class="rules-box">
+      <div class="rules-toggle" onclick="document.getElementById('rulesContent').style.display = document.getElementById('rulesContent').style.display==='none' ? 'block':'none';">▸ Field Design Rules (reference — click to expand)</div>
+      <div id="rulesContent" style="display:none;margin-top:10px;"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Trade &amp; Selection Fields</h2>
+      <div class="helptext">Every trade defaults to <b>not included</b>. Click "Include: Yes" to open it up. Each field shows its control type — Pick One (radio), Pick Any (checkboxes), Per-Location (add a row per instance), or Required Input (free text). The small dropdown next to each answer tracks whether it's Confirmed, Reported, Assumed, Unknown, or needs Investigation — same convention as your written SOWs.</div>
+      <div id="tradeContainer"></div>
+    </div>
+  </div>
+
+  <div class="tabpanel active" id="tab_areas">
+    <div class="panel">
+      <h2>Plan Sheets</h2>
+      <div class="helptext"><b>Required before Scope Builder unlocks.</b> Upload your plan set as a PDF (each page becomes its own sheet automatically) or as PNG/JPG images.</div>
+      <div class="field"><label>Upload Plan Sheet(s)</label><input type="file" id="planUpload" accept="image/*,application/pdf" multiple onchange="handleAreaPlanUpload(event)"></div>
+      <div id="sheetThumbs" class="sheet-thumbs"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Plan Canvas</h2>
+      <div class="helptext" id="canvasHint">Click on the plan to place a marker. Use the page arrows to move between sheets, and zoom in for precise placement.</div>
+      <div class="canvas-toolbar">
+        <button class="btn tiny secondary" onclick="prevSheet()">‹ Prev Page</button>
+        <span id="sheetPageIndicator" class="sheet-page-indicator">No sheets yet</span>
+        <button class="btn tiny secondary" onclick="nextSheet()">Next Page ›</button>
+        <span class="toolbar-sep"></span>
+        <label style="display:inline-block;margin:0 6px 0 0;font-size:11px;">Sheet type:</label>
+        <select id="activeSheetType" onchange="setActiveSheetType(this.value)" style="width:170px;display:inline-block;">
+          <option>Floor Plan</option><option>Front Elevation</option><option>Rear Elevation</option><option>Left Elevation</option><option>Right Elevation</option><option>Roof Plan</option><option>Other</option>
+        </select>
+        <span class="toolbar-sep"></span>
+        <button class="btn tiny secondary" onclick="zoomOut()">− Zoom</button>
+        <span id="zoomIndicator" class="sheet-page-indicator">100%</span>
+        <button class="btn tiny secondary" onclick="zoomIn()">+ Zoom</button>
+        <button class="btn tiny secondary" onclick="resetZoom()">Reset</button>
+      </div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="planCanvas" width="800" height="600" onclick="handleCanvasClick(event)"></canvas>
+      </div>
+      <div class="helptext">Click empty space to drop a marker. Click-and-drag empty space to pan when zoomed in. Click-and-drag an existing marker to reposition it.</div>
+    </div>
+
+    <div class="panel" id="areaFormPanel" style="display:none;">
+      <h2 id="areaFormTitle">New Area Marker</h2>
+      <div class="grid">
+        <div class="field"><label>Area Type Prefix</label>
+          <input type="text" id="areaPrefix" list="prefixSuggestions" placeholder="e.g. RM, EX, GR, SH, BA, ELF">
+          <datalist id="prefixSuggestions">
+            <option value="RM">RM — Room / Interior Space</option>
+            <option value="EX">EX — Exterior / Porch / Deck</option>
+            <option value="GR">GR — Garage</option>
+            <option value="BS">BS — Basement / Below-Grade</option>
+            <option value="SH">SH — Shower / Bath Fixture Area</option>
+            <option value="BA">BA — Bathroom</option>
+            <option value="KI">KI — Kitchen</option>
+            <option value="UT">UT — Utility / Mechanical</option>
+            <option value="CL">CL — Closet</option>
+            <option value="ELF">ELF — Elevation, Front</option>
+            <option value="ELB">ELB — Elevation, Rear/Back</option>
+            <option value="ELL">ELL — Elevation, Left</option>
+            <option value="ELR">ELR — Elevation, Right</option>
+            <option value="OT">OT — Other</option>
+          </datalist>
+        </div>
+        <div class="field"><label>Area Number (auto-suggested, editable — can append a letter like "201A")</label><input type="text" id="areaNumber"></div>
+        <div class="field"><label>Area ID (preview)</label><input type="text" id="areaIdPreview" disabled></div>
+        <div class="field"><label>Area Name</label><input type="text" id="areaName" placeholder="e.g. Primary Shower, Front Elevation — Left Gable"></div>
+        <div class="field"><label>Existing / New</label>
+          <select id="areaExistingNew"><option>New</option><option>Existing</option><option>Existing — Modified</option></select>
+        </div>
+        <div class="field"><label>Detail Status</label>
+          <select id="areaDetailStatus"><option>Base Plan Only</option><option>Needs Interior Elevation</option><option>Needs Walkthrough Decision</option><option>Finalized</option></select>
+        </div>
+        <div class="field"><label>Plan Reference</label><input type="text" id="areaPlanRef" disabled></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="areaNotes" style="min-height:50px;"></textarea></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" onclick="commitAreaMarker()">Place / Update Marker</button>
+        <button class="btn secondary" onclick="cancelAreaMarker()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Project Area Register</h2>
+      <div class="helptext">Every marker you place shows up here. This register populates the location dropdowns in Scope Builder — including an always-available "Entire House" option so you're not forced to select every room individually when something applies everywhere.</div>
+      <table class="area-table" id="areaTable">
+        <thead><tr><th>Area ID</th><th>Name</th><th>Existing/New</th><th>Detail Status</th><th>Sheet</th><th></th></tr></thead>
+        <tbody id="areaTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Print / Export Labeled Plan Set</h2>
+      <div class="helptext">Prints every uploaded sheet with its markers and labels baked in. Use your browser's print dialog to save as a PDF, or send straight to a printer.</div>
+      <div class="grid">
+        <div class="field"><label>Print Size</label>
+          <select id="printPageSize">
+            <option value="letter">Letter (8.5 x 11 in)</option>
+            <option value="tabloid">Tabloid / Ledger (11 x 17 in)</option>
+            <option value="ansiD">ANSI D (24 x 36 in)</option>
+            <option value="original">Original Image Size</option>
+          </select>
+        </div>
+        <div class="field"><label>Marker Label Size (pt)</label>
+          <input type="number" id="markerLabelPt" value="8" min="4" max="18" step="0.5">
+        </div>
+      </div>
+      <div class="helptext">This is the size the room labels print at on the page — adjust and reprint until it matches what you want. It applies the same way whether the sheet came in as a small scan or a huge architectural page.</div>
+      <button class="btn" onclick="printPlanSet()">Print / Save Plan Set as PDF</button>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="tab_assume">
+    <div class="panel">
+      <h2>Assumptions Review</h2>
+      <div class="helptext">Every field you've filled in across every included trade, in one place, with its status. Change the status here and it updates the same control back in Scope Builder — this is a different view of the same data, not a separate copy.</div>
+      <table class="assume-review-table" id="assumeTable">
+        <thead><tr><th>Trade</th><th>Field / Value</th><th>Status</th></tr></thead>
+        <tbody id="assumeTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="tab_scopeadmin">
+    <div class="panel">
+      <h2>Manage Scope Items</h2>
+      <div class="helptext">Add trades, fields, and options here as you see them come up in the field — no code changes needed. This saves to your browser automatically and applies immediately to Scope Builder. It's saved on this computer/browser only — the file itself never changes, so if you move to a new computer, export/re-import or re-add anything custom.</div>
+      <button class="btn secondary" onclick="resetScopeLibraryToDefault()">Reset Scope Library to Defaults</button>
+    </div>
+
+    <div class="panel">
+      <h2>Add an Option to an Existing Field</h2>
+      <div class="grid">
+        <div class="field"><label>Trade</label>
+          <select id="adminTradeSelect" onchange="renderAdminFieldList()"></select>
+        </div>
+        <div class="field"><label>Field</label>
+          <select id="adminFieldSelect" onchange="renderAdminOptionAdder()"></select>
+        </div>
+      </div>
+      <div id="adminOptionAdder"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Add a New Field to This Trade</h2>
+      <div class="grid">
+        <div class="field"><label>Field Name</label><input type="text" id="adminNewFieldName" placeholder="e.g. Skylight condition"></div>
+        <div class="field"><label>Control Type</label>
+          <select id="adminNewFieldControl">
+            <option value="pickone">Pick one (radio)</option>
+            <option value="pickany">Pick any (checkboxes)</option>
+            <option value="perloc">Per location (add-a-row, single choice per row)</option>
+            <option value="permulti">Pick any per location (add-a-row, multi-select per row)</option>
+            <option value="input">Required input (free text)</option>
+          </select>
+        </div>
+        <div class="field"><label>Location Group Name (only for the two per-location types — rows with the same name share one matrix)</label><input type="text" id="adminNewFieldLocGroup" placeholder="e.g. Per skylight"></div>
+      </div>
+      <div class="field"><label>Options (one per line — leave blank for Required Input)</label><textarea id="adminNewFieldOptions" rows="4" placeholder="Leaking&#10;Not leaking&#10;Unknown, needs inspection"></textarea></div>
+      <div class="field"><label>Helper Note (shown as placeholder text)</label><input type="text" id="adminNewFieldNote"></div>
+      <button class="btn" onclick="addNewFieldToTrade()">Add Field</button>
+    </div>
+
+    <div class="panel">
+      <h2>Add a New Trade Section</h2>
+      <div class="grid">
+        <div class="field"><label>Trade Title</label><input type="text" id="adminNewTradeTitle" placeholder="e.g. 2.10 Solar / Backup Power"></div>
+        <div class="field"><label>Category</label>
+          <select id="adminNewTradeCat">
+            <option>Sitework & Structure</option>
+            <option>Core Building Systems</option>
+            <option>Interior & Exterior Finishes</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="addNewTrade()">Add Trade Section (then add fields to it above)</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="planPrintView"></div>
+
+<div class="actions no-print">
+  <button class="btn secondary" onclick="loadSample()">Load Sample Data</button>
+  <button class="btn" onclick="generateDoc()">Generate Document</button>
+  <button class="btn secondary" onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<div id="docView">
+  <div class="doc-page" id="pageCover">
+    <div class="cover-brand-block">
+      <img id="docLogo" class="cover-logo" style="display:none;">
+      <div id="docCompanyName" class="cover-title"></div>
+      <div id="docTagline" class="cover-tagline"></div>
+    </div>
+    <div class="cover-doctype-rule"></div>
+    <div class="cover-doctype-label" id="docDocType">Request for Proposal</div>
+    <div class="cover-meta-grid" id="docMeta"></div>
+    <div class="cover-aerial-wrap" id="docAerialWrap" style="display:none;">
+      <img id="docAerial" class="aerial-box">
+    </div>
+    <div class="directions-box" id="docDirections"></div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-page-header" id="staticHeader2"></div>
+    <h2 class="section-head">General Notes</h2>
+    <div id="docGeneralNotes" style="font-size:12.5px;line-height:1.6;margin-top:14px;"></div>
+    <h2 class="section-head" style="margin-top:26px;">Table of Contents</h2>
+    <div id="docTOC"></div>
+    <div class="doc-page-footer" id="staticFooter2"></div>
+  </div>
+  <div id="pageSectionsWrap"></div>
+</div>
+
+</div>
+
+<script>
+let SECTIONS = [{"id": "1_1_excavation_land_management", "title": "1.1 Excavation & Land Management", "fields": [{"name": "Foundation excavation approach", "control": "Pick one", "ctype": "pickone", "options": ["Crawlspace", "Slab-on-grade", "Full basement", "Walkout basement", "Combination basement/crawlspace"], "note": "Plan reference; excavation depths; transition points", "locGroup": null}, {"name": "Topsoil handling", "control": "Pick one", "ctype": "pickone", "options": ["Stockpile on-site", "Spread on-site", "Haul off-site"], "note": "Stockpile location; estimated quantity", "locGroup": null}, {"name": "Excess spoil handling", "control": "Pick one", "ctype": "pickone", "options": ["Spread and grade on-site", "Haul off-site", "Import/export balance to be determined"], "note": "Disposal location; dump fees; dirt budget", "locGroup": null}, {"name": "Construction access", "control": "Pick any", "ctype": "pickany", "options": ["Temporary gravel drive", "Stabilized entrance", "Culvert installation", "Retop existing drive"], "note": "Length, width, material, culvert size", "locGroup": null}, {"name": "Tree/vegetation work", "control": "Pick any", "ctype": "pickany", "options": ["Selective tree removal", "Clearing/grubbing", "Protect designated trees", "Stump removal"], "note": "Marked locations", "locGroup": null}, {"name": "Utility trenching", "control": "Pick any", "ctype": "pickany", "options": ["Water", "Electric", "Gas/propane", "Well", "Communications", "Drainage"], "note": "Linear footage, depth, route, by whom", "locGroup": null}, {"name": "Grading stage", "control": "Pick any", "ctype": "pickany", "options": ["Initial rough grade", "Post-foundation rough grade", "Final grade", "Topsoil placement", "Seed/straw", "Hydroseed"], "note": "Limits of disturbance; finish elevations", "locGroup": null}, {"name": "Driveway work", "control": "Pick any", "ctype": "pickany", "options": ["New gravel drive", "New concrete drive", "New asphalt drive", "Retop existing gravel", "Approach shaping only"], "note": "Dimensions and material", "locGroup": null}, {"name": "Special excavation", "control": "Pick any", "ctype": "pickany", "options": ["Pool shell", "Egress well", "Exterior basement stair", "Below-grade addition", "Foundation opening/cut"], "note": "Plan/detail reference; shoring responsibility", "locGroup": null}, {"name": "Erosion control", "control": "Pick any", "ctype": "pickany", "options": ["Silt fence", "Inlet protection", "Construction entrance", "SWPPP measures"], "note": "Jurisdiction requirements", "locGroup": null}, {"name": "Site protection requirements", "control": "Pick any", "ctype": "pickany", "options": ["Protect structures", "Protect utilities", "Protect landscaping", "Protect well/septic"], "note": "Specific locations", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_2_footing_foundation", "title": "1.2 Footing & Foundation", "fields": [{"name": "Foundation system", "control": "Pick one", "ctype": "pickone", "options": ["Crawlspace", "Slab-on-grade with trench footing/stem wall", "Full basement", "Walkout basement", "Combination basement/crawlspace"], "note": "", "locGroup": null}, {"name": "Foundation wall material", "control": "Pick one", "ctype": "pickone", "options": ["Poured concrete", "ICF", "CMU/block"], "note": "", "locGroup": null}, {"name": "Foundation wall height", "control": "Pick one", "ctype": "pickone", "options": ["4 ft", "5 ft", "6 ft", "7 ft", "8 ft", "9 ft", "10 ft", "Varies by wall \u2014 specify in notes", "Other"], "note": "", "locGroup": null}, {"name": "Footing type", "control": "Pick one", "ctype": "pickone", "options": ["Continuous strip footing", "Trench footing", "Pad footing", "Engineered specialty footing"], "note": "Structural reference", "locGroup": null}, {"name": "Porch foundation", "control": "Per location", "ctype": "perloc", "options": ["Poured wall", "Frost footing/piers", "Slab thickening", "Other engineered system"], "note": "Porch location", "locGroup": "Per location"}, {"name": "Porch foundation wall height", "control": "Per location", "ctype": "perloc", "options": ["4 ft", "5 ft", "6 ft", "7 ft", "8 ft"], "note": "", "locGroup": "Per location"}, {"name": "Foundation openings", "control": "Pick any", "ctype": "pickany", "options": ["Crawlspace access", "Egress opening", "Exterior stair opening", "Utility penetration", "Garage/man-door opening"], "note": "Size and location", "locGroup": null}, {"name": "Retaining walls", "control": "Pick any", "ctype": "pickany", "options": ["Poured concrete", "Segmental block", "Boulder/stone", "Engineered specialty"], "note": "Height, length, finish", "locGroup": null}, {"name": "Foundation coordination", "control": "Pick any", "ctype": "pickany", "options": ["Termite treatment", "Embedded anchors", "Sleeves", "Hold-downs", "Brick ledge", "Stone ledge"], "note": "Plan/detail reference", "locGroup": null}, {"name": "Zero-entry condition", "control": "Pick any", "ctype": "pickany", "options": ["Garage", "Porch(es)", "Other"], "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_2_1_flatwork", "title": "1.2.1 Flatwork", "fields": [{"name": "Concrete area", "control": "Per location", "ctype": "perloc", "options": ["Garage slab", "Living slab", "Porch", "Approach", "Driveway", "Sidewalk", "AC pad", "Equipment pad", "Hot tub pad", "Trash pad", "Storm shelter pad", "Pool deck", "Other"], "note": "Location and square footage", "locGroup": "Per location"}, {"name": "Finish", "control": "Per location", "ctype": "perloc", "options": ["Broom", "Smooth/troweled", "Stamped", "Stained", "Exposed aggregate", "Polished", "Epoxy-ready"], "note": "Color/pattern where applicable", "locGroup": "Per location"}, {"name": "Entry condition", "control": "Per location", "ctype": "perloc", "options": ["Standard step", "Zero-entry/flush", "Sloped transition"], "note": "Elevation/detail", "locGroup": "Per location"}, {"name": "Thickness", "control": "Per location", "ctype": "perloc", "options": ["4 in. standard", "5 in.", "6 in.", "Engineered/custom"], "note": "Load requirement", "locGroup": "Per location"}, {"name": "Reinforcement", "control": "Per location", "ctype": "perloc", "options": ["Fiber only", "Rebar", "Welded wire mesh", "Rebar + fiber", "Engineered reinforcing"], "note": "Size/spacing", "locGroup": "Per location"}, {"name": "Special slab condition", "control": "Pick any", "ctype": "pickany", "options": ["Heavy-lift area", "Thickened edge", "Integral footing", "Steel pan deck", "Radiant tubing coordination", "Trench drain", "Floor drain"], "note": "Detail/specification", "locGroup": null, "perOptionLocation": true}, {"name": "Concrete accessories", "control": "Pick any", "ctype": "pickany", "options": ["Control joints", "Isolation joints", "Sleeves", "Vapor barrier", "Insulation below slab", "Sealer"], "note": "Locations/specification", "locGroup": null, "perOptionLocation": true}], "cat": "Sitework & Structure"}, {"id": "storm_shelter", "title": "1.2.2 Storm Shelter", "fields": [{"name": "Location type", "control": "Pick one", "ctype": "pickone", "options": ["Above slab interior", "Below slab interior/garage", "Below slab \u2014 under porch", "Exterior standalone"], "note": "", "locGroup": null}, {"name": "Capacity", "control": "Pick one", "ctype": "pickone", "options": ["2-4 persons", "5-8 persons", "9+ persons", "Custom"], "note": "", "locGroup": null}, {"name": "Construction", "control": "Pick one", "ctype": "pickone", "options": ["Precast", "Poured-in-place", "Steel safe-room system"], "note": "", "locGroup": null}, {"name": "Access", "control": "Pick one", "ctype": "pickone", "options": ["Hatch", "Standard door", "Hidden/integrated door"], "note": "", "locGroup": null}, {"name": "Special requirements", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_3_waterproofing", "title": "1.3 Waterproofing", "fields": [{"name": "Waterproofing system", "control": "Pick one", "ctype": "pickone", "options": ["Spray-applied membrane", "Sheet membrane", "Cementitious", "Drainage board system", "Other specified system"], "note": "", "locGroup": null}, {"name": "Locations", "control": "Pick any", "ctype": "pickany", "options": ["Basement walls", "Below-grade addition", "Retaining wall", "Foundation joint", "Exterior stairwell", "Window well", "Garage wall"], "note": "Plan/elevation reference", "locGroup": null}, {"name": "Drainage components", "control": "Pick any", "ctype": "pickany", "options": ["Perimeter drain tile", "Sump connection", "Drainage board", "Protection board", "Gravel drainage layer"], "note": "Discharge point", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_4_demolition", "title": "1.4 Demolition", "fields": [{"name": "Demolition approach", "control": "Pick one", "ctype": "pickone", "options": ["Full structure demolition", "Substantial interior gut", "Selective demolition by area", "Exterior-only demolition", "Trade-specific demolition"], "note": "", "locGroup": null}, {"name": "Occupancy condition", "control": "Pick one", "ctype": "pickone", "options": ["Vacant", "Occupied in separate area", "Occupied within work area/phased"], "note": "", "locGroup": null}, {"name": "Debris handling", "control": "Pick one", "ctype": "pickone", "options": ["Haul to landfill", "On-site burial where approved", "Separate recyclable/salvage streams"], "note": "Approved disposal location", "locGroup": null}, {"name": "Salvage requirements", "control": "Pick any", "ctype": "pickany", "options": ["Salvage for owner", "Salvage for reuse", "Protect in place", "Carefully remove and store"], "note": "Item, tagging, storage location", "locGroup": null}, {"name": "Temporary protection", "control": "Pick any", "ctype": "pickany", "options": ["Dust partitions", "Negative air", "Floor protection", "Weather protection", "Temporary security", "Temporary shoring"], "note": "Limits and duration", "locGroup": null}, {"name": "Hazardous material basis", "control": "Pick one", "ctype": "pickone", "options": ["Testing complete/no known hazards", "Testing required", "Excluded pending discovery"], "note": "Report/reference", "locGroup": null}, {"name": "Utility disconnection", "control": "Pick any", "ctype": "pickany", "options": ["Electric", "Gas", "Water", "Sewer/septic", "HVAC", "Low voltage"], "note": "Responsible party and sequence", "locGroup": null}, {"name": "Trade self-disconnect before demo", "control": "Pick any", "ctype": "pickany", "options": ["Electrical", "Plumbing", "Mechanical/HVAC", "Gas", "Low voltage", "Other"], "note": "Trades disconnecting their own equipment before the general demo crew proceeds", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_5_framing", "title": "1.5 Framing", "fields": [{"name": "Exterior wall framing", "control": "Pick one", "ctype": "pickone", "options": ["2x4", "2x6", "Double-stud", "Engineered wall system", "Existing wall retained/furred"], "note": "", "locGroup": null}, {"name": "Wall sheathing", "control": "Pick one", "ctype": "pickone", "options": ["OSB", "Plywood", "ZIP System", "Other structural sheathing"], "note": "", "locGroup": null}, {"name": "Wall sheathing thickness", "control": "Pick one", "ctype": "pickone", "options": ["1/2 in.", "5/8 in."], "note": "", "locGroup": null}, {"name": "Roof decking", "control": "Pick one", "ctype": "pickone", "options": ["OSB", "Plywood", "ZIP System", "1x boards", "Existing decking retained"], "note": "", "locGroup": null}, {"name": "Roof decking thickness", "control": "Pick one", "ctype": "pickone", "options": ["1/2 in.", "5/8 in."], "note": "", "locGroup": null}, {"name": "Floor system", "control": "Pick one", "ctype": "pickone", "options": ["I-joists", "Floor trusses", "Dimensional lumber", "Slab-on-grade/no framed floor", "Existing floor retained"], "note": "", "locGroup": null}, {"name": "Subfloor material", "control": "Pick one", "ctype": "pickone", "options": ["3/4 in. tongue & groove AdvanTech (standard)", "Other \u2014 specify brand/spec in notes"], "note": "", "locGroup": null}, {"name": "Roof structure", "control": "Pick one", "ctype": "pickone", "options": ["Engineered trusses", "Stick-framed", "Timber frame", "Combination", "Existing roof modified"], "note": "", "locGroup": null}, {"name": "Ceiling form", "control": "Per room/area", "ctype": "perloc", "options": ["Flat", "Vaulted", "Tray", "Coffered", "Barrel", "Sloped", "Other specialty"], "note": "", "locGroup": "Per room/area"}, {"name": "Interior wall height", "control": "Per room/area", "ctype": "perloc", "options": ["8 ft", "9 ft", "10 ft", "12 ft", "To structure", "Custom"], "note": "", "locGroup": "Per room/area"}, {"name": "Door opening height", "control": "Per opening type", "ctype": "perloc", "options": ["6 ft 8 in.", "7 ft", "8 ft", "Custom"], "note": "", "locGroup": "Per opening type"}, {"name": "Door opening shape", "control": "Per opening", "ctype": "perloc", "options": ["Square", "Arched", "Cased opening/no door"], "note": "", "locGroup": "Per opening"}, {"name": "Stair riser condition", "control": "Pick one", "ctype": "pickone", "options": ["Closed", "Open"], "note": "", "locGroup": null}, {"name": "Special framing", "control": "Pick any per specialty area", "ctype": "permulti", "options": ["Exposed beams", "Decorative beams", "Dormer", "Fireplace framing", "Shower niche", "Shower bench", "Pony wall", "Curved wall", "Ceiling treatment backing", "Cabinet backing", "TV backing", "Other \u2014 specify in notes"], "note": "Location/detail", "locGroup": "Pick any per specialty area"}, {"name": "Envelope framing details", "control": "Pick any", "ctype": "pickany", "options": ["Sloped window sills", "Sill pan/stretch tape", "Boxed soffits", "Taped sheathing seams", "Wall-to-slab liquid flashing", "Rainscreen furring"], "note": "Manufacturer/detail reference", "locGroup": null}, {"name": "Existing-structure work", "control": "Pick any", "ctype": "pickany", "options": ["Field verification", "Structural repair allowance", "Wall furring", "Floor leveling", "Roof tie-in", "Temporary shoring"], "note": "Known conditions and allowance", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "windows", "title": "1.6 Windows", "fields": [{"name": "Frame material", "control": "Pick one", "ctype": "pickone", "options": ["Vinyl", "Fiberglass", "Aluminum", "Wood", "Wood-clad", "Steel"], "note": "", "locGroup": null}, {"name": "Interior frame color/finish", "control": "Pick one", "ctype": "pickone", "options": ["White", "Black", "Bronze", "Stainable wood", "Custom"], "note": "", "locGroup": null}, {"name": "Exterior frame color/finish", "control": "Pick one", "ctype": "pickone", "options": ["White", "Black", "Bronze", "Custom color", "Clad finish"], "note": "", "locGroup": null}, {"name": "Operation type", "control": "Per opening", "ctype": "perloc", "options": ["Fixed", "Single-hung", "Double-hung", "Casement", "Awning", "Slider", "Hopper", "Specialty shape"], "note": "", "locGroup": "Per opening"}, {"name": "Grilles", "control": "Per opening/group", "ctype": "perloc", "options": ["None", "Between-glass", "Simulated divided lite", "True divided lite"], "note": "Pattern", "locGroup": "Per opening/group"}, {"name": "Glass package", "control": "Per opening/group", "ctype": "perloc", "options": ["Clear", "Low-E standard", "Tempered", "Laminated", "Privacy/textured", "Impact-rated", "Triple-pane"], "note": "", "locGroup": "Per opening/group"}, {"name": "Screen type", "control": "Per operable window", "ctype": "perloc", "options": ["Standard", "Retractable", "No screen", "Specialty"], "note": "", "locGroup": "Per operable window"}, {"name": "Interior finish coordination", "control": "Pick one", "ctype": "pickone", "options": ["Drywall return", "Wood extension jamb/trim", "Mixed by location"], "note": "", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_7_water_source_well", "title": "1.7 Water Source / Well", "fields": [{"name": "Water source", "control": "Pick one", "ctype": "pickone", "options": ["New drilled well", "Existing well retained", "Existing well relocated/modified", "Rural water district", "Municipal water", "Other"], "note": "", "locGroup": null}, {"name": "Well house", "control": "Pick one", "ctype": "pickone", "options": ["Not required", "Exterior well house", "Inside garage/basement/mechanical room"], "note": "", "locGroup": null}, {"name": "Temporary water service", "control": "Pick one", "ctype": "pickone", "options": ["Not required", "Maintain existing service", "Temporary tank/line", "Other temporary setup"], "note": "Maximum downtime", "locGroup": null}, {"name": "Unused well disposition", "control": "Pick one", "ctype": "pickone", "options": ["None", "Cap", "Abandon per code"], "note": "Permit/authority", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "1_9_wastewater_septic", "title": "1.9 Wastewater / Septic", "fields": [{"name": "Wastewater system", "control": "Pick one", "ctype": "pickone", "options": ["Conventional gravity septic", "Aerobic treatment", "Lagoon", "Municipal sewer", "Existing system retained/modified"], "note": "", "locGroup": null}, {"name": "System capacity basis", "control": "Required input", "ctype": "input", "options": ["Bedroom count", "Fixture count", "Soil report", "Jurisdiction criteria"], "note": "Attach report/reference", "locGroup": null}, {"name": "Existing system work", "control": "Pick any", "ctype": "pickany", "options": ["Abandon", "Relocate", "Connect to", "Repair", "Expand"], "note": "Condition and responsibility", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "propane_tank", "title": "1.9.1 Propane Tank", "fields": [{"name": "Ownership", "control": "Pick one", "ctype": "pickone", "options": ["Rent/lease from supplier", "Purchase/owner-owned"], "note": "", "locGroup": null}, {"name": "Placement", "control": "Pick one", "ctype": "pickone", "options": ["Above ground", "Buried"], "note": "", "locGroup": null}, {"name": "Capacity", "control": "Pick one", "ctype": "pickone", "options": ["250 gal", "500 gal", "1,000 gal", "1,500 gal", "Multiple tanks/custom"], "note": "", "locGroup": null}, {"name": "Quantity", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Tank accessories", "control": "Pick any", "ctype": "pickany", "options": ["Concrete pad", "Bollards", "Screen/fence", "Underground dome", "Regulator", "Trenching/line"], "note": "Location/setbacks", "locGroup": null}], "cat": "Sitework & Structure"}, {"id": "2_1_hvac_venting", "title": "2.1 HVAC & Venting", "fields": [{"name": "Primary system configuration", "control": "Pick one", "ctype": "pickone", "options": ["Single central system", "Multiple central systems", "Zoned central system", "Ductless mini-split system", "Geothermal system", "Hybrid/combination"], "note": "", "locGroup": null}, {"name": "Primary heating technology", "control": "Pick one", "ctype": "pickone", "options": ["Gas furnace", "Electric heat pump", "Dual-fuel heat pump", "Electric resistance", "Geothermal heat pump", "Other"], "note": "", "locGroup": null}, {"name": "Cooling technology", "control": "Pick one", "ctype": "pickone", "options": ["Central DX air conditioning", "Heat pump cooling", "Ductless mini-split", "Geothermal", "None"], "note": "", "locGroup": null}, {"name": "Number of systems/zones", "control": "Required input", "ctype": "input", "options": null, "note": "Identify areas served", "locGroup": null}, {"name": "Supplemental conditioning", "control": "Per area", "ctype": "perloc", "options": ["Mini-split head", "Radiant heater", "Unit heater", "Fireplace as supplemental only", "None"], "note": "Location", "locGroup": "Per area"}, {"name": "Ventilation", "control": "Pick any", "ctype": "pickany", "options": ["Bath exhaust", "Kitchen hood exhaust", "Dryer exhaust", "ERV", "HRV", "Whole-house ventilation", "Make-up air"], "note": "Termination location/capacity", "locGroup": null}, {"name": "Humidity control", "control": "Pick any", "ctype": "pickany", "options": ["Whole-house dehumidifier", "Humidifier", "Crawlspace dehumidifier"], "note": "Area served", "locGroup": null}, {"name": "Controls", "control": "Pick any", "ctype": "pickany", "options": ["Standard thermostat", "Smart thermostat", "Multi-zone controls", "Remote sensors"], "note": "Quantity/location", "locGroup": null}, {"name": "Fuel source", "control": "Pick any", "ctype": "pickany", "options": ["Natural gas", "Propane", "Electric"], "note": "Appliance/system served", "locGroup": null}, {"name": "Equipment sizing inputs", "control": "Required input", "ctype": "input", "options": ["Manual J/S or engineering", "Envelope assumptions", "Window data", "Occupancy assumptions"], "note": "Responsible party/deadline", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_2_electrical", "title": "2.2 Electrical", "fields": [{"name": "Service size", "control": "Pick one", "ctype": "pickone", "options": ["100A", "200A", "320/400A", "Engineered/custom"], "note": "", "locGroup": null}, {"name": "Panel strategy", "control": "Pick one", "ctype": "pickone", "options": ["New main panel", "Reuse existing panel", "Reuse existing + new subpanel", "New panel for addition", "Multiple new panels"], "note": "", "locGroup": null}, {"name": "Service entrance", "control": "Pick one", "ctype": "pickone", "options": ["Underground", "Overhead", "From existing service", "Utility-design required"], "note": "", "locGroup": null}, {"name": "Underground/overhead run length", "control": "Required input", "ctype": "input", "options": null, "note": "Length of the utility-to-house service run", "locGroup": null}, {"name": "SER length (house to panel)", "control": "Required input", "ctype": "input", "options": null, "note": "Service entrance riser length from point of attachment/meter to panel", "locGroup": null}, {"name": "Temporary power", "control": "Pick any", "ctype": "pickany", "options": ["Temporary construction service", "Maintain power to occupied area", "Maintain well power", "Maintain refrigeration/freezer power", "Phased switchover"], "note": "Loads and duration", "locGroup": null}, {"name": "General lighting package", "control": "Pick one", "ctype": "pickone", "options": ["Recessed lighting baseline", "Decorative fixtures only at plan locations", "Mixed recessed/decorative", "Lighting design pending allowance"], "note": "", "locGroup": null}, {"name": "Fixture finish/color direction", "control": "Required input", "ctype": "input", "options": null, "note": "Per fixture category if different", "locGroup": null}, {"name": "Specialty lighting", "control": "Pick any", "ctype": "pickany", "options": ["Vanity", "Sconce", "Pendant", "Under-cabinet", "In-cabinet", "Toe-kick", "Stair", "Floor receptacle/lighting", "Art lighting", "Cove lighting", "Closet lighting"], "note": "Locations and control", "locGroup": null}, {"name": "Exterior lighting type", "control": "Pick any", "ctype": "pickany", "options": ["Wall-mounted", "Ceiling-mounted", "Soffit downlight", "Landscape", "Permanent holiday/accent"], "note": "Locations and switching", "locGroup": null}, {"name": "Lighting controls", "control": "Pick any", "ctype": "pickany", "options": ["Standard switches", "Dimmers", "Occupancy sensors", "Smart controls", "3-way/4-way", "Central lighting control"], "note": "Locations/system", "locGroup": null}, {"name": "Island receptacle method", "control": "Pick one", "ctype": "pickone", "options": ["Pop-up", "Side-mounted", "End-panel mounted", "Overhang support/other code-compliant method", "No island"], "note": "", "locGroup": null}, {"name": "Dedicated circuits", "control": "Pick any", "ctype": "pickany", "options": ["Range/cooktop", "Wall oven", "Dryer", "Water heater", "HVAC", "Mini-split", "Garage equipment", "EV charger", "Hot tub", "Pool", "Well", "Generator", "Other 240V load"], "note": "Voltage/amperage/equipment spec", "locGroup": null}, {"name": "Backup power", "control": "Pick one", "ctype": "pickone", "options": ["None", "Portable-generator inlet", "Critical-load standby generator", "Whole-home standby generator"], "note": "Fuel, kW, transfer-switch location", "locGroup": null}, {"name": "Low-voltage rough-ins by electrician", "control": "Pick any", "ctype": "pickany", "options": ["Security cameras", "Doorbell", "Gate", "TV power", "Wi-Fi access point power", "Audio power", "Fountain/water feature", "Landscape transformer"], "note": "Separate from cabling scope", "locGroup": null}, {"name": "Special receptacles/devices", "control": "Pick any", "ctype": "pickany", "options": ["Bidet outlet", "Air switch", "Floor receptacle", "USB/USB-C", "In-cabinet outlet", "Holiday-light receptacles", "Exterior switched receptacles"], "note": "Locations", "locGroup": null}, {"name": "Surge protection", "control": "Pick one", "ctype": "pickone", "options": ["None", "Main panel only", "Main and subpanels", "Whole-house + point-of-use"], "note": "", "locGroup": null}, {"name": "Electrical walkthrough", "control": "Required input", "ctype": "input", "options": ["Required", "Not required"], "note": "Deadline before rough-in; decision owner", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "home_audio", "title": "2.2.1 Home Audio", "fields": [{"name": "System level", "control": "Pick one", "ctype": "pickone", "options": ["Prewire only", "Partial installed system", "Whole-home installed system"], "note": "", "locGroup": null}, {"name": "Speaker location", "control": "Pick any", "ctype": "pickany", "options": ["Interior", "Exterior", "Dedicated theater"], "note": "", "locGroup": null}, {"name": "Speaker type", "control": "Pick any", "ctype": "pickany", "options": ["In-wall", "In-ceiling", "Surface-mounted", "Landscape", "Soundbar"], "note": "", "locGroup": null}, {"name": "Zone control", "control": "Pick one", "ctype": "pickone", "options": ["Single zone", "Multi-zone", "App-controlled multi-zone"], "note": "", "locGroup": null}, {"name": "Equipment location", "control": "Pick one", "ctype": "pickone", "options": ["No central rack", "Closet rack", "Dedicated equipment cabinet", "Mechanical/IT room"], "note": "", "locGroup": null}, {"name": "TV/audio locations", "control": "Per location", "ctype": "perloc", "options": ["Power only", "Power + data", "Full AV prewire", "Installed equipment"], "note": "Room/wall", "locGroup": "Per location"}], "cat": "Core Building Systems"}, {"id": "wi_fi_low_voltage_smart_home", "title": "2.2.2 Wi-Fi / Low Voltage / Smart Home", "fields": [{"name": "Network wiring level", "control": "Pick one", "ctype": "pickone", "options": ["Router only/basic", "Cat6 prewire", "Full wired network", "Managed enterprise-style network"], "note": "", "locGroup": null}, {"name": "Wi-Fi coverage", "control": "Pick one", "ctype": "pickone", "options": ["Single router", "Multiple access points", "Indoor/outdoor managed coverage"], "note": "", "locGroup": null}, {"name": "Hardwired data locations", "control": "Per location", "ctype": "perloc", "options": ["Data jack", "TV location", "Office", "Access point", "Camera", "Gate/intercom", "Equipment"], "note": "Quantity/location", "locGroup": "Per location"}, {"name": "Security camera system", "control": "Pick one", "ctype": "pickone", "options": ["Prewire only", "Owner-furnished cameras", "Installed standalone system", "Integrated system"], "note": "", "locGroup": null}, {"name": "Security system", "control": "Pick one", "ctype": "pickone", "options": ["None", "Prewire", "Installed alarm", "Integrated alarm/access control"], "note": "", "locGroup": null}, {"name": "Smart-home level", "control": "Pick one", "ctype": "pickone", "options": ["Basic devices only", "Selected integrated systems", "Whole-home automation platform"], "note": "", "locGroup": null}, {"name": "Integrated functions", "control": "Pick any", "ctype": "pickany", "options": ["Lighting", "Thermostats", "Door locks", "Shades", "Audio", "Security", "Cameras", "Gate", "Irrigation", "Pool", "Generator monitoring"], "note": "Platform/installer", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_3_plumbing", "title": "2.3 Plumbing", "fields": [{"name": "Plumbing project approach", "control": "Pick one", "ctype": "pickone", "options": ["Full new construction", "Slab-on-grade/in-slab rough-in", "Full renovation replacement", "Partial remodel/reuse existing", "Addition tied to existing"], "note": "", "locGroup": null}, {"name": "Water heater fuel", "control": "Pick one", "ctype": "pickone", "options": ["Gas", "Electric", "Heat-pump water heater", "Other"], "note": "", "locGroup": null}, {"name": "Water heater style", "control": "Pick one", "ctype": "pickone", "options": ["Tank", "Tankless", "Hybrid/heat-pump", "Boiler/indirect"], "note": "", "locGroup": null}, {"name": "Water heater capacity", "control": "Required input", "ctype": "input", "options": ["40 gal", "50 gal", "80 gal", "GPM/BTU for tankless", "Engineered/custom"], "note": "Quantity and location", "locGroup": null}, {"name": "Water treatment", "control": "Pick any", "ctype": "pickany", "options": ["Water softener", "Whole-house sediment filter", "Carbon filter", "UV", "Reverse osmosis", "Other"], "note": "Equipment location and who furnishes", "locGroup": null}, {"name": "Hot-water recirculation", "control": "Pick one", "ctype": "pickone", "options": ["None", "Dedicated return loop", "Demand recirculation", "Pump-only on existing piping"], "note": "", "locGroup": null}, {"name": "Kitchen sink material", "control": "Pick one", "ctype": "pickone", "options": ["Stainless steel", "Cast iron/enamel", "Fireclay", "Composite granite", "Copper", "Other"], "note": "", "locGroup": null}, {"name": "Kitchen faucet operation", "control": "Pick one", "ctype": "pickone", "options": ["Manual pull-down", "Touch", "Touchless", "Bridge", "Other"], "note": "", "locGroup": null}, {"name": "Toilet height", "control": "Pick one", "ctype": "pickone", "options": ["Standard", "Chair/comfort height"], "note": "", "locGroup": null}, {"name": "Bidet condition", "control": "Pick one", "ctype": "pickone", "options": ["None", "Bidet seat prep", "Bidet seat furnished/installed", "Integrated bidet toilet"], "note": "", "locGroup": null}, {"name": "Tub type", "control": "Per tub", "ctype": "perloc", "options": ["Freestanding", "Alcove", "Drop-in", "Undermount", "Jetted", "None"], "note": "", "locGroup": "Per tub"}, {"name": "Tub filler mount", "control": "Per tub", "ctype": "perloc", "options": ["Deck-mounted", "Floor-mounted/freestanding", "Wall-mounted"], "note": "", "locGroup": "Per tub"}, {"name": "Shower type", "control": "Pick any per shower", "ctype": "perloc", "options": ["Tub/shower combo", "Walk-in shower", "Prefabricated shower", "Onyx/solid-surface system", "Custom tile shower"], "note": "", "locGroup": "Pick any per shower"}, {"name": "Shower entry", "control": "Pick any per shower", "ctype": "perloc", "options": ["Curbed", "Curbless/zero-entry", "Tub threshold"], "note": "", "locGroup": "Pick any per shower"}, {"name": "Shower components", "control": "Pick any per shower", "ctype": "permulti", "options": ["Standard wall head", "Rain head", "Hand shower", "Body sprays", "Electronic control", "Thermostatic valve", "Grab bar", "Bench", "Niche"], "note": "Quantity/layout", "locGroup": "Pick any per shower"}, {"name": "Special plumbing fixtures", "control": "Pick any", "ctype": "pickany", "options": ["Pot filler", "Wall-mounted faucet", "Bar sink", "Pantry sink", "Laundry sink", "Dog wash", "Floor drain", "Garage drain", "Pressure-washer hookup", "Ice maker", "Outdoor shower"], "note": "Location", "locGroup": null}, {"name": "Gas piping", "control": "Pick any", "ctype": "pickany", "options": ["Range", "Fireplace", "Grill", "Fire pit", "Generator", "Pool heater", "HVAC", "Dryer", "Other"], "note": "BTU/load and route", "locGroup": null}, {"name": "Plumbing walkthrough", "control": "Required input", "ctype": "input", "options": ["Required", "Not required"], "note": "Deadline before rough-in", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_4_insulation", "title": "2.4 Insulation", "fields": [{"name": "Exterior wall insulation", "control": "Pick one", "ctype": "pickone", "options": ["Fiberglass batt", "Mineral wool", "Open-cell spray foam", "Closed-cell spray foam", "Blown-in/cellulose", "Hybrid system"], "note": "", "locGroup": null}, {"name": "Roof/attic insulation", "control": "Pick one", "ctype": "pickone", "options": ["Attic-floor blown-in", "Roof-deck open-cell foam", "Roof-deck closed-cell foam", "Batt/mineral wool", "Hybrid system"], "note": "", "locGroup": null}, {"name": "Floor/crawlspace insulation", "control": "Pick one", "ctype": "pickone", "options": ["Floor batts", "Crawlspace wall foam", "Rigid foam", "None/conditioned slab"], "note": "", "locGroup": null}, {"name": "Garage envelope status", "control": "Pick one", "ctype": "pickone", "options": ["Unconditioned/excluded", "Insulated only", "Fully conditioned envelope"], "note": "", "locGroup": null}, {"name": "Sound control", "control": "Pick any", "ctype": "pickany", "options": ["Bathroom walls", "Bedroom-adjacent walls", "Laundry walls", "Mechanical room", "Media room", "Plumbing walls", "Floor/ceiling assemblies"], "note": "Exact walls/areas", "locGroup": null}, {"name": "Air/vapor control", "control": "Pick any", "ctype": "pickany", "options": ["Vapor barrier", "Air sealing package", "Rim-joist foam", "Fire-blocking support", "Blower-door target"], "note": "Climate/design basis", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_5_drywall", "title": "2.5 Drywall", "fields": [{"name": "Drywall finish level", "control": "Pick one", "ctype": "pickone", "options": ["Level 3", "Level 4", "Level 5"], "note": "", "locGroup": null}, {"name": "Wall texture", "control": "Pick one", "ctype": "pickone", "options": ["Smooth/no texture", "Light orange peel", "Medium orange peel", "Knockdown", "Match existing"], "note": "", "locGroup": null}, {"name": "Ceiling texture", "control": "Pick one", "ctype": "pickone", "options": ["Smooth/no texture", "Light orange peel", "Tree bark", "Knockdown", "Match existing"], "note": "", "locGroup": null}, {"name": "Corner style", "control": "Pick one", "ctype": "pickone", "options": ["Square", "Bullnose", "Specialty/profiled"], "note": "", "locGroup": null}, {"name": "Window interior treatment", "control": "Pick one", "ctype": "pickone", "options": ["Drywall return", "Wood trim", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Garage finish", "control": "Pick one", "ctype": "pickone", "options": ["Same as living space", "Taped/fire-code only", "Level 3", "Level 4", "Other"], "note": "", "locGroup": null}, {"name": "Remodel repair scope", "control": "Pick any", "ctype": "pickany", "options": ["Patch openings", "Blend existing texture", "Scrape popcorn", "Skim-coat existing", "Repair trade damage", "Fur existing walls"], "note": "Areas and acceptance basis", "locGroup": null}, {"name": "Special openings", "control": "Pick any", "ctype": "pickany", "options": ["Arched openings", "Niches", "Reveals", "Shadow bead", "Control joints"], "note": "Locations/details", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "2_8_masonry", "title": "2.8 Masonry", "fields": [{"name": "Masonry work approach", "control": "Pick one", "ctype": "pickone", "options": ["New veneer", "Repair/extend existing", "Clean/refinish existing", "Combination"], "note": "", "locGroup": null}, {"name": "Primary masonry material", "control": "Pick one", "ctype": "pickone", "options": ["Brick", "Natural stone", "Manufactured stone veneer", "CMU", "Other"], "note": "", "locGroup": null}, {"name": "Exterior applications", "control": "Pick any per masonry area", "ctype": "permulti", "options": ["Wainscot", "Full-height wall", "Gable", "Chimney", "Porch column", "Exterior corner accent", "Mailbox", "Retaining/landscape wall"], "note": "Height/locations", "locGroup": "Per masonry area"}, {"name": "Interior applications", "control": "Pick any per masonry area", "ctype": "permulti", "options": ["Fireplace surround", "Hearth", "Accent wall", "Wine room", "Other"], "note": "Dimensions/location", "locGroup": "Per masonry area"}, {"name": "Masonry square footage", "control": "Per masonry area", "ctype": "perloc", "options": null, "note": "Enter sq ft for this area", "locGroup": "Per masonry area"}, {"name": "Mortar/joint style", "control": "Required input", "ctype": "input", "options": null, "note": "Sample/mockup requirement", "locGroup": null}, {"name": "Special finish", "control": "Pick any", "ctype": "pickany", "options": ["Whitewash", "Limewash", "German smear", "Sealer", "Cleaning only"], "note": "Approved sample", "locGroup": null}], "cat": "Core Building Systems"}, {"id": "fireplace", "title": "2.8.1 Fireplace", "fields": [{"name": "Fuel type", "control": "Per fireplace", "ctype": "perloc", "options": ["Gas", "Wood-burning", "Electric", "Pellet"], "note": "", "locGroup": "Per fireplace"}, {"name": "Unit type", "control": "Per fireplace", "ctype": "perloc", "options": ["Direct-vent", "Vent-free", "Masonry", "Insert", "Linear", "Traditional box", "Other"], "note": "", "locGroup": "Per fireplace"}, {"name": "Surround material", "control": "Per fireplace", "ctype": "perloc", "options": ["Stone", "Brick", "Tile", "Slab", "Plaster", "Wood/trim", "None"], "note": "", "locGroup": "Per fireplace"}, {"name": "Hearth", "control": "Per fireplace", "ctype": "perloc", "options": ["None", "Raised", "Flush", "Floating"], "note": "Material/dimensions", "locGroup": "Per fireplace"}, {"name": "Mantel", "control": "Per fireplace", "ctype": "perloc", "options": ["None", "Wood", "Stone/slab", "Metal", "Custom"], "note": "", "locGroup": "Per fireplace"}, {"name": "Add-ons", "control": "Pick any per fireplace", "ctype": "permulti", "options": ["Blower", "TV/power rough-in", "Fireplace lighting", "Built-ins", "Wood storage", "Gas log set"], "note": "Specifications", "locGroup": "Per fireplace"}], "cat": "Core Building Systems"}, {"id": "2_9_flooring", "title": "2.9 Flooring", "fields": [{"name": "Flooring material", "control": "Per area", "ctype": "perloc", "options": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate", "Carpet", "Tile", "Sheet vinyl", "Polished concrete", "Epoxy flake", "Other"], "note": "Room/area schedule", "locGroup": "Per area"}, {"name": "Hardwood finish condition", "control": "Per area", "ctype": "perloc", "options": ["Site-finished/raw", "Prefinished"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood"]}}, {"name": "Hardwood species", "control": "Per area", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood"]}}, {"name": "Plank width", "control": "Per area", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate"]}}, {"name": "Installation pattern", "control": "Per area", "ctype": "perloc", "options": ["Straight", "Diagonal", "Herringbone", "Chevron", "Random width", "Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Solid hardwood", "Engineered hardwood", "LVP", "Laminate", "Tile"]}}, {"name": "Carpet style", "control": "Per area", "ctype": "perloc", "options": ["Plush", "Berber", "Frieze", "Loop", "Pattern/Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Carpet"]}}, {"name": "Carpet pad", "control": "Per area", "ctype": "perloc", "options": ["Standard", "Upgraded/specialty", "Moisture barrier", "Other"], "note": "", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Carpet"]}}, {"name": "Garage floor coating", "control": "Per area", "ctype": "perloc", "options": ["None", "Epoxy flake", "Solid-color epoxy", "Polyaspartic flake", "Polished concrete"], "note": "Coverage and wall curb treatment", "locGroup": "Per area", "visibleWhen": {"field": "Flooring material", "values": ["Epoxy flake", "Polished concrete"]}}, {"name": "Stair finish", "control": "Per component", "ctype": "perloc", "options": ["Treads", "Risers", "Landing", "Skirt boards"], "note": "Material/finish per component", "locGroup": "Per component"}, {"name": "Transitions", "control": "Pick any per area", "ctype": "permulti", "options": ["Flush transition", "Reducer", "Metal profile", "Wood threshold", "Stone threshold"], "note": "Locations", "locGroup": "Per area"}], "cat": "Core Building Systems"}, {"id": "3_1_trim_carpentry", "title": "3.1 Trim Carpentry", "fields": [{"name": "Trim types at this location", "control": "Pick any per trim area", "ctype": "permulti", "options": ["Door casing", "Window casing", "Baseboard", "Closet shelving", "Crown molding", "Beam/ceiling treatment", "Custom shelving", "Accent wall", "Stair parts", "Other"], "note": "", "locGroup": "Per trim area"}, {"name": "Trim grade", "control": "Per trim area", "ctype": "perloc", "options": ["Paint-grade", "Stain-grade"], "note": "", "locGroup": "Per trim area"}, {"name": "Wood species (if stain-grade)", "control": "Per trim area", "ctype": "perloc", "options": null, "note": "Free text \u2014 species used at this location", "locGroup": "Per trim area"}, {"name": "Door casing profile", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Custom"], "note": "", "locGroup": null}, {"name": "Door casing assembly method", "control": "Pick one", "ctype": "pickone", "options": ["Picture-frame (mitered)", "Farmhouse header", "Reveal/no casing", "Custom"], "note": "", "locGroup": null}, {"name": "Window casing profile", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Custom"], "note": "", "locGroup": null}, {"name": "Window casing assembly method", "control": "Pick one", "ctype": "pickone", "options": ["Picture-frame (mitered)", "Farmhouse header", "Reveal/no casing", "Custom"], "note": "", "locGroup": null}, {"name": "Window sill treatment", "control": "Pick one", "ctype": "pickone", "options": ["Casing wraps to sill (no separate stool)", "Stool and apron", "Flat sill/no apron", "Custom"], "note": "", "locGroup": null}, {"name": "Baseboard style", "control": "Pick one", "ctype": "pickone", "options": ["Flat", "Profiled/colonial", "Flush/reveal", "Custom"], "note": "", "locGroup": null}, {"name": "Trim dimensions", "control": "Required input", "ctype": "input", "options": ["Casing width", "Base height", "Thickness", "Header components"], "note": "Can vary by location", "locGroup": null}, {"name": "Crown molding", "control": "Per room", "ctype": "perloc", "options": ["None", "Standard crown", "Built-up crown", "Cove", "Custom"], "note": "", "locGroup": "Per room"}, {"name": "Closet build-out level", "control": "Per closet", "ctype": "perloc", "options": ["Rod and shelf", "Double-hang", "Adjustable shelving", "Built-in dresser", "Shoe shelving", "Fully custom"], "note": "", "locGroup": "Per closet"}, {"name": "Shelving grade", "control": "Pick one", "ctype": "pickone", "options": ["Paint-grade", "Stain-grade", "Prefinished laminate", "Wire"], "note": "", "locGroup": null}, {"name": "Shelving style", "control": "Pick one", "ctype": "pickone", "options": ["Cleated", "Floating", "Cabinet-integrated", "Adjustable track"], "note": "", "locGroup": null}, {"name": "Stair railing material", "control": "Pick one", "ctype": "pickone", "options": ["Wood", "Metal", "Cable", "Glass", "Combination"], "note": "", "locGroup": null}, {"name": "Stair newel material", "control": "Pick one", "ctype": "pickone", "options": ["Wood", "Metal", "None/custom"], "note": "", "locGroup": null}, {"name": "Special trim features", "control": "Pick any", "ctype": "pickany", "options": ["Decorative beams", "Structural beam wrap", "Coffered ceiling", "Wall paneling", "Ceiling paneling", "Mantel", "Mudroom cleats", "Bench", "Built-in bookshelves", "Window seat", "Wainscot"], "note": "Location/detail", "locGroup": null, "perOptionLocation": true}], "cat": "Interior & Exterior Finishes"}, {"id": "interior_exterior_doors", "title": "3.1.1 Interior & Exterior Doors", "fields": [{"name": "Interior door core", "control": "Pick one", "ctype": "pickone", "options": ["Hollow-core", "Solid-core", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Interior door profile", "control": "Pick one", "ctype": "pickone", "options": ["Flush", "1-panel", "2-panel", "5-panel", "Shaker", "Other"], "note": "", "locGroup": null}, {"name": "Interior door height", "control": "Per opening group", "ctype": "perloc", "options": ["6 ft 8 in.", "7 ft", "8 ft", "Custom"], "note": "", "locGroup": "Per opening group"}, {"name": "Interior door material", "control": "Pick one", "ctype": "pickone", "options": ["Molded composite", "MDF", "Paint-grade wood", "Stain-grade wood", "Metal/glass specialty"], "note": "", "locGroup": null}, {"name": "Pocket door core", "control": "Pick one", "ctype": "pickone", "options": ["Hollow-core", "Solid-core", "Specialty glass/wood"], "note": "", "locGroup": null}, {"name": "Pocket door hardware", "control": "Pick one", "ctype": "pickone", "options": ["Standard track", "Soft-close track", "Concealed premium system"], "note": "", "locGroup": null}, {"name": "Front door leaf configuration", "control": "Pick one", "ctype": "pickone", "options": ["Single", "Double/French"], "note": "", "locGroup": null}, {"name": "Front door side condition", "control": "Pick one", "ctype": "pickone", "options": ["No sidelights", "One sidelight", "Two sidelights"], "note": "", "locGroup": null}, {"name": "Front door transom", "control": "Pick one", "ctype": "pickone", "options": ["None", "Rectangular", "Arched", "Custom"], "note": "", "locGroup": null}, {"name": "Exterior door material", "control": "Per door", "ctype": "perloc", "options": ["Fiberglass", "Steel", "Wood", "Aluminum/glass", "Other"], "note": "", "locGroup": "Per door"}, {"name": "Exterior door glass", "control": "Per door", "ctype": "perloc", "options": ["None", "Full-lite", "Half-lite", "Top-lite", "Custom"], "note": "", "locGroup": "Per door"}, {"name": "Special doors", "control": "Pick any", "ctype": "pickany", "options": ["Barn door", "Murphy/hidden door", "Safe-room door", "Storm shelter door", "Pivot door", "Folding/sliding glass wall"], "note": "Location/spec", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "garage_doors", "title": "3.1.2 Garage Doors", "fields": [{"name": "Door material", "control": "Pick one", "ctype": "pickone", "options": ["Steel", "Wood", "Aluminum/glass", "Composite"], "note": "", "locGroup": null}, {"name": "Panel style", "control": "Pick one", "ctype": "pickone", "options": ["Flush/square", "Raised panel", "Carriage-house", "Full-view glass", "Custom"], "note": "", "locGroup": null}, {"name": "Door construction/insulation", "control": "Pick one", "ctype": "pickone", "options": ["Non-insulated", "2-layer", "3-layer insulated", "High-R-value premium"], "note": "", "locGroup": null}, {"name": "Window condition", "control": "Pick one", "ctype": "pickone", "options": ["No windows", "Top-panel windows", "Full-view/glass panels"], "note": "", "locGroup": null}, {"name": "Window pattern", "control": "Required input", "ctype": "input", "options": ["Standard square", "Arched", "Stockton", "Custom"], "note": "", "locGroup": null}, {"name": "Operator type", "control": "Pick one", "ctype": "pickone", "options": ["Overhead trolley", "Side-mount/jackshaft", "Commercial/high-lift"], "note": "", "locGroup": null}, {"name": "Color/finish", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Quantity and size", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_2_paint_stain", "title": "3.2 Paint & Stain", "fields": [{"name": "Wall coating system", "control": "Pick one", "ctype": "pickone", "options": ["Primer + 1 finish coat", "Primer + 2 finish coats", "Repaint/2 finish coats", "Specialty coating"], "note": "", "locGroup": null}, {"name": "Ceiling coating system", "control": "Pick one", "ctype": "pickone", "options": ["Primer + 1 finish coat", "Primer + 2 finish coats", "Repaint", "Specialty coating"], "note": "", "locGroup": null}, {"name": "Component finish", "control": "Per component", "ctype": "perloc", "options": ["Paint", "Clear stain", "Opaque stain", "Natural clear coat", "Factory-finished/no field finish"], "note": "Walls, ceilings, trim, doors, beams, shelving, railings, mantel, exterior elements", "locGroup": "Per component"}, {"name": "Paint sheen", "control": "Per surface", "ctype": "perloc", "options": ["Flat", "Matte", "Eggshell", "Satin", "Semi-gloss", "Gloss"], "note": "", "locGroup": "Per surface"}, {"name": "Stain system", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Exterior paint scope", "control": "Pick one", "ctype": "pickone", "options": ["New exterior complete", "Addition only", "Blend/repaint affected elevations", "Full repaint existing + new"], "note": "", "locGroup": null}, {"name": "Cabinet refinishing", "control": "Pick any", "ctype": "pickany", "options": ["Paint existing cabinets", "Restain existing cabinets", "Refinish island only", "Hardware removal/reinstall"], "note": "Areas and finish standard", "locGroup": null}, {"name": "Prep requirements", "control": "Pick any", "ctype": "pickany", "options": ["Fill nail holes", "Sand", "Caulk", "Prime bare material", "Spot-prime", "Soft wash", "Scrape loose coating", "Repair minor defects"], "note": "Define exclusions for major substrate repair", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_3_hardware_accessories", "title": "3.3 Hardware & Accessories", "fields": [{"name": "Interior door hardware style", "control": "Pick one", "ctype": "pickone", "options": ["Lever", "Knob", "Mixed by location"], "note": "", "locGroup": null}, {"name": "Interior hardware finish", "control": "Pick one", "ctype": "pickone", "options": ["Oil-rubbed bronze", "Brushed nickel/chrome", "Matte black", "Brushed brass/gold", "Other"], "note": "", "locGroup": null}, {"name": "Exterior lock type", "control": "Per door", "ctype": "perloc", "options": ["Standard keyed lockset", "Smart lock", "Keypad", "Multipoint lock", "Passage/no lock"], "note": "", "locGroup": "Per door"}, {"name": "Door stops", "control": "Pick one", "ctype": "pickone", "options": ["Hinge-pin", "Baseboard", "Floor", "Wall", "Mixed"], "note": "", "locGroup": null}, {"name": "Bathroom accessories", "control": "Pick any", "ctype": "pickany", "options": ["Towel bar", "Towel ring", "Robe hook", "Toilet-paper holder", "Grab bar", "Shower rod"], "note": "Per-bath schedule", "locGroup": null}, {"name": "Mirrors", "control": "Per location", "ctype": "perloc", "options": ["Framed mirror", "Frameless mirror", "Medicine cabinet", "Backlit mirror", "Client-furnished"], "note": "Dimensions and install responsibility", "locGroup": "Per location"}, {"name": "Miscellaneous install", "control": "Pick any", "ctype": "pickany", "options": ["Closet rods", "Window hardware", "Screens", "Cabinet hardware", "Appliance panels", "Specialty accessories"], "note": "Furnished by/installed by", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_4_tile", "title": "3.4 Tile", "fields": [{"name": "Tile application", "control": "Per area", "ctype": "perloc", "options": ["Floor", "Shower wall", "Shower floor", "Tub surround", "Kitchen backsplash", "Pantry backsplash", "Laundry backsplash", "Fireplace", "Accent wall", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Tile material", "control": "Per area", "ctype": "perloc", "options": ["Porcelain", "Ceramic", "Natural stone", "Glass", "Mosaic", "Cement", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Tile size", "control": "Per area", "ctype": "perloc", "options": ["12x24", "24x24", "24x48", "12x12", "6x24", "4x8 (subway)", "3x6 (subway)", "2x2 mosaic", "Custom \u2014 specify in notes"], "note": "", "locGroup": "Per area"}, {"name": "Layout pattern", "control": "Per area", "ctype": "perloc", "options": ["Straight stack", "Offset/brick", "1/3 offset", "Herringbone", "Chevron", "Diagonal", "Random", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Grout type", "control": "Per area", "ctype": "perloc", "options": ["Epoxy", "Sanded", "Non-sanded"], "note": "", "locGroup": "Per area"}, {"name": "Shower entry", "control": "Per shower", "ctype": "perloc", "options": ["Curbed", "Curbless/zero-entry"], "note": "", "locGroup": "Per shower"}, {"name": "Shower bench position", "control": "Per shower", "ctype": "perloc", "options": ["Corner", "In-line/full-width", "L-shaped", "None"], "note": "", "locGroup": "Per shower"}, {"name": "Shower bench construction", "control": "Per shower", "ctype": "perloc", "options": ["Floor-supported", "Floating", "Prefabricated"], "note": "", "locGroup": "Per shower"}, {"name": "Niche configuration", "control": "Per shower", "ctype": "perloc", "options": ["None", "Standard single niche", "Tall niche", "Multiple niches", "Custom"], "note": "Size/location/layout", "locGroup": "Per shower"}, {"name": "Heated floor", "control": "Per area", "ctype": "perloc", "options": ["Yes", "No"], "note": "Thermostat location/system", "locGroup": "Per area"}, {"name": "Edge treatment", "control": "Per area", "ctype": "perloc", "options": ["Metal profile", "Bullnose", "Mitered edge", "Stone/quartz cap", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Waterproofing system", "control": "Per wet area", "ctype": "perloc", "options": ["Cement backer board (Hardie/Durock)", "Foam substrate board (Wedi)", "Foam substrate board (Schluter Kerdi board)", "Sheet membrane over standard backer", "Liquid membrane over standard backer", "Other approved system"], "note": "", "locGroup": "Per wet area"}], "cat": "Interior & Exterior Finishes"}, {"id": "shower_glass", "title": "3.4.1 Shower Glass", "fields": [{"name": "Opening condition", "control": "Per shower", "ctype": "perloc", "options": ["Full-height opening", "Pony-wall opening", "Partition-only/open shower"], "note": "", "locGroup": "Per shower"}, {"name": "Frame type", "control": "Per shower", "ctype": "perloc", "options": ["Framed", "Semi-frameless", "Frameless"], "note": "", "locGroup": "Per shower"}, {"name": "Door configuration", "control": "Per shower", "ctype": "perloc", "options": ["No door/fixed panel only", "Hinged door only", "Hinged door + fixed panel", "Sliding door", "Multiple panels/custom"], "note": "", "locGroup": "Per shower"}, {"name": "Glass type", "control": "Per shower", "ctype": "perloc", "options": ["Clear", "Low-iron clear", "Rain/textured", "Frosted/privacy"], "note": "", "locGroup": "Per shower"}, {"name": "Glass height", "control": "Per shower", "ctype": "perloc", "options": null, "note": "", "locGroup": "Per shower"}, {"name": "Hardware finish", "control": "Per shower", "ctype": "perloc", "options": ["Oil-rubbed bronze", "Brushed nickel/chrome", "Matte black", "Brushed brass/gold", "Other"], "note": "", "locGroup": "Per shower"}, {"name": "Cutouts/notches", "control": "Pick any per shower", "ctype": "permulti", "options": ["Control access", "Niche opening", "Bench notch", "Towel-bar mount", "Other"], "note": "Dimensions/location", "locGroup": "Per shower"}, {"name": "Protective treatment", "control": "Per shower", "ctype": "perloc", "options": ["None", "Factory-applied protective coating"], "note": "", "locGroup": "Per shower"}], "cat": "Interior & Exterior Finishes"}, {"id": "3_5_cabinetry", "title": "3.5 Cabinetry", "fields": [{"name": "Cabinet wood/material", "control": "Per area", "ctype": "perloc", "options": ["Paint-grade hardwood/MDF", "Alder", "Knotty alder", "Red oak", "White oak", "Maple", "Walnut", "Laminate/TFL", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Cabinet finish", "control": "Per area", "ctype": "perloc", "options": ["Paint", "Stain", "Natural clear", "Factory laminate", "Mixed"], "note": "", "locGroup": "Per area"}, {"name": "Door profile", "control": "Pick one", "ctype": "pickone", "options": ["Shaker", "Slab", "Raised panel", "Applied molding", "Other"], "note": "", "locGroup": null}, {"name": "Cabinet construction style", "control": "Pick one", "ctype": "pickone", "options": ["Framed", "Frameless"], "note": "", "locGroup": null}, {"name": "Door/drawer overlay", "control": "Pick one", "ctype": "pickone", "options": ["Full overlay", "Partial overlay", "Inset"], "note": "", "locGroup": null}, {"name": "Cabinet height", "control": "Per area", "ctype": "perloc", "options": ["Standard upper height", "To ceiling", "Stacked uppers", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Range hood enclosure", "control": "Pick one", "ctype": "pickone", "options": ["Cabinet-integrated/built-in", "Decorative wood hood", "Exposed appliance hood", "None"], "note": "", "locGroup": null}, {"name": "End panels", "control": "Pick any", "ctype": "pickany", "options": ["Finished exposed ends", "Furniture ends", "Applied panels", "Waterfall panel"], "note": "", "locGroup": null}, {"name": "Special cabinetry", "control": "Pick any", "ctype": "pickany", "options": ["Built-in desk", "Make-up vanity", "Glass-front cabinets", "Wine rack", "Locker/cubby", "Bookshelves", "Laundry cabinetry", "Pantry cabinetry", "Appliance garage", "Banquette"], "note": "Location", "locGroup": null}, {"name": "Storage accessories", "control": "Pick any", "ctype": "pickany", "options": ["Trash pull-out", "Spice pull-out", "Tray dividers", "Cutlery insert", "Peg drawer", "Rollouts", "Mixer lift", "Blind-corner accessory"], "note": "Location/quantity", "locGroup": null}, {"name": "Lighting integration", "control": "Pick any", "ctype": "pickany", "options": ["Under-cabinet", "In-cabinet", "Toe-kick", "Above-cabinet"], "note": "Electrical coordination", "locGroup": null}, {"name": "Pantry approach", "control": "Pick one", "ctype": "pickone", "options": ["Open shelving", "Base/upper cabinets", "Full-height pantry cabinets", "Combination"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_6_countertops", "title": "3.6 Countertops", "fields": [{"name": "Countertop material", "control": "Per area", "ctype": "perloc", "options": ["Granite", "Quartz", "Quartzite", "Marble", "Solid surface", "Butcher block", "Porcelain slab", "Stainless steel", "Other"], "note": "", "locGroup": "Per area"}, {"name": "Surface finish", "control": "Per area", "ctype": "perloc", "options": ["Polished", "Honed", "Leathered", "Brushed/textured"], "note": "", "locGroup": "Per area"}, {"name": "Edge profile", "control": "Per area", "ctype": "perloc", "options": ["Eased", "Square", "Beveled", "Bullnose", "Ogee", "Mitered/thickened", "Custom"], "note": "", "locGroup": "Per area"}, {"name": "Thickness", "control": "Per area", "ctype": "perloc", "options": ["2 cm", "3 cm", "Built-up/custom"], "note": "", "locGroup": "Per area"}, {"name": "Backsplash", "control": "Per area", "ctype": "perloc", "options": ["Same as countertop material", "None", "4 in. splash", "Full-height slab", "Tile by others", "Custom height"], "note": "", "locGroup": "Per area"}, {"name": "Sink condition", "control": "Per sink", "ctype": "perloc", "options": ["Undermount", "Top-mount", "Farm/apron", "Integrated", "Vessel"], "note": "", "locGroup": "Per sink"}, {"name": "Special countertop features", "control": "Pick any", "ctype": "pickany", "options": ["Waterfall edge", "Thickened island edge", "Integrated sink", "Drainboard grooves", "Fireplace sill", "Shower curb cap", "Pony-wall cap", "Window sill", "Floating shelf"], "note": "Location", "locGroup": null}, {"name": "Cutouts", "control": "Pick any", "ctype": "pickany", "options": ["Faucet", "Soap dispenser", "Air switch", "Filter faucet", "Cooktop", "Outlet/pop-up", "Other"], "note": "Quantity/spec", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "appliances", "title": "3.6.1 Appliances", "fields": [{"name": "Range/cooking configuration", "control": "Pick one", "ctype": "pickone", "options": ["Freestanding range", "Slide-in range", "Cooktop + wall oven", "Rangetop + wall oven", "Range + additional oven"], "note": "", "locGroup": null}, {"name": "Range/cooktop fuel", "control": "Pick one", "ctype": "pickone", "options": ["Gas", "Electric", "Induction", "Dual fuel"], "note": "", "locGroup": null}, {"name": "Wall oven configuration", "control": "Pick one", "ctype": "pickone", "options": ["None", "Single", "Double", "Combination oven/microwave", "Steam oven"], "note": "", "locGroup": null}, {"name": "Dishwasher", "control": "Per unit", "ctype": "perloc", "options": ["Standard front", "Panel-ready", "Drawer dishwasher"], "note": "Quantity", "locGroup": "Per unit"}, {"name": "Microwave type", "control": "Pick one", "ctype": "pickone", "options": ["Built-in", "Over-range", "Drawer", "Countertop", "Combination wall unit"], "note": "", "locGroup": null}, {"name": "Refrigerator type", "control": "Pick one", "ctype": "pickone", "options": ["Standard-depth", "Counter-depth", "Built-in", "Column refrigerator/freezer", "Panel-ready"], "note": "", "locGroup": null}, {"name": "Refrigerator features", "control": "Pick any", "ctype": "pickany", "options": ["Ice maker", "Water dispenser", "Internal dispenser", "No dispenser", "Panel-ready front"], "note": "", "locGroup": null}, {"name": "Washer/dryer arrangement", "control": "Pick one", "ctype": "pickone", "options": ["Side-by-side", "Stacked", "Laundry center", "Multiple sets"], "note": "", "locGroup": null}, {"name": "Dryer fuel", "control": "Pick one", "ctype": "pickone", "options": ["Electric", "Gas", "Heat-pump/ventless"], "note": "", "locGroup": null}, {"name": "Vent hood type", "control": "Pick one", "ctype": "pickone", "options": ["Exposed decorative", "Cabinet-integrated", "Insert/liner", "Downdraft", "Recirculating"], "note": "", "locGroup": null}, {"name": "Special appliances", "control": "Pick any", "ctype": "pickany", "options": ["Ice maker", "Wine cooler", "Beverage refrigerator", "Freezer", "Second refrigerator", "Coffee system", "Warming drawer", "Outdoor appliances"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_7_exterior_wall_envelope", "title": "3.7 Exterior Wall Envelope", "fields": [{"name": "Primary siding material", "control": "Per elevation/area", "ctype": "perloc", "options": ["LP SmartSide/engineered wood", "Fiber cement", "Vinyl", "Natural wood", "Metal", "Stucco/EIFS", "Other"], "note": "", "locGroup": "Per elevation/area"}, {"name": "Siding profile", "control": "Per elevation/area", "ctype": "perloc", "options": ["Horizontal lap", "Board-and-batten", "Shake/shingle", "Panel", "Mixed per elevation"], "note": "", "locGroup": "Per elevation/area"}, {"name": "Siding finish", "control": "Pick one", "ctype": "pickone", "options": ["Prefinished", "Field-painted", "Field-stained", "Natural/clear finish"], "note": "", "locGroup": null}, {"name": "Porch ceiling material", "control": "Per porch", "ctype": "perloc", "options": ["Painted panel/soffit", "Car siding/T&G wood", "Metal", "Fiber cement", "Other"], "note": "", "locGroup": "Per porch"}, {"name": "Soffit material", "control": "Pick one", "ctype": "pickone", "options": ["Vented aluminum", "Non-vented aluminum", "Fiber cement", "Wood", "Vinyl", "Other"], "note": "", "locGroup": null}, {"name": "Fascia material", "control": "Pick one", "ctype": "pickone", "options": ["Aluminum-wrapped", "Fiber cement", "Wood", "Metal", "Other"], "note": "", "locGroup": null}, {"name": "Gable treatment", "control": "Per gable", "ctype": "perloc", "options": ["Match field siding", "Board-and-batten", "Shake", "Metal accent", "Masonry", "Decorative truss/other"], "note": "", "locGroup": "Per gable"}, {"name": "Exterior trim", "control": "Pick any", "ctype": "pickany", "options": ["Window trim", "Door trim", "Corners", "Band boards", "Frieze", "Water table", "Column wraps", "Beam wraps"], "note": "Material/width/color", "locGroup": null}, {"name": "Metal wraps", "control": "Pick any", "ctype": "pickany", "options": ["Garage jambs", "Exterior door jambs", "Fascia", "Other exposed wood"], "note": "Material/color", "locGroup": null}, {"name": "Gutters", "control": "Pick one", "ctype": "pickone", "options": ["None", "Standard aluminum", "Oversized aluminum", "Copper", "Specialty"], "note": "", "locGroup": null}, {"name": "Gutter accessories", "control": "Pick any", "ctype": "pickany", "options": ["Leaf guards", "Buried downspout lines", "Rain chains", "Collection barrels", "Heat cable"], "note": "Locations", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "3_8_roofing", "title": "3.8 Roofing", "fields": [{"name": "Roofing material", "control": "Per roof area", "ctype": "perloc", "options": ["Asphalt shingle", "Standing-seam metal", "Exposed-fastener metal", "Synthetic slate/shake", "Natural slate", "Tile", "Refer to plans/drawings", "Other"], "note": "", "locGroup": "Per roof area"}, {"name": "Roofing scope extent", "control": "Pick one", "ctype": "pickone", "options": ["Full roof replacement/new roof", "New additions only", "Repair/tie-in only", "Mixed by roof area"], "note": "", "locGroup": null}, {"name": "Underlayment", "control": "Pick one", "ctype": "pickone", "options": ["Synthetic underlayment", "Full ice-and-water membrane", "Mixed by area", "Manufacturer system"], "note": "", "locGroup": null}, {"name": "Roof color", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Drip edge color/material", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Snow/ice accessories", "control": "Pick any", "ctype": "pickany", "options": ["Snow guards", "Heat cable", "Enhanced ice barrier"], "note": "Locations", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "decks", "title": "3.9 Decks", "fields": [{"name": "Decking material", "control": "Per deck", "ctype": "perloc", "options": ["Pressure-treated wood", "Cedar", "Composite", "PVC", "Aluminum", "Other"], "note": "", "locGroup": "Per deck"}, {"name": "Railing material", "control": "Per deck", "ctype": "perloc", "options": ["Wood", "Aluminum", "Steel", "Cable", "Glass", "Composite", "None"], "note": "", "locGroup": "Per deck"}, {"name": "Deck structure", "control": "Per deck", "ctype": "perloc", "options": ["Wood framed", "Steel framed", "Concrete/steel pan", "Existing structure reused"], "note": "", "locGroup": "Per deck"}, {"name": "Special features", "control": "Pick any per deck", "ctype": "permulti", "options": ["Stairs", "Skirting", "Drainage system below deck", "Lighting", "Built-in bench", "Privacy screen"], "note": "Locations/details", "locGroup": "Per deck"}], "cat": "Interior & Exterior Finishes"}, {"id": "pool", "title": "3.9.1 Pool", "fields": [{"name": "Pool construction", "control": "Pick one", "ctype": "pickone", "options": ["Vinyl liner", "Fiberglass shell", "Gunite/concrete"], "note": "", "locGroup": null}, {"name": "Pool dimensions", "control": "Required input", "ctype": "input", "options": null, "note": "", "locGroup": null}, {"name": "Shape", "control": "Pick one", "ctype": "pickone", "options": ["Rectangle", "Freeform", "L-shape", "Custom"], "note": "", "locGroup": null}, {"name": "Depth profile", "control": "Pick one", "ctype": "pickone", "options": ["Uniform/shallow", "Shallow-to-deep", "Sport pool", "Custom"], "note": "", "locGroup": null}, {"name": "Heating", "control": "Pick one", "ctype": "pickone", "options": ["None", "Gas", "Electric heat pump", "Solar"], "note": "", "locGroup": null}, {"name": "Entry features", "control": "Pick any", "ctype": "pickany", "options": ["Steps", "Tanning ledge", "Beach entry", "Ladder", "Handrail"], "note": "", "locGroup": null}, {"name": "Water features", "control": "Pick any", "ctype": "pickany", "options": ["Bubblers", "Waterfall", "Deck jets", "Sheer descent", "Spa spillover", "Other"], "note": "", "locGroup": null}, {"name": "Pool deck material", "control": "Pick one", "ctype": "pickone", "options": ["Broom concrete", "Stamped concrete", "Pavers", "Natural stone", "Porcelain pavers", "Other"], "note": "", "locGroup": null}, {"name": "Safety/barrier", "control": "Pick any", "ctype": "pickany", "options": ["Code fence", "Automatic cover", "Manual cover", "Alarm", "Safety gate"], "note": "", "locGroup": null}, {"name": "Associated systems", "control": "Pick any", "ctype": "pickany", "options": ["Integrated spa", "Outdoor kitchen", "Fire feature", "Equipment enclosure", "Automation", "Lighting"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}, {"id": "landscaping", "title": "3.9.2 Landscaping", "fields": [{"name": "Landscape package level", "control": "Pick one", "ctype": "pickone", "options": ["Seed/straw only", "Basic planting package", "Full landscape package", "Design-build custom"], "note": "", "locGroup": null}, {"name": "Ground cover", "control": "Per area", "ctype": "perloc", "options": ["Seed/straw", "Hydroseed", "Sod", "Rock", "Mulch", "Native planting"], "note": "", "locGroup": "Per area"}, {"name": "Plantings", "control": "Pick any", "ctype": "pickany", "options": ["Trees", "Shrubs", "Perennials", "Annuals", "Ornamental grasses", "Privacy screening"], "note": "", "locGroup": null}, {"name": "Irrigation", "control": "Pick one", "ctype": "pickone", "options": ["None", "Partial yard", "Full yard", "Drip only", "Smart-zoned system"], "note": "", "locGroup": null}, {"name": "Hardscape", "control": "Pick any", "ctype": "pickany", "options": ["Patio", "Walkway", "Steps", "Retaining wall", "Boulder wall", "Edging", "Pergola/arbor"], "note": "Material and area", "locGroup": null}, {"name": "Features", "control": "Pick any", "ctype": "pickany", "options": ["Water feature", "Fire feature", "Garden beds", "Fence", "Outdoor lighting", "Drainage improvements"], "note": "", "locGroup": null}], "cat": "Interior & Exterior Finishes"}];
+const DESIGN_RULES = [{"field": "Separate selection from scope", "rule": "A material/style choice should not also contain labor, location, quantity, or responsibility. Capture those in separate fields."}, {"field": "Separate product from performance", "rule": "Example: \u201cmetal roof\u201d is a material. Standing seam vs exposed fastener is the system. Color is separate."}, {"field": "Separate type from location", "rule": "Repeat selections per room/elevation/opening where different choices are possible."}, {"field": "Separate mutually exclusive choices from add-ons", "rule": "Do not place \u201cbench, niche, grab bar\u201d in the same pick-one row. Each is an independent add-on."}, {"field": "Separate known fact from pricing assumption", "rule": "Site conditions and plan gaps should be labeled Confirmed, Reported, Assumed, Unknown, or Investigation Required."}, {"field": "Require quantities and locations", "rule": "Every add-on that can repeat needs quantity and location fields."}, {"field": "Require furnished-by / installed-by", "rule": "Selections involving fixtures, appliances, hardware, accessories, or specialty systems must identify procurement and installation responsibility."}, {"field": "Conditional logic", "rule": "Only show dependent fields after the parent option is selected. Example: shower bench position/support only appears when Bench = Yes."}, {"field": "Avoid \u201cstandard\u201d without definition", "rule": "Use an approved baseline specification or define the exact profile, capacity, finish level, dimensions, or allowance."}];
+const DEFAULT_SECTIONS_JSON = JSON.stringify(SECTIONS);
+try{
+  const savedSections = localStorage.getItem('mcd_sections_custom');
+  if(savedSections){ SECTIONS = JSON.parse(savedSections); }
+}catch(e){ console.warn('Could not load custom scope library, using defaults.', e); }
+function saveSectionsOverride(){
+  try{ localStorage.setItem('mcd_sections_custom', JSON.stringify(SECTIONS)); }catch(e){ alert('Could not save — your browser storage may be full or restricted.'); }
+}
+function resetScopeLibraryToDefault(){
+  if(!confirm('This removes every custom trade, field, and option you have added and restores the built-in defaults. Continue?')) return;
+  localStorage.removeItem('mcd_sections_custom');
+  SECTIONS = JSON.parse(DEFAULT_SECTIONS_JSON);
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  renderScopeAdminPanel();
+  alert('Scope library reset to defaults.');
+}
+
+function renderScopeAdminPanel(){
+  const sel = document.getElementById('adminTradeSelect');
+  const current = sel.value;
+  sel.innerHTML = '';
+  SECTIONS.forEach(s=>{
+    const o = document.createElement('option'); o.value = s.id; o.textContent = s.title;
+    sel.appendChild(o);
+  });
+  if(current) sel.value = current;
+  renderAdminFieldList();
+}
+
+function renderAdminFieldList(){
+  const tradeId = document.getElementById('adminTradeSelect').value;
+  const section = SECTIONS.find(s=>s.id===tradeId);
+  const sel = document.getElementById('adminFieldSelect');
+  sel.innerHTML = '';
+  if(!section) return;
+  section.fields.forEach((f, idx)=>{
+    const o = document.createElement('option'); o.value = idx; o.textContent = f.name + ' ('+f.control+')';
+    sel.appendChild(o);
+  });
+  renderAdminOptionAdder();
+}
+
+function renderAdminOptionAdder(){
+  const wrap = document.getElementById('adminOptionAdder');
+  wrap.innerHTML = '';
+  const tradeId = document.getElementById('adminTradeSelect').value;
+  const fIdx = parseInt(document.getElementById('adminFieldSelect').value, 10);
+  const section = SECTIONS.find(s=>s.id===tradeId);
+  if(!section || isNaN(fIdx)) return;
+  const field = section.fields[fIdx];
+  if(field.ctype === 'input'){
+    wrap.innerHTML = '<div class="helptext">This is a free-text field — there is no fixed option list to add to.</div>';
+    return;
+  }
+  const row = document.createElement('div');
+  row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginTop = '10px';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.placeholder = 'New option text'; inp.style.flex = '1';
+  const btn = document.createElement('button');
+  btn.className = 'btn tiny'; btn.textContent = 'Add Option';
+  btn.onclick = ()=>{
+    const val = inp.value.trim();
+    if(!val) return;
+    field.options = field.options || [];
+    field.options.push(val);
+    saveSectionsOverride();
+    document.getElementById('tradeContainer').innerHTML = '';
+    Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+    buildTradeUI();
+    renderAdminFieldList();
+    inp.value = '';
+    alert('Added "'+val+'" to '+field.name+'. It now shows up in Scope Builder.');
+  };
+  row.appendChild(inp); row.appendChild(btn);
+  wrap.appendChild(row);
+  const list = document.createElement('div');
+  list.className = 'helptext';
+  list.style.marginTop = '8px';
+  list.textContent = 'Current options: ' + ((field.options||[]).join(', ') || '(none / free text)');
+  wrap.appendChild(list);
+}
+
+function addNewFieldToTrade(){
+  const tradeId = document.getElementById('adminTradeSelect').value;
+  const section = SECTIONS.find(s=>s.id===tradeId);
+  if(!section){ alert('Pick a trade first.'); return; }
+  const name = document.getElementById('adminNewFieldName').value.trim();
+  if(!name){ alert('Field name is required.'); return; }
+  const control = document.getElementById('adminNewFieldControl').value;
+  const locGroupInput = document.getElementById('adminNewFieldLocGroup').value.trim();
+  const optionsRaw = document.getElementById('adminNewFieldOptions').value;
+  const options = optionsRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  const note = document.getElementById('adminNewFieldNote').value.trim();
+
+  const field = {
+    name: name,
+    control: control==='pickone' ? 'Pick one' : control==='pickany' ? 'Pick any' : control==='input' ? 'Required input' : (locGroupInput || 'Per location'),
+    ctype: control,
+    options: (control==='input') ? (options.length?options:null) : (options.length?options:[]),
+    note: note,
+    locGroup: (control==='perloc'||control==='permulti') ? (locGroupInput || 'Per location') : null
+  };
+  section.fields.push(field);
+  saveSectionsOverride();
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  renderScopeAdminPanel();
+  document.getElementById('adminNewFieldName').value = '';
+  document.getElementById('adminNewFieldOptions').value = '';
+  document.getElementById('adminNewFieldNote').value = '';
+  document.getElementById('adminNewFieldLocGroup').value = '';
+  alert('Added field "'+name+'" to '+section.title+'.');
+}
+
+function addNewTrade(){
+  const title = document.getElementById('adminNewTradeTitle').value.trim();
+  if(!title){ alert('Trade title is required.'); return; }
+  const cat = document.getElementById('adminNewTradeCat').value;
+  const id = 'custom_' + title.toLowerCase().replace(/[^a-z0-9]+/g,'_') + '_' + Date.now();
+  SECTIONS.push({ id, title, cat, fields: [] });
+  saveSectionsOverride();
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  renderScopeAdminPanel();
+  document.getElementById('adminTradeSelect').value = id;
+  renderAdminFieldList();
+  document.getElementById('adminNewTradeTitle').value = '';
+  alert('Added trade "'+title+'". Now add fields to it above.');
+}
+const STATUS_OPTS = ["", "Confirmed", "Assumed"];
+
+let currentMode = 'RFP';
+let logoDataUrl = '';
+let aerialDataUrl = '';
+let includeState = {}; // key: sectionId -> 'yes'|'no'
+let userSetInclude = {}; // key: sectionId -> true once the user has explicitly clicked Include Yes/No
+let matrixRows = {}; // key: sectionId -> array of {loc, cells:{fIdx:{sel,arr,note,status}}}
+const matrixRenderers = {}; // key: sectionId -> {locFields, container} for re-rendering when areaRegister changes
+
+// ===== Plan & Areas state =====
+let planSheets = []; // {id, name, imageDataUrl, img}
+let activeSheetId = null;
+let areaRegister = []; // {id, name, category, existingNew, confidence, parent, detailStatus, notes, sheetId, x, y}
+let pendingClick = null; // {x,y}
+let editingAreaId = null;
+let areaSeq = 100;
+let zoomLevel = 1;
+let dragPanStart = null; // {x, y, scrollLeft, scrollTop}
+let draggingMarker = null; // reference to the areaRegister object being repositioned
+let suppressNextClick = false;
+
+function showTab(name){
+  if(name==='builder' && planSheets.length===0){
+    alert('Upload at least one plan sheet (PDF or image) first.\n\nScope Builder\'s location fields are tied to the Project Area Register, so there\'s nothing to link to until a plan is on the board.');
+    name = 'areas';
+  }
+  ['settings','builder','areas','assume','scopeadmin'].forEach(n=> document.getElementById('tab_'+n).classList.toggle('active', n===name));
+  document.getElementById('tabBtnSettings').classList.toggle('active', name==='settings');
+  document.getElementById('tabBtnBuilder').classList.toggle('active', name==='builder');
+  document.getElementById('tabBtnAreas').classList.toggle('active', name==='areas');
+  document.getElementById('tabBtnAssume').classList.toggle('active', name==='assume');
+  document.getElementById('tabBtnScopeAdmin').classList.toggle('active', name==='scopeadmin');
+  if(name==='areas'){ drawCanvas(); }
+  if(name==='assume'){ renderAssumptionsTab(); }
+  if(name==='scopeadmin'){ renderScopeAdminPanel(); }
+}
+
+function setStatusValue(id, value){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.value = value;
+  if(typeof el.onchange === 'function'){ el.onchange(); } else { el.dispatchEvent(new Event('change')); }
+}
+
+function renderAssumptionsTab(){
+  const tbody = document.getElementById('assumeTableBody');
+  tbody.innerHTML = '';
+  let any = false;
+  SECTIONS.forEach(section=>{
+    if(includeState[section.id] !== 'yes') return;
+    section.fields.forEach((field, fIdx)=>{
+      const objs = getFieldLineObjs(section, field, fIdx);
+      objs.forEach(o=>{
+        any = true;
+        const tr = document.createElement('tr');
+        const tdTrade = document.createElement('td'); tdTrade.textContent = section.title;
+        const tdText = document.createElement('td'); tdText.textContent = o.text;
+        const tdStatus = document.createElement('td');
+        const sel = document.createElement('select');
+        STATUS_OPTS.forEach(s=>{ const opt=document.createElement('option'); opt.value=s; opt.textContent = s || 'Not tracked'; if(s===o.status) opt.selected=true; sel.appendChild(opt); });
+        sel.onchange = ()=> setStatusValue(o.statusElId, sel.value);
+        tdStatus.appendChild(sel);
+        tr.appendChild(tdTrade); tr.appendChild(tdText); tr.appendChild(tdStatus);
+        tbody.appendChild(tr);
+      });
+    });
+  });
+  if(!any){
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="3" style="color:#999;">No fields filled in yet — go to Scope Builder and include a trade to see it here.</td>';
+    tbody.appendChild(tr);
+  }
+}
+
+function updateBuilderTabState(){
+  const btn = document.getElementById('tabBtnBuilder');
+  if(planSheets.length > 0){
+    btn.classList.remove('locked');
+    btn.title = '';
+    btn.textContent = '2. Scope Builder';
+  } else {
+    btn.classList.add('locked');
+    btn.title = 'Upload plan sheets first';
+    btn.textContent = 'Scope Builder';
+  }
+}
+function setMode(mode){
+  currentMode = mode;
+  document.getElementById('modeRFP').classList.toggle('active', mode==='RFP');
+  document.getElementById('modeSOW').classList.toggle('active', mode==='SOW');
+}
+function handleLogoUpload(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt)=>{ logoDataUrl = evt.target.result; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; saveCompanySettingsGlobal(); };
+  reader.readAsDataURL(file);
+}
+function handleAerialUpload(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt)=>{ aerialDataUrl = evt.target.result; const p=document.getElementById('aerialPreview'); p.src=aerialDataUrl; p.style.display='block'; };
+  reader.readAsDataURL(file);
+}
+function updateColors(){
+  const p=document.getElementById('colorPrimary').value, n=document.getElementById('colorNavy').value, c=document.getElementById('colorCream').value;
+  document.getElementById('colorPrimaryHex').textContent=p;
+  document.getElementById('colorNavyHex').textContent=n;
+  document.getElementById('colorCreamHex').textContent=c;
+  document.documentElement.style.setProperty('--primary', p);
+  document.documentElement.style.setProperty('--navy', n);
+  document.documentElement.style.setProperty('--cream', c);
+  saveCompanySettingsGlobal();
+}
+function esc(str){ if(!str) return ''; const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+function slugStatus(s){ return s.replace(/ /g,'-'); }
+
+function buildStatusSelect(id){
+  const sel = document.createElement('select');
+  sel.className = 'status-select';
+  sel.id = id;
+  STATUS_OPTS.forEach(s=>{
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s || 'Status: not tracked';
+    sel.appendChild(o);
+  });
+  sel.onchange = ()=>{ sel.className = 'status-select' + (sel.value ? ' st-'+slugStatus(sel.value) : ''); refreshAllPreviews(); };
+  return sel;
+}
+
+function buildRulesPanel(){
+  const c = document.getElementById('rulesContent');
+  DESIGN_RULES.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'rule-row';
+    row.innerHTML = '<b>'+esc(r.field)+':</b> '+esc(r.rule);
+    c.appendChild(row);
+  });
+}
+
+function buildTradeUI(){
+  const container = document.getElementById('tradeContainer');
+  const byCat = {};
+  SECTIONS.forEach(s=>{ const c = s.cat || 'Other'; byCat[c] = byCat[c] || []; byCat[c].push(s); });
+  const order = ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'];
+  const rendered = new Set();
+  function renderCatGroup(cat){
+    if(!byCat[cat] || !byCat[cat].length) return;
+    rendered.add(cat);
+    const catDiv = document.createElement('div');
+    catDiv.className = 'trade-cat';
+    catDiv.textContent = cat;
+    container.appendChild(catDiv);
+
+    const noteWrap = document.createElement('div');
+    noteWrap.className = 'cat-note-wrap';
+    const noteLbl = document.createElement('label');
+    noteLbl.textContent = 'General notes for ' + cat + ' (optional — appears at the top of this category page in the generated document)';
+    const noteTa = document.createElement('textarea');
+    noteTa.id = 'catnote_' + catSlug(cat);
+    noteTa.rows = 2;
+    noteWrap.appendChild(noteLbl);
+    noteWrap.appendChild(noteTa);
+    container.appendChild(noteWrap);
+
+    byCat[cat].forEach(section=> container.appendChild(renderSection(section)));
+  }
+  order.forEach(renderCatGroup);
+  Object.keys(byCat).forEach(cat=>{ if(!rendered.has(cat)) renderCatGroup(cat); });
+}
+function catSlug(cat){ return cat.replace(/[^a-zA-Z0-9]+/g,'_'); }
+
+function renderSection(section){
+  const div = document.createElement('div');
+  div.className = 'trade';
+  div.id = 'trade_'+section.id;
+
+  const head = document.createElement('div');
+  head.className = 'trade-head';
+  const title = document.createElement('span');
+  title.className = 'trade-title';
+  title.textContent = section.title;
+  title.onclick = ()=> div.classList.toggle('open');
+  title.style.cursor='pointer';
+  title.style.flex='1';
+
+  const toggle = document.createElement('div');
+  toggle.className = 'include-toggle';
+  const yesBtn = document.createElement('button'); yesBtn.textContent='Include: Yes'; yesBtn.className='yes';
+  const noBtn = document.createElement('button'); noBtn.textContent='Include: No'; noBtn.className='no active';
+  yesBtn.onclick = ()=>{ includeState[section.id]='yes'; userSetInclude[section.id]=true; yesBtn.classList.add('active'); noBtn.classList.remove('active'); div.classList.add('open','included'); refreshAllPreviews(); };
+  noBtn.onclick = ()=>{ includeState[section.id]='no'; userSetInclude[section.id]=true; noBtn.classList.add('active'); yesBtn.classList.remove('active'); div.classList.remove('included'); refreshAllPreviews(); };
+  toggle.appendChild(yesBtn); toggle.appendChild(noBtn);
+
+  head.appendChild(title); head.appendChild(toggle);
+  div.appendChild(head);
+
+  const body = document.createElement('div');
+  body.className = 'trade-body';
+
+  const locGroups = {};
+  section.fields.forEach((field, fIdx)=>{
+    if(field.ctype === 'perloc' || field.ctype === 'permulti'){
+      const g = field.locGroup || 'Per Location';
+      locGroups[g] = locGroups[g] || [];
+      locGroups[g].push({field, fIdx});
+    } else {
+      body.appendChild(renderField(section, field, fIdx));
+    }
+  });
+  Object.keys(locGroups).forEach(g=>{
+    body.appendChild(renderLocationMatrix(section, g, locGroups[g]));
+  });
+
+  const preview = document.createElement('div');
+  preview.className = 'assembled-preview';
+  preview.id = 'preview_'+section.id;
+  preview.textContent = '(not included)';
+  body.appendChild(preview);
+
+  div.appendChild(body);
+  return div;
+}
+
+function matrixKey(sectionId, locGroup){
+  return sectionId + '__' + locGroup.replace(/[^a-zA-Z0-9]+/g,'_');
+}
+
+function renderLocationMatrix(section, groupLabel, locFields){
+  const key = matrixKey(section.id, groupLabel);
+  matrixRows[key] = matrixRows[key] || [];
+  const wrap = document.createElement('div');
+  wrap.className = 'fld';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'fld-name';
+  nameEl.textContent = 'Areas / Locations — ' + groupLabel;
+  wrap.appendChild(nameEl);
+  const helpline = document.createElement('div');
+  helpline.className = 'helptext';
+  helpline.style.marginBottom = '8px';
+  helpline.textContent = 'Scoped to "' + groupLabel + '" only. Add one once — it prompts for every attribute in this group (' + locFields.map(lf=>lf.field.name).join(', ') + ') together in that same row. Fields scoped to a different group, like shower-only fields, do not show up here.';
+  wrap.appendChild(helpline);
+
+  const container = document.createElement('div');
+  container.id = 'matrix_'+key;
+  wrap.appendChild(container);
+
+  const addBtn = document.createElement('button');
+  addBtn.type='button'; addBtn.className='add-row-btn';
+  addBtn.textContent = '+ Add ' + groupLabel.replace(/^Per /i,'').replace(/^Pick any per /i,'');
+  addBtn.onclick = ()=>{
+    const cells = {};
+    locFields.forEach(lf=>{ cells[lf.fIdx] = {sel:'', arr:[], note:'', status:''}; });
+    matrixRows[key].push({loc:'', cells});
+    renderMatrixRows(section, key, locFields, container);
+    refreshAllPreviews();
+  };
+  wrap.appendChild(addBtn);
+
+  matrixRenderers[key] = {section, locFields, container};
+  renderMatrixRows(section, key, locFields, container);
+  return wrap;
+}
+
+function renderMatrixRows(section, key, locFields, container){
+  container.innerHTML = '';
+  matrixRows[key].forEach((row, rIdx)=>{
+    const item = document.createElement('div');
+    item.className = 'matrix-row';
+
+    const locHead = document.createElement('div');
+    locHead.className = 'matrix-loc-header';
+    const locSelect = document.createElement('select');
+    const blankOpt = document.createElement('option'); blankOpt.value=''; blankOpt.textContent='— select location —';
+    locSelect.appendChild(blankOpt);
+    const entireOpt = document.createElement('option'); entireOpt.value='__entire__'; entireOpt.textContent='— Entire House (applies everywhere) —';
+    locSelect.appendChild(entireOpt);
+    areaRegister.forEach(a=>{
+      const o = document.createElement('option'); o.value=a.id; o.textContent=a.id+' — '+a.name;
+      locSelect.appendChild(o);
+    });
+    const customOpt = document.createElement('option'); customOpt.value='__custom__'; customOpt.textContent='— custom (type manually) —';
+    locSelect.appendChild(customOpt);
+    const customInp = document.createElement('input');
+    customInp.type='text'; customInp.placeholder='Custom location name'; customInp.style.display='none'; customInp.style.maxWidth='160px';
+    const existingIds = areaRegister.map(a=>a.id);
+    if(row.loc === '__entire__'){ locSelect.value = '__entire__'; }
+    else if(row.loc && existingIds.includes(row.loc)){ locSelect.value = row.loc; }
+    else if(row.loc){ locSelect.value = '__custom__'; customInp.style.display = 'inline-block'; customInp.value = row.loc; }
+    locSelect.onchange = ()=>{
+      if(locSelect.value === '__custom__'){ customInp.style.display = 'inline-block'; row.loc = customInp.value; }
+      else { customInp.style.display = 'none'; row.loc = locSelect.value; }
+      refreshAllPreviews();
+    };
+    customInp.oninput = ()=>{ row.loc = customInp.value; refreshAllPreviews(); };
+    const rmBtn = document.createElement('button');
+    rmBtn.type='button'; rmBtn.className='rm-btn'; rmBtn.textContent='Remove';
+    rmBtn.onclick = ()=>{ matrixRows[key].splice(rIdx,1); renderMatrixRows(section, key, locFields, container); refreshAllPreviews(); };
+    locHead.appendChild(locSelect); locHead.appendChild(customInp); locHead.appendChild(rmBtn);
+    item.appendChild(locHead);
+
+    const cellsWrap = document.createElement('div');
+    cellsWrap.className = 'matrix-cells';
+    locFields.forEach(lf=>{
+      if(lf.field.visibleWhen){
+        const ctrl = locFields.find(x=>x.field.name===lf.field.visibleWhen.field);
+        if(ctrl){
+          const ctrlVal = row.cells[ctrl.fIdx] ? row.cells[ctrl.fIdx].sel : '';
+          if(!lf.field.visibleWhen.values.includes(ctrlVal)) return;
+        }
+      }
+      const cell = row.cells[lf.fIdx];
+      const cellDiv = document.createElement('div');
+      cellDiv.className = 'matrix-cell';
+      const lbl = document.createElement('div'); lbl.className = 'matrix-cell-label'; lbl.textContent = lf.field.name;
+      cellDiv.appendChild(lbl);
+      const isController = locFields.some(x=>x.field.visibleWhen && x.field.visibleWhen.field===lf.field.name);
+      if(lf.field.ctype === 'permulti'){
+        const box = document.createElement('div'); box.className = 'opt-checks';
+        (lf.field.options||[]).forEach(opt=>{
+          const clbl = document.createElement('label'); clbl.style.display='flex'; clbl.style.gap='5px'; clbl.style.alignItems='center';
+          const chk = document.createElement('input'); chk.type='checkbox'; chk.checked = cell.arr.includes(opt);
+          chk.onchange = ()=>{ if(chk.checked){ if(!cell.arr.includes(opt)) cell.arr.push(opt); } else { cell.arr = cell.arr.filter(x=>x!==opt); } refreshAllPreviews(); };
+          const t = document.createElement('span'); t.textContent = opt;
+          clbl.appendChild(chk); clbl.appendChild(t);
+          box.appendChild(clbl);
+        });
+        cellDiv.appendChild(box);
+      } else if(!lf.field.options || !lf.field.options.length){
+        const txt = document.createElement('input');
+        txt.type = 'text';
+        txt.placeholder = lf.field.note || 'Enter value';
+        txt.value = cell.sel || '';
+        txt.oninput = ()=>{ cell.sel = txt.value; refreshAllPreviews(); };
+        cellDiv.appendChild(txt);
+      } else {
+        const sel = document.createElement('select');
+        const b = document.createElement('option'); b.value=''; b.textContent='— select —'; sel.appendChild(b);
+        (lf.field.options||[]).forEach(opt=>{
+          const o = document.createElement('option'); o.value=opt; o.textContent=opt;
+          if(cell.sel===opt) o.selected = true;
+          sel.appendChild(o);
+        });
+        sel.onchange = ()=>{
+          cell.sel = sel.value;
+          if(isController){ renderMatrixRows(section, key, locFields, container); }
+          refreshAllPreviews();
+        };
+        cellDiv.appendChild(sel);
+      }
+      const noteTa = document.createElement('textarea');
+      noteTa.rows = 1;
+      noteTa.style.fontSize = '11px';
+      noteTa.style.marginBottom = '5px';
+      noteTa.placeholder = 'Note (Enter for a new line)';
+      noteTa.value = cell.note;
+      noteTa.oninput = ()=>{ cell.note = noteTa.value; refreshAllPreviews(); };
+      cellDiv.appendChild(noteTa);
+      const statusId = 'matrixstatus_'+key+'_'+rIdx+'_'+lf.fIdx;
+      const statusSel = buildStatusSelect(statusId);
+      statusSel.value = cell.status;
+      statusSel.className = 'status-select' + (cell.status ? ' st-'+slugStatus(cell.status) : '');
+      statusSel.onchange = ()=>{ cell.status = statusSel.value; statusSel.className = 'status-select'+(cell.status?' st-'+slugStatus(cell.status):''); refreshAllPreviews(); };
+      cellDiv.appendChild(statusSel);
+      cellsWrap.appendChild(cellDiv);
+    });
+    item.appendChild(cellsWrap);
+    container.appendChild(item);
+  });
+}
+
+
+// ===== Plan & Areas functions =====
+if(window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+function handleAreaPlanUpload(e){
+  const files = Array.from(e.target.files || []);
+  files.forEach(file=>{
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if(isPdf){ handlePdfFile(file); } else { handleImageFile(file); }
+  });
+}
+
+function handleImageFile(file){
+  const reader = new FileReader();
+  reader.onload = (evt)=> addSheetFromDataUrl(file.name, evt.target.result);
+  reader.readAsDataURL(file);
+}
+
+function handlePdfFile(file){
+  const reader = new FileReader();
+  reader.onload = async (evt)=>{
+    if(!window.pdfjsLib){
+      alert('PDF reader did not load (no internet access to the CDN?). Export the page as a PNG/JPG and upload that instead.');
+      return;
+    }
+    try{
+      const typedarray = new Uint8Array(evt.target.result);
+      const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
+      for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({scale: 2});
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = viewport.width;
+        tempCanvas.height = viewport.height;
+        const ctx = tempCanvas.getContext('2d');
+        await page.render({canvasContext: ctx, viewport: viewport}).promise;
+        const dataUrl = tempCanvas.toDataURL('image/png');
+        const label = pdf.numPages > 1 ? (file.name + ' — p' + pageNum) : file.name;
+        addSheetFromDataUrl(label, dataUrl);
+      }
+    } catch(err){
+      alert('Could not read this PDF (' + err.message + '). Try exporting the page as a PNG/JPG and uploading that instead.');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function addSheetFromDataUrl(name, dataUrl){
+  const id = 'sheet_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  const img = new Image();
+  img.onload = ()=>{
+    planSheets.push({id, name, imageDataUrl: dataUrl, img, sheetType: 'Floor Plan'});
+    renderSheetThumbs();
+    if(!activeSheetId){ setActiveSheet(id); }
+    updateBuilderTabState();
+  };
+  img.src = dataUrl;
+}
+
+function renderSheetThumbs(){
+  const wrap = document.getElementById('sheetThumbs');
+  wrap.innerHTML = '';
+  planSheets.forEach(s=>{
+    const t = document.createElement('div');
+    t.className = 'sheet-thumb' + (s.id===activeSheetId ? ' active':'');
+    t.onclick = ()=> setActiveSheet(s.id);
+    const img = document.createElement('img'); img.src = s.imageDataUrl;
+    const lbl = document.createElement('div'); lbl.className='thumb-label'; lbl.textContent = s.name + (s.sheetType && s.sheetType!=='Floor Plan' ? ' ('+s.sheetType+')' : '');
+    t.appendChild(img); t.appendChild(lbl);
+    wrap.appendChild(t);
+  });
+}
+
+function setActiveSheet(id){
+  activeSheetId = id;
+  const sheet = planSheets.find(s=>s.id===id);
+  const wrap = document.getElementById('canvasWrap');
+  if(sheet && sheet.img && sheet.img.naturalWidth && wrap && wrap.clientWidth){
+    const fit = wrap.clientWidth / sheet.img.naturalWidth;
+    zoomLevel = (isFinite(fit) && fit > 0) ? Math.min(1, fit) : 1;
+  } else {
+    zoomLevel = 1;
+  }
+  renderSheetThumbs();
+  drawCanvas();
+}
+
+function drawCanvas(){
+  const canvas = document.getElementById('planCanvas');
+  const ctx = canvas.getContext('2d');
+  const sheet = planSheets.find(s=>s.id===activeSheetId);
+  updatePageIndicator();
+  if(!sheet){
+    canvas.width = 800; canvas.height = 400;
+    ctx.fillStyle = '#f5f3ee'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#999'; ctx.font = '14px Inter, sans-serif';
+    ctx.fillText('Upload a plan sheet above to begin.', 20, 40);
+    return;
+  }
+  canvas.width = sheet.img.naturalWidth * zoomLevel;
+  canvas.height = sheet.img.naturalHeight * zoomLevel;
+  ctx.drawImage(sheet.img, 0, 0, canvas.width, canvas.height);
+  const markers = areaRegister.filter(a=>a.sheetId===activeSheetId);
+  const dotRadius = 6;
+  const dotRects = markers.map(a=>{
+    const cx = a.x*zoomLevel, cy = a.y*zoomLevel;
+    return {left:cx-dotRadius, right:cx+dotRadius, top:cy-dotRadius, bottom:cy+dotRadius, ownerId:a.id};
+  });
+  const placedLabels = [];
+  markers.forEach(a=>{
+    const avoidDots = dotRects.filter(d=>d.ownerId!==a.id);
+    drawMarker(ctx, a.x*zoomLevel, a.y*zoomLevel, a.id, false, 1, placedLabels, avoidDots);
+  });
+  if(pendingClick){
+    drawMarker(ctx, pendingClick.x*zoomLevel, pendingClick.y*zoomLevel, '?', true, 1, placedLabels, dotRects);
+  }
+  document.getElementById('zoomIndicator').textContent = Math.round(zoomLevel*100)+'%';
+  const typeSel = document.getElementById('activeSheetType');
+  if(typeSel) typeSel.value = sheet.sheetType || 'Floor Plan';
+}
+
+function rectsOverlap(a, b){
+  return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+}
+
+function drawMarker(ctx, sx, sy, label, pending, sizeMult, placedLabels, avoidRects){
+  sizeMult = sizeMult || 1;
+  const r = 6 * sizeMult;
+  ctx.beginPath();
+  ctx.arc(sx, sy, r, 0, 2*Math.PI);
+  ctx.fillStyle = pending ? 'rgba(176,64,53,0.85)' : '#C9A66C';
+  ctx.fill();
+  ctx.strokeStyle = pending ? '#fff' : '#1E2235'; ctx.lineWidth = 1.5 * sizeMult; ctx.stroke();
+
+  const fontPx = Math.round(12*sizeMult);
+  ctx.font = 'bold ' + fontPx + 'px Inter, sans-serif';
+  const tw = ctx.measureText(label).width;
+  const padX = 4*sizeMult, padY = 2.5*sizeMult;
+  const boxW = tw + padX*2;
+  const boxH = fontPx + padY*2;
+  const gap = 3*sizeMult;
+
+  const candidates = [
+    {x: sx + r + gap,          y: sy - boxH/2},        // right
+    {x: sx - boxW/2,           y: sy - r - gap - boxH}, // above
+    {x: sx - boxW/2,           y: sy + r + gap},        // below
+    {x: sx - r - gap - boxW,   y: sy - boxH/2},         // left
+  ];
+  const allAvoid = (placedLabels||[]).concat(avoidRects||[]);
+  let chosen = candidates[0];
+  if(allAvoid.length){
+    let found = false;
+    for(const c of candidates){
+      const rect = {left:c.x, right:c.x+boxW, top:c.y, bottom:c.y+boxH};
+      if(!allAvoid.some(p=>rectsOverlap(rect, p))){ chosen = c; found = true; break; }
+    }
+    if(!found) chosen = candidates[0];
+  }
+  if(placedLabels){
+    placedLabels.push({left:chosen.x, right:chosen.x+boxW, top:chosen.y, bottom:chosen.y+boxH});
+  }
+
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fillRect(chosen.x, chosen.y, boxW, boxH);
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+  ctx.strokeRect(chosen.x, chosen.y, boxW, boxH);
+  ctx.fillStyle = '#1E2235';
+  ctx.fillText(label, chosen.x + padX, chosen.y + boxH - padY - (fontPx*0.18));
+}
+
+function canvasHitTestMarker(clientX, clientY){
+  const canvas = document.getElementById('planCanvas');
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const baseX = ((clientX - rect.left) * scaleX) / zoomLevel;
+  const baseY = ((clientY - rect.top) * scaleY) / zoomLevel;
+  const hitRadius = 14 / zoomLevel;
+  return areaRegister.find(a => a.sheetId===activeSheetId && Math.hypot(a.x-baseX, a.y-baseY) <= hitRadius);
+}
+
+function canvasMouseDown(e){
+  if(!activeSheetId) return;
+  const hit = canvasHitTestMarker(e.clientX, e.clientY);
+  if(hit){
+    draggingMarker = hit;
+    document.getElementById('planCanvas').style.cursor = 'grabbing';
+    e.preventDefault();
+    return;
+  }
+  const wrap = document.getElementById('canvasWrap');
+  dragPanStart = { x: e.clientX, y: e.clientY, scrollLeft: wrap.scrollLeft, scrollTop: wrap.scrollTop, dragged: false };
+}
+
+function canvasMouseMove(e){
+  if(draggingMarker){
+    const canvas = document.getElementById('planCanvas');
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    draggingMarker.x = ((e.clientX - rect.left) * scaleX) / zoomLevel;
+    draggingMarker.y = ((e.clientY - rect.top) * scaleY) / zoomLevel;
+    suppressNextClick = true;
+    drawCanvas();
+    return;
+  }
+  if(!dragPanStart) return;
+  const dx = e.clientX - dragPanStart.x;
+  const dy = e.clientY - dragPanStart.y;
+  if(Math.abs(dx) > 4 || Math.abs(dy) > 4){
+    dragPanStart.dragged = true;
+    suppressNextClick = true;
+    const wrap = document.getElementById('canvasWrap');
+    wrap.scrollLeft = dragPanStart.scrollLeft - dx;
+    wrap.scrollTop = dragPanStart.scrollTop - dy;
+    document.getElementById('planCanvas').style.cursor = 'grabbing';
+  }
+}
+
+function canvasMouseUp(e){
+  if(draggingMarker){
+    draggingMarker = null;
+    document.getElementById('planCanvas').style.cursor = 'crosshair';
+    renderAreaTable();
+    return;
+  }
+  dragPanStart = null;
+  document.getElementById('planCanvas').style.cursor = 'crosshair';
+}
+
+function initCanvasInteractions(){
+  const canvas = document.getElementById('planCanvas');
+  canvas.addEventListener('mousedown', canvasMouseDown);
+  window.addEventListener('mousemove', canvasMouseMove);
+  window.addEventListener('mouseup', canvasMouseUp);
+}
+
+function handleCanvasClick(event){
+  if(suppressNextClick){ suppressNextClick = false; return; }
+  if(!activeSheetId){ alert('Upload and select a plan sheet first.'); return; }
+  const canvas = document.getElementById('planCanvas');
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = ((event.clientX - rect.left) * scaleX) / zoomLevel;
+  const y = ((event.clientY - rect.top) * scaleY) / zoomLevel;
+  pendingClick = {x, y};
+  editingAreaId = null;
+  openAreaForm();
+  drawCanvas();
+}
+
+function zoomIn(){ zoomLevel = Math.min(4, zoomLevel + 0.25); drawCanvas(); }
+function zoomOut(){ zoomLevel = Math.max(0.25, zoomLevel - 0.25); drawCanvas(); }
+function resetZoom(){
+  const sheet = planSheets.find(s=>s.id===activeSheetId);
+  const wrap = document.getElementById('canvasWrap');
+  if(sheet && sheet.img && sheet.img.naturalWidth && wrap && wrap.clientWidth){
+    const fit = wrap.clientWidth / sheet.img.naturalWidth;
+    zoomLevel = (isFinite(fit) && fit > 0) ? Math.min(1, fit) : 1;
+  } else {
+    zoomLevel = 1;
+  }
+  drawCanvas();
+}
+
+function updatePageIndicator(){
+  const ind = document.getElementById('sheetPageIndicator');
+  if(!planSheets.length){ ind.textContent = 'No sheets yet'; return; }
+  const idx = planSheets.findIndex(s=>s.id===activeSheetId);
+  ind.textContent = 'Page ' + (idx+1) + ' of ' + planSheets.length;
+}
+
+function prevSheet(){
+  if(!planSheets.length) return;
+  const idx = planSheets.findIndex(s=>s.id===activeSheetId);
+  const newIdx = idx <= 0 ? planSheets.length-1 : idx-1;
+  setActiveSheet(planSheets[newIdx].id);
+}
+function nextSheet(){
+  if(!planSheets.length) return;
+  const idx = planSheets.findIndex(s=>s.id===activeSheetId);
+  const newIdx = idx >= planSheets.length-1 ? 0 : idx+1;
+  setActiveSheet(planSheets[newIdx].id);
+}
+function setActiveSheetType(val){
+  const sheet = planSheets.find(s=>s.id===activeSheetId);
+  if(sheet){ sheet.sheetType = val; renderSheetThumbs(); }
+}
+
+function nextSeqForPrefix(prefix){
+  const nums = areaRegister
+    .filter(a=> a.id.split('-')[0] === prefix)
+    .map(a=>{
+      const m = a.id.split('-')[1] || '';
+      const num = parseInt(m, 10);
+      return isNaN(num) ? 100 : num;
+    });
+  if(!nums.length) return 101;
+  return Math.max(...nums) + 1;
+}
+
+function updateAreaIdPreview(){
+  const prefix = (document.getElementById('areaPrefix').value || 'OT').trim().toUpperCase();
+  const number = (document.getElementById('areaNumber').value || '').trim();
+  document.getElementById('areaIdPreview').value = prefix + '-' + number;
+}
+
+const SHEET_TYPE_PREFIX = {
+  'Front Elevation':'ELF', 'Rear Elevation':'ELB', 'Left Elevation':'ELL', 'Right Elevation':'ELR', 'Roof Plan':'RF'
+};
+
+function openAreaForm(){
+  document.getElementById('areaFormPanel').style.display = 'block';
+  document.getElementById('areaFormTitle').textContent = editingAreaId ? 'Edit Area Marker' : 'New Area Marker';
+  const sheet = planSheets.find(s=>s.id===activeSheetId);
+  if(editingAreaId){
+    const a = areaRegister.find(x=>x.id===editingAreaId);
+    document.getElementById('areaPrefix').value = a.id.split('-')[0];
+    document.getElementById('areaNumber').value = a.id.split('-')[1] || '';
+    document.getElementById('areaName').value = a.name;
+    document.getElementById('areaExistingNew').value = a.existingNew;
+    document.getElementById('areaDetailStatus').value = a.detailStatus;
+    document.getElementById('areaNotes').value = a.notes;
+    document.getElementById('areaPlanRef').value = (sheet?sheet.name:'') + ' @ ('+Math.round(a.x)+', '+Math.round(a.y)+')';
+  } else {
+    const suggested = (sheet && SHEET_TYPE_PREFIX[sheet.sheetType]) ? SHEET_TYPE_PREFIX[sheet.sheetType] : 'RM';
+    document.getElementById('areaPrefix').value = suggested;
+    document.getElementById('areaNumber').value = nextSeqForPrefix(suggested);
+    document.getElementById('areaName').value = '';
+    document.getElementById('areaExistingNew').value = 'New';
+    document.getElementById('areaDetailStatus').value = 'Base Plan Only';
+    document.getElementById('areaNotes').value = '';
+    document.getElementById('areaPlanRef').value = (sheet?sheet.name:'') + (pendingClick ? ' @ ('+Math.round(pendingClick.x)+', '+Math.round(pendingClick.y)+')' : '');
+  }
+  updateAreaIdPreview();
+}
+
+document.addEventListener('input', (e)=>{
+  if(e.target && (e.target.id === 'areaPrefix' || e.target.id === 'areaNumber')){
+    updateAreaIdPreview();
+  }
+});
+
+function commitAreaMarker(){
+  const prefix = (document.getElementById('areaPrefix').value || 'OT').trim().toUpperCase();
+  const number = (document.getElementById('areaNumber').value || '').trim();
+  const id = prefix + '-' + number;
+  const name = document.getElementById('areaName').value.trim();
+  if(!name){ alert('Area Name is required.'); return; }
+  const payload = {
+    id, name,
+    existingNew: document.getElementById('areaExistingNew').value,
+    detailStatus: document.getElementById('areaDetailStatus').value,
+    notes: document.getElementById('areaNotes').value.trim(),
+    sheetId: activeSheetId,
+    x: editingAreaId ? areaRegister.find(a=>a.id===editingAreaId).x : (pendingClick?pendingClick.x:0),
+    y: editingAreaId ? areaRegister.find(a=>a.id===editingAreaId).y : (pendingClick?pendingClick.y:0)
+  };
+  if(editingAreaId && editingAreaId !== id){
+    areaRegister = areaRegister.filter(a=>a.id!==editingAreaId);
+  } else {
+    areaRegister = areaRegister.filter(a=>a.id!==id);
+  }
+  areaRegister.push(payload);
+  pendingClick = null;
+  editingAreaId = null;
+  document.getElementById('areaFormPanel').style.display = 'none';
+  drawCanvas();
+  renderAreaTable();
+  refreshLocationSelects();
+}
+
+function cancelAreaMarker(){
+  pendingClick = null;
+  editingAreaId = null;
+  document.getElementById('areaFormPanel').style.display = 'none';
+  drawCanvas();
+}
+
+function editArea(id){
+  const a = areaRegister.find(x=>x.id===id);
+  if(!a) return;
+  editingAreaId = id;
+  if(a.sheetId !== activeSheetId){ setActiveSheet(a.sheetId); }
+  openAreaForm();
+}
+
+function deleteArea(id){
+  if(!confirm('Delete area '+id+'? Any location fields in Scope Builder referencing it will fall back to custom text.')) return;
+  areaRegister = areaRegister.filter(a=>a.id!==id);
+  drawCanvas();
+  renderAreaTable();
+  refreshLocationSelects();
+}
+
+function renderAreaTable(){
+  const tbody = document.getElementById('areaTableBody');
+  tbody.innerHTML = '';
+  areaRegister.forEach(a=>{
+    const sheet = planSheets.find(s=>s.id===a.sheetId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><b>${esc(a.id)}</b></td><td>${esc(a.name)}</td><td>${esc(a.existingNew)}</td><td>${esc(a.detailStatus)}</td><td>${esc(sheet?sheet.name:'')}</td><td></td>`;
+    const actionTd = tr.lastElementChild;
+    const editBtn = document.createElement('button'); editBtn.className='edit-btn'; editBtn.textContent='Edit'; editBtn.onclick=()=>editArea(a.id);
+    const delBtn = document.createElement('button'); delBtn.className='del-btn'; delBtn.textContent='Delete'; delBtn.onclick=()=>deleteArea(a.id);
+    actionTd.appendChild(editBtn); actionTd.appendChild(delBtn);
+    tbody.appendChild(tr);
+  });
+}
+
+function refreshLocationSelects(){
+  Object.keys(matrixRenderers).forEach(key=>{
+    const {section, locFields, container} = matrixRenderers[key];
+    renderMatrixRows(section, key, locFields, container);
+  });
+  refreshAllPlanRefSelects();
+}
+
+function fieldBaseId(section, fIdx){ return section.id+'__'+fIdx; }
+
+function renderField(section, field, fIdx){
+  const wrap = document.createElement('div');
+  wrap.className = 'fld';
+  const base = fieldBaseId(section, fIdx);
+
+  const nameEl = document.createElement('span');
+  nameEl.className = 'fld-name';
+  nameEl.textContent = field.name;
+  const tag = document.createElement('span');
+  tag.className = 'fld-ctl-tag';
+  tag.textContent = field.control;
+  nameEl.appendChild(tag);
+  wrap.appendChild(nameEl);
+
+  if(field.ctype === 'pickone'){
+    const list = document.createElement('div');
+    list.className = 'opt-list';
+    (field.options||[]).forEach((opt,oIdx)=>{
+      const row = document.createElement('label');
+      row.className = 'opt-row';
+      const radio = document.createElement('input');
+      radio.type='radio'; radio.name='ro_'+base; radio.id='ro_'+base+'_'+oIdx;
+      radio.onchange = refreshAllPreviews;
+      const txt = document.createElement('span'); txt.textContent = opt;
+      row.appendChild(radio); row.appendChild(txt);
+      list.appendChild(row);
+    });
+    const noneRow = document.createElement('label');
+    noneRow.className = 'opt-row';
+    const noneRadio = document.createElement('input');
+    noneRadio.type='radio'; noneRadio.name='ro_'+base; noneRadio.checked=true; noneRadio.id='ro_'+base+'_none';
+    noneRadio.onchange = refreshAllPreviews;
+    const noneTxt = document.createElement('span'); noneTxt.style.color='#999'; noneTxt.textContent='— not selected —';
+    noneRow.appendChild(noneRadio); noneRow.appendChild(noneTxt);
+    list.appendChild(noneRow);
+    wrap.appendChild(list);
+    wrap.appendChild(buildMetaRow(base, field));
+  }
+  else if(field.ctype === 'pickany'){
+    const list = document.createElement('div');
+    list.className = 'opt-list';
+    (field.options||[]).forEach((opt,oIdx)=>{
+      const row = document.createElement('label');
+      row.className = 'opt-row';
+      const chk = document.createElement('input');
+      chk.type='checkbox'; chk.id='ck_'+base+'_'+oIdx;
+      const txt = document.createElement('span'); txt.textContent = opt;
+      row.appendChild(chk); row.appendChild(txt);
+
+      let otherInp = null;
+      if(/^other\b/i.test(opt.trim())){
+        otherInp = document.createElement('input');
+        otherInp.type='text'; otherInp.id='ckother_'+base+'_'+oIdx;
+        otherInp.placeholder='Specify...'; otherInp.style.display='none'; otherInp.style.marginLeft='8px'; otherInp.style.maxWidth='180px';
+        otherInp.oninput = refreshAllPreviews;
+        row.appendChild(otherInp);
+      }
+      let locSel = null;
+      if(field.perOptionLocation){
+        locSel = buildPlanRefSelect('ckloc_'+base+'_'+oIdx);
+        locSel.style.display = 'none';
+        locSel.style.marginLeft = '8px';
+        row.appendChild(locSel);
+      }
+      chk.onchange = ()=>{
+        if(otherInp) otherInp.style.display = chk.checked ? 'inline-block' : 'none';
+        if(locSel) locSel.style.display = chk.checked ? 'inline-block' : 'none';
+        refreshAllPreviews();
+      };
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+    wrap.appendChild(buildMetaRow(base, field));
+  }
+  else if(field.ctype === 'input'){
+    const metaRow = document.createElement('div');
+    metaRow.className = 'fld-meta-row';
+    const inp = document.createElement('textarea');
+    inp.id='in_'+base;
+    inp.rows = 2;
+    inp.placeholder = field.note || (field.options ? field.options.join(' / ') : 'Enter value (Enter for a new line)');
+    inp.oninput = refreshAllPreviews;
+    metaRow.appendChild(inp);
+    metaRow.appendChild(buildPlanRefSelect('planref_'+base));
+    metaRow.appendChild(buildStatusSelect('status_'+base));
+    wrap.appendChild(metaRow);
+  }
+  return wrap;
+}
+
+function buildPlanRefSelect(id){
+  const sel = document.createElement('select');
+  sel.id = id;
+  sel.className = 'planref-select';
+  sel.title = 'Link this answer to a specific plan marker or elevation, if relevant';
+  const blank = document.createElement('option'); blank.value=''; blank.textContent='Plan/Elevation ref: none';
+  sel.appendChild(blank);
+  const entire = document.createElement('option'); entire.value='__entire__'; entire.textContent='— Entire House —';
+  sel.appendChild(entire);
+  areaRegister.forEach(a=>{
+    const o = document.createElement('option'); o.value=a.id; o.textContent=a.id+' — '+a.name;
+    sel.appendChild(o);
+  });
+  sel.onchange = refreshAllPreviews;
+  return sel;
+}
+
+function refreshAllPlanRefSelects(){
+  document.querySelectorAll('select.planref-select').forEach(sel=>{
+    const current = sel.value;
+    sel.innerHTML = '';
+    const blank = document.createElement('option'); blank.value=''; blank.textContent='Plan/Elevation ref: none';
+    sel.appendChild(blank);
+    const entire = document.createElement('option'); entire.value='__entire__'; entire.textContent='— Entire House —';
+    sel.appendChild(entire);
+    areaRegister.forEach(a=>{
+      const o = document.createElement('option'); o.value=a.id; o.textContent=a.id+' — '+a.name;
+      sel.appendChild(o);
+    });
+    sel.value = current;
+  });
+}
+
+function planRefLabel(value){
+  if(!value) return '';
+  if(value === '__entire__') return 'Entire House';
+  const a = areaRegister.find(x=>x.id===value);
+  return a ? (a.id+' — '+a.name) : '';
+}
+
+function buildMetaRow(base, field){
+  const metaRow = document.createElement('div');
+  metaRow.className = 'fld-meta-row';
+  const noteInp = document.createElement('textarea');
+  noteInp.id='note_'+base;
+  noteInp.rows = 2;
+  noteInp.placeholder = field.note || 'Details / quantity / location (optional — Enter for a new line)';
+  noteInp.oninput = refreshAllPreviews;
+  metaRow.appendChild(noteInp);
+  metaRow.appendChild(buildPlanRefSelect('planref_'+base));
+  metaRow.appendChild(buildStatusSelect('status_'+base));
+  return metaRow;
+}
+
+function getFieldLineObjs(section, field, fIdx){
+  const base = fieldBaseId(section, fIdx);
+  const out = [];
+  if(field.ctype === 'pickone'){
+    (field.options||[]).forEach((opt,oIdx)=>{
+      const r = document.getElementById('ro_'+base+'_'+oIdx);
+      if(r && r.checked){
+        const statusEl = document.getElementById('status_'+base);
+        const noteEl = document.getElementById('note_'+base);
+        const planRefEl = document.getElementById('planref_'+base);
+        let text = field.name+': '+opt;
+        if(noteEl && noteEl.value.trim()) text += ' ('+noteEl.value.trim()+')';
+        const refLabel = planRefEl ? planRefLabel(planRefEl.value) : '';
+        if(refLabel) text += ' [Ref: '+refLabel+']';
+        out.push({text, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
+      }
+    });
+  } else if(field.ctype === 'pickany'){
+    const statusEl = document.getElementById('status_'+base);
+    const noteEl = document.getElementById('note_'+base);
+    const planRefEl = document.getElementById('planref_'+base);
+    const sharedRef = planRefEl ? planRefLabel(planRefEl.value) : '';
+    (field.options||[]).forEach((opt,oIdx)=>{
+      const c = document.getElementById('ck_'+base+'_'+oIdx);
+      if(!c || !c.checked) return;
+      let text = field.name+': '+opt;
+      const otherInp = document.getElementById('ckother_'+base+'_'+oIdx);
+      if(otherInp && otherInp.value.trim()) text += ' — '+otherInp.value.trim();
+      const locSel = document.getElementById('ckloc_'+base+'_'+oIdx);
+      const itemRef = locSel ? planRefLabel(locSel.value) : '';
+      if(itemRef) text += ' ['+itemRef+']';
+      else if(sharedRef) text += ' [Ref: '+sharedRef+']';
+      if(noteEl && noteEl.value.trim()) text += ' ('+noteEl.value.trim()+')';
+      out.push({text, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
+    });
+  } else if(field.ctype === 'perloc' || field.ctype === 'permulti'){
+    const key = matrixKey(section.id, field.locGroup || 'Per Location');
+    (matrixRows[key]||[]).forEach((row, rIdx)=>{
+      const cell = row.cells ? row.cells[fIdx] : null;
+      if(!cell) return;
+      let valuePart = field.ctype==='permulti' ? cell.arr.join(', ') : cell.sel;
+      if(!valuePart) return;
+      const areaObj = areaRegister.find(a=>a.id===row.loc);
+      const locDisplay = row.loc === '__entire__' ? 'Entire House' : (areaObj ? (areaObj.id+' — '+areaObj.name) : (row.loc || ''));
+      let text = field.name + ': ' + valuePart;
+      if(cell.note) text += ' ('+cell.note+')';
+      out.push({text, status: cell.status, statusElId: 'matrixstatus_'+key+'_'+rIdx+'_'+fIdx, groupLabel: locDisplay || null});
+    });
+  } else if(field.ctype === 'input'){
+    const inp = document.getElementById('in_'+base);
+    const statusEl = document.getElementById('status_'+base);
+    const planRefEl = document.getElementById('planref_'+base);
+    if(inp && inp.value.trim()){
+      let text = field.name+': '+inp.value.trim();
+      const refLabel = planRefEl ? planRefLabel(planRefEl.value) : '';
+      if(refLabel) text += ' [Ref: '+refLabel+']';
+      out.push({text, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
+    }
+  }
+  return out;
+}
+
+function getSectionLineObjs(section){
+  let all = [];
+  section.fields.forEach((field, fIdx)=>{
+    all = all.concat(getFieldLineObjs(section, field, fIdx));
+  });
+  return all;
+}
+
+function getUngroupedLineObjs(section){
+  let all = [];
+  section.fields.forEach((field, fIdx)=>{
+    if(field.ctype === 'perloc' || field.ctype === 'permulti') return;
+    all = all.concat(getFieldLineObjs(section, field, fIdx));
+  });
+  return all;
+}
+
+function getLocationGroupsForSection(section){
+  const fieldsByKey = {};
+  section.fields.forEach((field, fIdx)=>{
+    if(field.ctype === 'perloc' || field.ctype === 'permulti'){
+      const key = matrixKey(section.id, field.locGroup || 'Per Location');
+      fieldsByKey[key] = fieldsByKey[key] || [];
+      fieldsByKey[key].push({field, fIdx});
+    }
+  });
+  const rowGroups = [];
+  Object.keys(fieldsByKey).forEach(key=>{
+    const fieldList = fieldsByKey[key];
+    (matrixRows[key]||[]).forEach((row, rIdx)=>{
+      const lines = [];
+      let firstVal = '';
+      fieldList.forEach(({field, fIdx})=>{
+        const cell = row.cells[fIdx];
+        if(!cell) return;
+        if(field.visibleWhen){
+          const ctrl = fieldList.find(x=>x.field.name===field.visibleWhen.field);
+          if(ctrl){
+            const ctrlVal = row.cells[ctrl.fIdx] ? row.cells[ctrl.fIdx].sel : '';
+            if(!field.visibleWhen.values.includes(ctrlVal)) return;
+          }
+        }
+        const val = field.ctype==='permulti' ? cell.arr.join(', ') : cell.sel;
+        if(!val) return;
+        if(!firstVal) firstVal = val;
+        let text = field.name+': '+val;
+        if(cell.note) text += ' ('+cell.note+')';
+        lines.push({text, status: cell.status, statusElId: 'matrixstatus_'+key+'_'+rIdx+'_'+fIdx});
+      });
+      if(!lines.length) return;
+      const areaObj = areaRegister.find(a=>a.id===row.loc);
+      const locDisplay = row.loc === '__entire__' ? 'Entire House' : (areaObj ? (areaObj.id+' — '+areaObj.name) : (row.loc || '(unspecified location)'));
+      rowGroups.push({ locDisplay, firstVal, lines });
+    });
+  });
+  const byLoc = {};
+  const order = [];
+  rowGroups.forEach(g=>{
+    if(!byLoc[g.locDisplay]){ byLoc[g.locDisplay] = []; order.push(g.locDisplay); }
+    byLoc[g.locDisplay].push(g);
+  });
+  return order.map(loc=>{
+    const rows = byLoc[loc];
+    const needsSub = rows.length > 1;
+    return {
+      locDisplay: loc,
+      rows: rows.map(r=>({ subLabel: needsSub ? r.firstVal : null, lines: r.lines }))
+    };
+  });
+}
+
+function refreshAllPreviews(){
+  SECTIONS.forEach(section=>{
+    const objs = getSectionLineObjs(section);
+    if(objs.length && includeState[section.id]!=='yes' && !userSetInclude[section.id]){
+      includeState[section.id] = 'yes';
+      const tradeDiv = document.getElementById('trade_'+section.id);
+      if(tradeDiv){
+        tradeDiv.classList.add('included');
+        const yBtn = tradeDiv.querySelector('.include-toggle .yes');
+        const nBtn = tradeDiv.querySelector('.include-toggle .no');
+        if(yBtn) yBtn.classList.add('active');
+        if(nBtn) nBtn.classList.remove('active');
+      }
+    }
+    const included = includeState[section.id]==='yes';
+    const preview = document.getElementById('preview_'+section.id);
+    if(!included){ preview.textContent = objs.length ? '(has content, but marked Include: No)' : '(not included)'; return; }
+    preview.textContent = objs.length ? objs.map(o=>'- '+o.text+(o.status?' ['+o.status+']':'')).join('\n') : '(included, but no fields filled in yet)';
+  });
+}
+
+function loadSample(){
+  document.getElementById('projName').value = 'Sample Project';
+  document.getElementById('projAddress').value = '123 Example Rd, Springfield MO 65810';
+  document.getElementById('projCounty').value = 'Greene';
+  document.getElementById('utilitiesNote').value = 'Lot has City Water, Spire Natural Gas, Liberty Electric. NO HOA.';
+  document.getElementById('directionsText').value = 'Head north on Main St, turn right at the second light, property is on the left past the church.';
+  const sampleIds = ['1_1_excavation_land_management','1_2_footing_foundation','1_5_framing','2_1_hvac_venting','2_2_electrical','2_3_plumbing','2_5_drywall','3_1_trim_carpentry','3_8_roofing','windows'];
+  sampleIds.forEach(id=>{
+    const section = SECTIONS.find(s=>s.id===id);
+    if(!section) return;
+    includeState[id] = 'yes';
+    const tradeDiv = document.getElementById('trade_'+id);
+    if(tradeDiv){ tradeDiv.classList.add('open','included'); tradeDiv.querySelector('.include-toggle .yes').classList.add('active'); tradeDiv.querySelector('.include-toggle .no').classList.remove('active'); }
+    section.fields.forEach((field, fIdx)=>{
+      const base = id+'__'+fIdx;
+      if(field.ctype==='pickone' && field.options && field.options.length){
+        const r = document.getElementById('ro_'+base+'_0'); if(r) r.checked = true;
+      } else if(field.ctype==='pickany' && field.options && field.options.length){
+        const c0 = document.getElementById('ck_'+base+'_0'); if(c0) c0.checked = true;
+      }
+    });
+  });
+  refreshAllPreviews();
+}
+
+function pageHeaderHtml(){
+  const proj = document.getElementById('projName').value || '(Project name not set)';
+  const addr = document.getElementById('projAddress').value || '';
+  return `<div class="doc-page-header"><span class="dph-project">${esc(proj)}</span><span class="dph-address">${esc(addr)}</span></div>`;
+}
+function pageFooterHtml(){
+  return `<div class="doc-page-footer">${esc(document.getElementById('footerLine').value || '')}</div>`;
+}
+
+function generateDoc(){
+  if(currentJobId){ saveCurrentJob(); }
+  const docView = document.getElementById('docView');
+  docView.classList.add('showing');
+  const companyName = document.getElementById('companyName').value;
+  const tagline = document.getElementById('companyTagline').value;
+  const footer = document.getElementById('footerLine').value;
+
+  document.getElementById('docCompanyName').textContent = companyName;
+  document.getElementById('docTagline').textContent = '"'+tagline+'"';
+  document.getElementById('docDocType').textContent = currentMode==='RFP' ? 'Request for Proposal' : 'Final Scope of Work';
+  if(logoDataUrl){ document.getElementById('docLogo').src=logoDataUrl; document.getElementById('docLogo').style.display='block'; } else document.getElementById('docLogo').style.display='none';
+  const aerialWrap = document.getElementById('docAerialWrap');
+  if(aerialDataUrl){ document.getElementById('docAerial').src=aerialDataUrl; aerialWrap.style.display='block'; } else aerialWrap.style.display='none';
+  document.getElementById('docDirections').textContent = document.getElementById('directionsText').value;
+
+  function metaItem(label, value){
+    return `<div class="cover-meta-item"><span class="cmi-label">${esc(label)}</span><span class="cmi-value">${esc(value)||'—'}</span></div>`;
+  }
+  document.getElementById('docMeta').innerHTML =
+    metaItem('Project', document.getElementById('projName').value) +
+    metaItem('Address', document.getElementById('projAddress').value) +
+    metaItem('County', document.getElementById('projCounty').value) +
+    metaItem('Permit #', document.getElementById('projPermit').value) +
+    metaItem('Project Manager', document.getElementById('pmName').value+' — '+document.getElementById('pmCell').value) +
+    metaItem('Office Manager', document.getElementById('omName').value+' — '+document.getElementById('omCell').value) +
+    metaItem('Up-to-Date Plans', document.getElementById('plansDate').value) +
+    metaItem('Approved / Finalized', (document.getElementById('approvedDate').value||'—')+' / '+(document.getElementById('finalizedDate').value||'—'));
+
+  document.getElementById('staticHeader2').className = 'doc-page-header';
+  document.getElementById('staticHeader2').innerHTML = '<span class="dph-project">'+esc(document.getElementById('projName').value||'')+'</span><span class="dph-address">'+esc(document.getElementById('projAddress').value||'')+'</span>';
+  document.getElementById('staticFooter2').className = 'doc-page-footer';
+  document.getElementById('staticFooter2').textContent = footer;
+
+  let gn = [];
+  if(document.getElementById('gnWalkthrough').checked) gn.push('ALL TRADES please refer to the "Final Walkthrough & Completion – Trade Requirements" at the bottom of this document.');
+  if(document.getElementById('gnCleanout').checked) gn.push('Please clean out concrete in dedicated location per P/M.');
+  if(document.getElementById('gnHOA').checked) gn.push('Refer to HOA requirements/restrictions.');
+  const util = document.getElementById('utilitiesNote').value; if(util) gn.push(util);
+  const extra = document.getElementById('extraGeneralNotes').value; if(extra) gn.push(extra);
+  document.getElementById('docGeneralNotes').innerHTML = gn.map(x=>'&bull; '+esc(x)).join('<br>');
+
+  function lineToLi(o){
+    const badge = o.status ? ` <span class="status-badge ${o.status.replace(/ /g,'-')}">${esc(o.status)}</span>` : '';
+    return `<li>${esc(o.text)}${badge}</li>`;
+  }
+  function buildTradeCardHtml(tradeNum, label, lineObjs, locGroups){
+    locGroups = locGroups || [];
+    if(!lineObjs.length && !locGroups.length){
+      return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3><div class="empty-trade-note">Included, but no fields specified yet.</div></div>`;
+    }
+    let body = '';
+    if(lineObjs.length){
+      body += `<ul class="clean-list">${lineObjs.map(lineToLi).join('')}</ul>`;
+    }
+    locGroups.forEach(g=>{
+      body += `<div class="loc-room-group"><div class="loc-room-label">${esc(g.locDisplay)}</div>`;
+      g.rows.forEach(r=>{
+        if(r.subLabel){
+          body += `<div class="loc-sub-label">${esc(r.subLabel)}</div>`;
+        }
+        body += `<ul class="clean-list">${r.lines.map(lineToLi).join('')}</ul>`;
+      });
+      body += `</div>`;
+    });
+    return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3>${body}</div>`;
+  }
+  function textLines(str){ return str.split('\n').filter(l=>l.trim().length).map(l=>({text:l, status:''})); }
+
+  const CATEGORY_ORDER = ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes','Selection Packages','Specialty Items','Other'];
+  const included = SECTIONS.filter(s=> includeState[s.id]==='yes');
+  const byCat = {};
+  included.forEach(s=>{ const c = s.cat || 'Other'; byCat[c] = byCat[c] || []; byCat[c].push(s); });
+
+  let tocHtml = '';
+  let tradeCounter = 0;
+  let pagesHtml = '';
+  CATEGORY_ORDER.forEach(cat=>{
+    const list = byCat[cat];
+    if(!list || !list.length) return;
+    tocHtml += `<div class="toc-category">${esc(cat)}</div>`;
+    let pageHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">${esc(cat)}</span><span class="cat-count">${list.length} trade${list.length>1?'s':''}</span></div>`;
+    const catNoteEl = document.getElementById('catnote_'+catSlug(cat));
+    if(catNoteEl && catNoteEl.value.trim()){
+      pageHtml += `<div class="cat-general-note"><b>General Notes — ${esc(cat)}:</b><br>${esc(catNoteEl.value.trim()).replace(/\n/g,'<br>')}</div>`;
+    }
+    list.forEach(s=>{
+      tradeCounter++;
+      tocHtml += `<div class="toc-item">${tradeCounter}. ${esc(s.title)}</div>`;
+      const objs = getUngroupedLineObjs(s);
+      const rowGroups = getLocationGroupsForSection(s);
+      pageHtml += buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups);
+    });
+    pageHtml += pageFooterHtml() + `</div>`;
+    pagesHtml += pageHtml;
+  });
+  tocHtml += `<div class="toc-category">Project Closeout</div><div class="toc-item">Final Walkthrough & Completion – Trade Requirements</div><div class="toc-item">Final Cleanup</div>`;
+  document.getElementById('docTOC').innerHTML = tocHtml;
+
+  let closeoutPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Closeout</span><span class="cat-count">2 items</span></div>`;
+  closeoutPage += buildTradeCardHtml('W', 'Final Walkthrough & Completion – Trade Requirements', textLines(document.getElementById('closeoutWalkthrough').value));
+  closeoutPage += buildTradeCardHtml('C', 'Final Cleanup', textLines(document.getElementById('closeoutCleanup').value));
+  closeoutPage += pageFooterHtml() + `</div>`;
+  pagesHtml += closeoutPage;
+
+  if(areaRegister.length){
+    let keyRows = areaRegister.map(a=>{
+      const sheet = planSheets.find(s=>s.id===a.sheetId);
+      return `<tr><td><b>${esc(a.id)}</b></td><td>${esc(a.name)}</td><td>${esc(a.existingNew)}</td><td>${esc(a.detailStatus)}</td><td>${esc(sheet?sheet.name:'')}</td></tr>`;
+    }).join('');
+    pagesHtml += `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Area Register — Key</span><span class="cat-count">${areaRegister.length} area${areaRegister.length>1?'s':''}</span></div>
+      <div class="helptext" style="margin-bottom:14px;">Matches the Area IDs referenced throughout this scope and shown on the plan sheets that follow.</div>
+      <table class="area-table"><thead><tr><th>Area ID</th><th>Name</th><th>Existing/New</th><th>Detail Status</th><th>Sheet</th></tr></thead><tbody>${keyRows}</tbody></table>` + pageFooterHtml() + `
+      </div>`;
+  }
+
+  if(planSheets.length){
+    const DOC_PLAN_TARGET_WIDTH = 730;
+    let plansHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Area Register — Plan Sheets</span><span class="cat-count">${planSheets.length} sheet${planSheets.length>1?'s':''}</span></div>`;
+    plansHtml += `<div class="helptext" style="margin-bottom:14px;">Reference plan sheets with area markers as laid out in the Plan & Areas step. Area IDs referenced above correspond to the markers shown here.</div>`;
+    planSheets.forEach(sheet=>{
+      const dataUrl = renderSheetToDataUrl(sheet, DOC_PLAN_TARGET_WIDTH);
+      plansHtml += `<div style="margin-bottom:18px;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">${esc(sheet.name)}${sheet.sheetType && sheet.sheetType!=='Floor Plan' ? ' — '+esc(sheet.sheetType) : ''}</div><img src="${dataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
+    });
+    plansHtml += pageFooterHtml() + `</div>`;
+    pagesHtml += plansHtml;
+  }
+
+  document.getElementById('pageSectionsWrap').innerHTML = pagesHtml;
+  docView.scrollIntoView({behavior:'smooth'});
+}
+
+const CLOSEOUT_DEFAULTS = {
+  walkthrough:`Trades will be expected to support the completion process through the following:
+- Address all punch list items identified during the first and second blue tape walkthroughs.
+- Complete any required touch-ups, adjustments, or corrections promptly.
+- Ensure all finish work is completed to a high standard prior to final cleaning.
+- Be available for follow-up if any additional issues are identified after cleaning.`,
+  cleanup:`Perform a full final deep cleaning of the residence upon project completion. This includes detailed cleaning of all interior spaces and exterior hard surfaces to ensure the home is move-in ready.
+- Deep clean the entire interior of the home.
+- Clean all interior and exterior windows.
+- Power wash all sidewalks, porches, and exterior concrete surfaces.`
+};
+document.getElementById('closeoutWalkthrough').value = CLOSEOUT_DEFAULTS.walkthrough;
+document.getElementById('closeoutCleanup').value = CLOSEOUT_DEFAULTS.cleanup;
+
+function renderSheetToDataUrl(sheet, targetDisplayWidth){
+  const tmp = document.createElement('canvas');
+  tmp.width = sheet.img.naturalWidth;
+  tmp.height = sheet.img.naturalHeight;
+  const ctx = tmp.getContext('2d');
+  ctx.drawImage(sheet.img, 0, 0);
+  const ptInput = document.getElementById('markerLabelPt');
+  const TARGET_LABEL_PT = ptInput ? (parseFloat(ptInput.value) || 8) : 8;
+  const TARGET_LABEL_PX = TARGET_LABEL_PT * (96/72); // pt to px at 96dpi CSS reference
+  let sizeMult = 1;
+  if(targetDisplayWidth && sheet.img.naturalWidth){
+    const scaleFactor = sheet.img.naturalWidth / targetDisplayWidth;
+    sizeMult = (TARGET_LABEL_PX / 12) * scaleFactor;
+  }
+  const markers = areaRegister.filter(a=>a.sheetId===sheet.id);
+  const dotRadiusAtNatural = 6 * sizeMult;
+  const dotRects = markers.map(a=>({
+    left:a.x-dotRadiusAtNatural, right:a.x+dotRadiusAtNatural, top:a.y-dotRadiusAtNatural, bottom:a.y+dotRadiusAtNatural, ownerId:a.id
+  }));
+  const placedLabels = [];
+  markers.forEach(a=>{
+    const avoidDots = dotRects.filter(d=>d.ownerId!==a.id);
+    drawMarker(ctx, a.x, a.y, a.id, false, sizeMult, placedLabels, avoidDots);
+  });
+  return tmp.toDataURL('image/png');
+}
+
+function printPlanSet(){
+  if(!planSheets.length){ alert('Upload at least one plan sheet first.'); return; }
+  const sizeKey = document.getElementById('printPageSize').value;
+  const sizeClass = 'size-' + sizeKey;
+  const PAGE_TARGET_WIDTH = { letter: 750, tabloid: 1000, ansiD: 2200, original: null };
+  const targetWidth = PAGE_TARGET_WIDTH[sizeKey];
+  const container = document.getElementById('planPrintView');
+  container.innerHTML = '';
+  planSheets.forEach(sheet=>{
+    const page = document.createElement('div');
+    page.className = 'plan-print-page' + (sizeKey!=='original' ? ' '+sizeClass : '');
+    if(sizeKey==='original'){ page.style.width = sheet.img.naturalWidth+'px'; page.style.height = sheet.img.naturalHeight+'px'; }
+    const img = document.createElement('img');
+    img.src = renderSheetToDataUrl(sheet, targetWidth);
+    page.appendChild(img);
+    container.appendChild(page);
+  });
+  const docView = document.getElementById('docView');
+  const wasShowingDoc = docView.classList.contains('showing');
+  docView.classList.remove('showing');
+  document.body.classList.add('printing-plans');
+  container.style.display = 'block';
+  window.print();
+  setTimeout(function(){
+    document.body.classList.remove('printing-plans');
+    container.style.display = 'none';
+    if(wasShowingDoc) docView.classList.add('showing');
+  }, 300);
+}
+window.onafterprint = function(){
+  document.body.classList.remove('printing-plans');
+  document.getElementById('planPrintView').style.display = 'none';
+};
+
+let currentJobId = null;
+
+function loadCompanySettingsGlobal(){
+  try{
+    const raw = localStorage.getItem('mcd_company_settings');
+    if(!raw) return;
+    const cs = JSON.parse(raw);
+    ['companyName','companyTagline','colorPrimary','colorNavy','colorCream','footerLine'].forEach(k=>{
+      if(cs[k]!=null){ const el=document.getElementById(k); if(el) el.value = cs[k]; }
+    });
+    if(cs.logoDataUrl){ logoDataUrl = cs.logoDataUrl; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; }
+    updateColors();
+  }catch(e){}
+  updateDashboardBrand();
+}
+function updateDashboardBrand(){
+  const nameEl = document.getElementById('dashBrandName');
+  if(nameEl) nameEl.textContent = document.getElementById('companyName').value || 'Mitchell Construction & Design';
+  const logoEl = document.getElementById('dashLogo');
+  if(logoEl){
+    if(logoDataUrl){ logoEl.src = logoDataUrl; logoEl.style.display = 'inline-block'; }
+    else { logoEl.style.display = 'none'; }
+  }
+}
+function saveCompanySettingsGlobal(){
+  const cs = {
+    companyName: document.getElementById('companyName').value,
+    companyTagline: document.getElementById('companyTagline').value,
+    colorPrimary: document.getElementById('colorPrimary').value,
+    colorNavy: document.getElementById('colorNavy').value,
+    colorCream: document.getElementById('colorCream').value,
+    footerLine: document.getElementById('footerLine').value,
+    logoDataUrl: logoDataUrl
+  };
+  try{ localStorage.setItem('mcd_company_settings', JSON.stringify(cs)); }catch(e){}
+  updateDashboardBrand();
+}
+
+function getJobsList(){
+  try{ return JSON.parse(localStorage.getItem('mcd_jobs_list')||'[]'); }catch(e){ return []; }
+}
+function saveJobsList(list){
+  try{ localStorage.setItem('mcd_jobs_list', JSON.stringify(list)); }catch(e){ alert('Could not save project list — browser storage may be full or restricted.'); }
+}
+
+let dashStatusFilter = 'active';
+
+function setDashStatusFilter(f){
+  dashStatusFilter = f;
+  ['active','closed','all'].forEach(k=>{
+    document.getElementById('statusTab'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active', k===f);
+  });
+  renderDashboard();
+}
+
+function focusNewJobForm(){
+  document.getElementById('newJobPanel').style.display = 'block';
+  document.getElementById('dashNewJobName').focus();
+}
+
+function showToolShellForSettings(){
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('toolShell').style.display = 'block';
+}
+
+function setJobStatus(id, status){
+  const list = getJobsList();
+  const job = list.find(j=>j.id===id);
+  if(job){ job.status = status; saveJobsList(list); renderDashboard(); }
+}
+
+function renderDashboard(){
+  const list = getJobsList();
+  const total = list.length;
+  const rfpCount = list.filter(j=> (j.mode||'RFP') === 'RFP').length;
+  const sowCount = list.filter(j=> j.mode === 'SOW').length;
+  document.getElementById('statTotalProjects').textContent = total;
+  document.getElementById('statRfpStage').textContent = rfpCount;
+  document.getElementById('statSowStage').textContent = sowCount;
+
+  const activeCount = list.filter(j=>(j.status||'Active')==='Active').length;
+  const closedCount = list.filter(j=>(j.status||'Active')==='Closed').length;
+  document.getElementById('statusTabActive').innerHTML = 'Active <span>('+activeCount+')</span>';
+  document.getElementById('statusTabClosed').innerHTML = 'Closed <span>('+closedCount+')</span>';
+  document.getElementById('statusTabAll').innerHTML = 'All <span>('+total+')</span>';
+
+  let filtered = list;
+  if(dashStatusFilter === 'active') filtered = list.filter(j=>(j.status||'Active')==='Active');
+  else if(dashStatusFilter === 'closed') filtered = list.filter(j=>(j.status||'Active')==='Closed');
+  filtered = filtered.slice().sort((a,b)=> (b.updatedAt||0)-(a.updatedAt||0));
+
+  const grid = document.getElementById('jobsCardsGrid');
+  grid.innerHTML = '';
+  document.getElementById('jobsEmptyNote').style.display = filtered.length ? 'none' : 'block';
+
+  filtered.forEach(job=>{
+    const pct = job.totalTradeCount ? Math.round(100*(job.includedTradeCount||0)/job.totalTradeCount) : 0;
+    const card = document.createElement('div');
+    card.className = 'dash-job-card';
+    const metaParts = [job.address, job.pmName].filter(Boolean).join(' &middot; ');
+    card.innerHTML = `
+      <div class="dash-job-card-head">
+        <div class="dash-job-card-name">${esc(job.name)}</div>
+        <select class="dash-job-status-select" onclick="event.stopPropagation()"></select>
+      </div>
+      <div class="dash-job-meta">${metaParts || '&nbsp;'}</div>
+      <div class="dash-progress-track"><div class="dash-progress-fill" style="width:${pct}%;"></div></div>
+      <div class="dash-job-stats">
+        <span><b>${job.includedTradeCount||0}</b> trades included</span>
+        <span>${job.mode==='SOW' ? 'Final SOW' : 'RFP'} stage</span>
+        <span>${pct}% started</span>
+      </div>
+    `;
+    const sel = card.querySelector('.dash-job-status-select');
+    ['Active','Closed'].forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; if((job.status||'Active')===s) o.selected=true; sel.appendChild(o); });
+    sel.onchange = ()=> setJobStatus(job.id, sel.value);
+    const delBtn = document.createElement('button');
+    delBtn.className = 'dash-job-card-delete'; delBtn.textContent = 'Delete project';
+    delBtn.onclick = (e)=>{ e.stopPropagation(); deleteJob(job.id); };
+    card.appendChild(delBtn);
+    card.onclick = ()=> openJob(job.id);
+    grid.appendChild(card);
+  });
+}
+
+function createNewJob(){
+  const name = document.getElementById('dashNewJobName').value.trim();
+  if(!name){ alert('Project name is required.'); return; }
+  const address = document.getElementById('dashNewJobAddress').value.trim();
+  const id = 'job_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+  const list = getJobsList();
+  list.push({id, name, address, updatedAt: Date.now()});
+  saveJobsList(list);
+  document.getElementById('dashNewJobName').value = '';
+  document.getElementById('dashNewJobAddress').value = '';
+  resetToolStateBlank();
+  document.getElementById('projName').value = name;
+  document.getElementById('projAddress').value = address;
+  currentJobId = id;
+  saveCurrentJob();
+  showToolShell();
+}
+
+function deleteJob(id){
+  if(!confirm('Delete this project? This cannot be undone.')) return;
+  localStorage.removeItem('mcd_job_'+id);
+  saveJobsList(getJobsList().filter(j=>j.id!==id));
+  renderDashboard();
+}
+
+function openJob(id){
+  const raw = localStorage.getItem('mcd_job_'+id);
+  currentJobId = id;
+  if(raw){
+    try{ restoreProject(JSON.parse(raw)); }catch(e){ console.error(e); resetToolStateBlank(); }
+  } else {
+    resetToolStateBlank();
+  }
+  showToolShell();
+}
+
+function showToolShell(){
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('toolShell').style.display = 'block';
+  showTab('areas');
+}
+function showDashboard(){
+  document.getElementById('toolShell').style.display = 'none';
+  document.getElementById('dashboardView').style.display = 'block';
+  renderDashboard();
+}
+function backToDashboard(){
+  if(currentJobId){ saveCurrentJob(); }
+  showDashboard();
+}
+
+function resetToolStateBlank(){
+  includeState = {}; userSetInclude = {}; matrixRows = {}; areaRegister = []; planSheets = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  ['projName','projAddress','projCounty','plansDate','approvedDate','finalizedDate','directionsText','utilitiesNote','extraGeneralNotes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('pmName').value = 'John Mitchell';
+  document.getElementById('pmCell').value = '417.818.3223';
+  document.getElementById('omName').value = 'Kennedy Adamson';
+  document.getElementById('omCell').value = '417.300.0468';
+  document.getElementById('projPermit').value = 'TBD';
+  document.getElementById('gnWalkthrough').checked = true;
+  document.getElementById('gnCleanout').checked = true;
+  document.getElementById('gnHOA').checked = false;
+  document.getElementById('closeoutWalkthrough').value = CLOSEOUT_DEFAULTS.walkthrough;
+  document.getElementById('closeoutCleanup').value = CLOSEOUT_DEFAULTS.cleanup;
+  ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'].forEach(cat=>{ const el=document.getElementById('catnote_'+catSlug(cat)); if(el) el.value=''; });
+  document.getElementById('logoPreview').style.display = logoDataUrl ? 'block' : 'none';
+  document.getElementById('aerialPreview').style.display='none';
+  updateBuilderTabState();
+  setMode('RFP');
+  renderSheetThumbs();
+  drawCanvas();
+  renderAreaTable();
+  refreshAllPreviews();
+}
+
+function getVal(id){ const el=document.getElementById(id); if(!el) return null; if(el.type==='checkbox') return el.checked; return el.value; }
+function setVal(id, v){ const el=document.getElementById(id); if(!el) return; if(el.type==='checkbox') el.checked=!!v; else el.value = (v==null?'':v); }
+
+const PROJECT_FIELD_IDS = ['projName','projAddress','projCounty','projPermit','pmName','pmCell','omName','omCell','plansDate','approvedDate','finalizedDate','projType','directionsText','utilitiesNote','extraGeneralNotes','closeoutWalkthrough','closeoutCleanup'];
+const PROJECT_CHECKBOX_IDS = ['gnWalkthrough','gnCleanout','gnHOA'];
+
+function serializeFieldStates(){
+  const out = {};
+  SECTIONS.forEach(section=>{
+    section.fields.forEach((field, fIdx)=>{
+      const base = fieldBaseId(section, fIdx);
+      if(field.ctype === 'pickone'){
+        const rec = {type:'pickone'};
+        (field.options||[]).forEach((opt,oIdx)=>{
+          const el = document.getElementById('ro_'+base+'_'+oIdx);
+          if(el && el.checked) rec.selectedIdx = oIdx;
+        });
+        const noteEl = document.getElementById('note_'+base); if(noteEl) rec.note = noteEl.value;
+        const planRefEl = document.getElementById('planref_'+base); if(planRefEl) rec.planref = planRefEl.value;
+        const statusEl = document.getElementById('status_'+base); if(statusEl) rec.status = statusEl.value;
+        out[base] = rec;
+      } else if(field.ctype === 'pickany'){
+        const rec = {type:'pickany', checked:[]};
+        (field.options||[]).forEach((opt,oIdx)=>{
+          const el = document.getElementById('ck_'+base+'_'+oIdx);
+          if(el && el.checked){
+            const otherEl = document.getElementById('ckother_'+base+'_'+oIdx);
+            const locEl = document.getElementById('ckloc_'+base+'_'+oIdx);
+            rec.checked.push({oIdx, other: otherEl?otherEl.value:undefined, loc: locEl?locEl.value:undefined});
+          }
+        });
+        const noteEl = document.getElementById('note_'+base); if(noteEl) rec.note = noteEl.value;
+        const planRefEl = document.getElementById('planref_'+base); if(planRefEl) rec.planref = planRefEl.value;
+        const statusEl = document.getElementById('status_'+base); if(statusEl) rec.status = statusEl.value;
+        out[base] = rec;
+      } else if(field.ctype === 'input'){
+        const inp = document.getElementById('in_'+base);
+        const statusEl = document.getElementById('status_'+base);
+        const planRefEl = document.getElementById('planref_'+base);
+        out[base] = {type:'input', value: inp?inp.value:'', status: statusEl?statusEl.value:'', planref: planRefEl?planRefEl.value:''};
+      }
+    });
+  });
+  return out;
+}
+
+function applyStatusAndNote(base, st){
+  const noteEl = document.getElementById('note_'+base); if(noteEl && st.note!=null) noteEl.value = st.note;
+  const planRefEl = document.getElementById('planref_'+base); if(planRefEl && st.planref!=null) planRefEl.value = st.planref;
+  const statusEl = document.getElementById('status_'+base);
+  if(statusEl && st.status!=null){ statusEl.value = st.status; statusEl.className = 'status-select'+(st.status?' st-'+slugStatus(st.status):''); }
+}
+
+function restoreFieldStates(states){
+  if(!states) return;
+  SECTIONS.forEach(section=>{
+    section.fields.forEach((field, fIdx)=>{
+      const base = fieldBaseId(section, fIdx);
+      const st = states[base];
+      if(!st) return;
+      if(field.ctype === 'pickone'){
+        if(st.selectedIdx!=null){ const el=document.getElementById('ro_'+base+'_'+st.selectedIdx); if(el) el.checked=true; }
+        applyStatusAndNote(base, st);
+      } else if(field.ctype === 'pickany'){
+        (st.checked||[]).forEach(c=>{
+          const el = document.getElementById('ck_'+base+'_'+c.oIdx); if(el) el.checked = true;
+          if(c.other!==undefined){ const o=document.getElementById('ckother_'+base+'_'+c.oIdx); if(o){ o.value=c.other; o.style.display='inline-block'; } }
+          if(c.loc!==undefined){ const l=document.getElementById('ckloc_'+base+'_'+c.oIdx); if(l){ l.value=c.loc; l.style.display='inline-block'; } }
+        });
+        applyStatusAndNote(base, st);
+      } else if(field.ctype === 'input'){
+        const inp=document.getElementById('in_'+base); if(inp) inp.value = st.value||'';
+        applyStatusAndNote(base, st);
+      }
+    });
+  });
+}
+
+function serializeCurrentProject(){
+  const data = { fields:{}, checkboxes:{}, catNotes:{} };
+  PROJECT_FIELD_IDS.forEach(id=> data.fields[id] = getVal(id));
+  PROJECT_CHECKBOX_IDS.forEach(id=> data.checkboxes[id] = getVal(id));
+  ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'].forEach(cat=>{ data.catNotes[catSlug(cat)] = getVal('catnote_'+catSlug(cat)); });
+  data.includeState = JSON.parse(JSON.stringify(includeState));
+  data.userSetInclude = JSON.parse(JSON.stringify(userSetInclude));
+  data.matrixRows = JSON.parse(JSON.stringify(matrixRows));
+  data.areaRegister = JSON.parse(JSON.stringify(areaRegister));
+  data.planSheets = planSheets.map(s=>({id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, sheetType:s.sheetType}));
+  data.aerialDataUrl = aerialDataUrl;
+  data.currentMode = currentMode;
+  data.fieldStates = serializeFieldStates();
+  return data;
+}
+
+function restoreProject(data){
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  includeState = {}; Object.assign(includeState, data.includeState||{});
+  userSetInclude = {}; Object.assign(userSetInclude, data.userSetInclude||{});
+  matrixRows = {}; Object.assign(matrixRows, data.matrixRows||{});
+  areaRegister = (data.areaRegister||[]).slice();
+  planSheets = (data.planSheets||[]).map(s=>{ const img = new Image(); img.src = s.imageDataUrl; return {id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, sheetType:s.sheetType, img}; });
+  activeSheetId = planSheets.length ? planSheets[0].id : null;
+  aerialDataUrl = data.aerialDataUrl || '';
+  currentMode = data.currentMode || 'RFP';
+  zoomLevel = 1;
+
+  buildTradeUI();
+
+  (data.fields ? Object.keys(data.fields) : []).forEach(id=> setVal(id, data.fields[id]));
+  (data.checkboxes ? Object.keys(data.checkboxes) : []).forEach(id=> setVal(id, data.checkboxes[id]));
+  (data.catNotes ? Object.keys(data.catNotes) : []).forEach(slug=> setVal('catnote_'+slug, data.catNotes[slug]));
+
+  if(aerialDataUrl){ document.getElementById('aerialPreview').src = aerialDataUrl; document.getElementById('aerialPreview').style.display='block'; }
+  else { document.getElementById('aerialPreview').style.display='none'; }
+
+  restoreFieldStates(data.fieldStates);
+  refreshLocationSelects();
+
+  SECTIONS.forEach(section=>{
+    const tradeDiv = document.getElementById('trade_'+section.id);
+    if(!tradeDiv) return;
+    const isYes = includeState[section.id] === 'yes';
+    tradeDiv.classList.toggle('included', isYes);
+    const yBtn = tradeDiv.querySelector('.include-toggle .yes');
+    const nBtn = tradeDiv.querySelector('.include-toggle .no');
+    if(yBtn) yBtn.classList.toggle('active', isYes);
+    if(nBtn) nBtn.classList.toggle('active', !isYes);
+  });
+
+  renderSheetThumbs();
+  updateBuilderTabState();
+  setMode(currentMode);
+  drawCanvas();
+  renderAreaTable();
+  refreshAllPreviews();
+}
+
+function saveCurrentJob(){
+  if(!currentJobId) return;
+  const data = serializeCurrentProject();
+  try{
+    localStorage.setItem('mcd_job_'+currentJobId, JSON.stringify(data));
+  }catch(e){
+    alert('Could not save this project — your browser storage may be full. Try removing an old plan sheet image, or export what you need before continuing.');
+    return;
+  }
+  const list = getJobsList();
+  const job = list.find(j=>j.id===currentJobId);
+  if(job){
+    job.name = document.getElementById('projName').value || job.name;
+    job.address = document.getElementById('projAddress').value || job.address;
+    job.pmName = document.getElementById('pmName').value || job.pmName;
+    job.updatedAt = Date.now();
+    job.mode = currentMode;
+    job.includedTradeCount = Object.values(includeState).filter(v=>v==='yes').length;
+    job.totalTradeCount = SECTIONS.length;
+    if(!job.status) job.status = 'Active';
+    saveJobsList(list);
+  }
+  saveCompanySettingsGlobal();
+}
+
+window.addEventListener('beforeunload', function(){
+  if(currentJobId){ try{ saveCurrentJob(); }catch(e){} }
+});
+
+buildRulesPanel();
+buildTradeUI();
+updateBuilderTabState();
+initCanvasInteractions();
+drawCanvas();
+loadCompanySettingsGlobal();
+renderScopeAdminPanel();
+renderDashboard();
+</script>
+</body>
+</html>
