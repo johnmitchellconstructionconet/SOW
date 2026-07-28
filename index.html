@@ -142,7 +142,7 @@
   .dash-job-stats b{color:var(--navy);}
   .dash-job-card-delete{background:none;border:none;color:#c9a;font-size:11px;cursor:pointer;margin-top:8px;text-decoration:underline;}
   .cover-brand-block{text-align:center;padding-top:10px;margin-bottom:34px;}
-  .cover-logo{max-height:76px;margin-bottom:18px;}
+  .cover-logo{max-height:190px;max-width:480px;width:auto;margin-bottom:22px;}
   .cover-title{font-size:25px;font-weight:600;color:var(--navy);margin:6px 0 4px;letter-spacing:.01em;}
   .cover-tagline{font-style:italic;color:var(--primary);margin-bottom:0;font-size:13.5px;letter-spacing:.02em;}
   .cover-doctype-rule{width:70px;height:2px;background:var(--primary);margin:0 auto 14px;}
@@ -1995,7 +1995,10 @@ function generateDoc(){
   if(logoDataUrl){ document.getElementById('docLogo').src=logoDataUrl; document.getElementById('docLogo').style.display='block'; } else document.getElementById('docLogo').style.display='none';
   const aerialWrap = document.getElementById('docAerialWrap');
   if(aerialDataUrl){ document.getElementById('docAerial').src=aerialDataUrl; aerialWrap.style.display='block'; } else aerialWrap.style.display='none';
-  document.getElementById('docDirections').textContent = document.getElementById('directionsText').value;
+  const directionsVal = document.getElementById('directionsText').value.trim();
+  const docDirEl = document.getElementById('docDirections');
+  docDirEl.textContent = directionsVal;
+  docDirEl.style.display = directionsVal ? 'block' : 'none';
 
   function metaItem(label, value){
     return `<div class="cover-meta-item"><span class="cmi-label">${esc(label)}</span><span class="cmi-value">${esc(value)||'—'}</span></div>`;
