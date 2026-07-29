@@ -36,11 +36,22 @@
   .filecheck-row label{display:flex;align-items:center;gap:6px;font-weight:400;font-size:13px;color:#333;}
   .btn{background:var(--primary);color:var(--navy);border:none;padding:12px 22px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;}
   .btn.secondary{background:transparent;border:1px solid var(--navy);color:var(--navy);}
+  .btn.is-done{background:var(--st-confirmed) !important;border-color:var(--st-confirmed) !important;color:#fff !important;}
   .btn.tiny{padding:5px 10px;font-size:11px;border-radius:14px;}
   .actions{position:sticky;bottom:0;background:var(--cream);padding:16px 0;display:flex;gap:10px;justify-content:center;border-top:1px solid #e2ddd0;flex-wrap:wrap;}
 
   /* trade sections */
   .cat-note-wrap{margin:10px 0 4px;padding:10px 12px;background:#fbfaf6;border:1px dashed #ddd6c4;border-radius:6px;}
+  .trade-note-block{margin-top:16px;padding:12px 14px;background:#fbfaf6;border:1px dashed #ddd6c4;border-radius:6px;}
+  .revision-log-row{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid #f1ede3;font-size:12px;}
+  .revision-log-row:last-child{border-bottom:none;}
+  .revision-log-stamp{color:#999;font-weight:600;white-space:nowrap;flex-shrink:0;min-width:150px;}
+  .revision-log-text{color:#333;}
+  .trade-note-block .fld-name{color:var(--rust);}
+  .trade-note-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+  .trade-note-row textarea{flex:1;min-width:160px;font-size:12px;padding:6px 8px;border:1px solid #ddd;border-radius:6px;resize:vertical;min-height:44px;background:#fff;}
+  .trade-note-row .status-select{flex-shrink:0;}
+  .trade-note-row .rm-btn{background:var(--rust);color:#fff;border:none;border-radius:4px;padding:6px 10px;font-size:11px;cursor:pointer;flex-shrink:0;}
   .cat-note-wrap label{font-size:11px;color:#888;margin-bottom:5px;}
   .cat-note-wrap textarea{font-size:12px;}
   .trade-cat{margin-top:20px;font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e2ddd0;padding-bottom:4px;}
@@ -72,6 +83,7 @@
   .matrix-cell textarea{width:100%;resize:vertical;}
 
   .status-select.st-Confirmed{border-left:4px solid var(--st-confirmed);}
+  .status-select.st-Clarification{border-left:4px solid var(--st-reported);}
   .status-select.st-Reported{border-left:4px solid var(--st-reported);}
   .status-select.st-Assumed{border-left:4px solid var(--st-assumed);}
   .status-select.st-Unknown{border-left:4px solid var(--st-unknown);}
@@ -106,7 +118,7 @@
   #docView.showing{display:block;}
   .doc-page{background:#fff;width:850px;margin:0 auto 20px;padding:50px 60px;box-shadow:0 1px 6px rgba(0,0,0,.15);min-height:1100px;}
   .doc-page{position:relative;}
-  .doc-page-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--primary);padding-bottom:9px;margin-bottom:24px;font-size:10.5px;color:var(--navy);}
+  .doc-page-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--primary);padding-bottom:9px;margin-bottom:24px;font-size:10.5px;color:var(--navy);page-break-after:avoid;}
   .doc-page-header .dph-project{font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
   .doc-page-header .dph-address{color:#999;font-weight:500;}
   .doc-page-footer{position:absolute;bottom:28px;left:60px;right:60px;text-align:center;font-size:9.5px;color:#aaa;border-top:1px solid #eee;padding-top:9px;letter-spacing:.02em;}
@@ -158,14 +170,14 @@
   h2.section-head{color:var(--navy);border-bottom:2px solid var(--primary);padding-bottom:6px;}
   .toc-category{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-top:14px;margin-bottom:2px;}
   .toc-item{font-size:13px;padding:4px 0 4px 14px;border-bottom:1px dotted #eee;color:#333;}
-  .doc-category-banner{background:var(--navy);color:#fff;border-radius:8px;padding:12px 18px;margin:0 0 20px;display:flex;align-items:baseline;justify-content:space-between;}
+  .doc-category-banner{background:var(--navy);color:#fff;border-radius:8px;padding:12px 18px;margin:0 0 20px;display:flex;align-items:baseline;justify-content:space-between;page-break-after:avoid;page-break-inside:avoid;}
   .doc-category-banner .cat-label{font-size:15px;font-weight:700;letter-spacing:.02em;}
   .doc-category-banner .cat-count{font-size:11px;color:var(--primary);font-weight:600;}
-  .cat-general-note{background:var(--cream);border-left:3px solid var(--primary);padding:10px 14px;font-size:12px;line-height:1.5;margin-bottom:18px;border-radius:0 6px 6px 0;color:#333;}
+  .cat-general-note{background:var(--cream);border-left:3px solid var(--primary);padding:10px 14px;font-size:12px;line-height:1.5;margin-bottom:18px;border-radius:0 6px 6px 0;color:#333;page-break-after:avoid;page-break-inside:avoid;}
   .trade-card{border:1px solid #e6e1d4;border-radius:8px;padding:16px 20px;margin-bottom:16px;background:#fffdf8;page-break-inside:avoid;}
   .trade-card h3{margin:0 0 12px;font-size:14px;color:var(--navy);font-weight:700;padding-bottom:9px;border-bottom:2px solid var(--primary);display:flex;align-items:center;gap:10px;}
   .trade-num-badge{background:var(--primary);color:var(--navy);width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
-  .loc-room-group{margin-top:16px;padding:12px 14px;background:#fbfaf4;border:1px solid #ece6d6;border-radius:8px;}
+  .loc-room-group{margin-top:16px;padding:12px 14px;background:#fbfaf4;border:1px solid #ece6d6;border-radius:8px;page-break-inside:avoid;}
   .loc-room-group:first-of-type{margin-top:16px;}
   .loc-room-label{font-size:13.5px;font-weight:800;color:var(--navy);letter-spacing:.02em;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--primary);}
   .loc-sub-label{font-size:10.5px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 4px;}
@@ -176,6 +188,7 @@
   .empty-trade-note{font-size:11.5px;color:#999;font-style:italic;padding-left:16px;}
   .status-badge{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:3px;margin-left:6px;letter-spacing:.01em;vertical-align:middle;}
   .status-badge.Confirmed{background:rgba(46,125,50,0.10);color:#2e7d32;}
+  .status-badge.Clarification{background:rgba(21,101,192,0.10);color:#1565c0;}
   .status-badge.Reported{background:rgba(21,101,192,0.10);color:#1565c0;}
   .status-badge.Assumed{background:rgba(176,64,53,0.10);color:#B04035;}
   .status-badge.Unknown{background:rgba(117,117,117,0.12);color:#757575;}
@@ -206,10 +219,14 @@
 
   .assume-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
   .assume-toolbar select{width:auto;padding:6px 10px;font-size:12.5px;}
+  .assume-status-filter-group{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .assume-status-filter-group label{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:400;margin:0;}
+  .assume-status-filter-group input[type=checkbox]{width:13px;height:13px;}
   .assume-summary{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;}
   .assume-chip{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;background:#f2efe6;color:#777;}
   .assume-chip.st-Confirmed{background:rgba(46,125,50,0.12);color:#2e7d32;}
   .assume-chip.st-Assumed{background:rgba(176,64,53,0.12);color:#B04035;}
+  .assume-chip.st-Clarification{background:rgba(21,101,192,0.12);color:#1565c0;}
   .assume-trade-card{border:1px solid #eee;border-radius:8px;margin-bottom:14px;background:#fff;overflow:hidden;}
   .assume-trade-head{background:#f8f6f0;padding:10px 16px;font-size:13px;font-weight:700;color:var(--navy);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;}
   .assume-trade-count{font-size:11px;color:#999;font-weight:600;}
@@ -219,21 +236,54 @@
   .assume-row select{width:140px;flex-shrink:0;font-size:11px;padding:4px 6px;}
   .assume-row.st-Confirmed{border-left-color:var(--st-confirmed);}
   .assume-row.st-Assumed{border-left-color:var(--st-assumed);}
+  .assume-row.st-Clarification{border-left-color:var(--st-reported);}
   .assume-empty-note{color:#999;padding:14px 16px;font-size:12.5px;}
+  .assume-table-scroll{width:100%;overflow-x:auto;}
+  .assume-sheet-table{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff;table-layout:fixed;}
+  .assume-sheet-table th{background:var(--navy);color:#fff;text-align:left;padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.02em;word-wrap:break-word;}
+  .assume-sheet-table td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word;}
+  .assume-sheet-table tr:nth-child(even){background:#fbfaf6;}
+  .assume-sheet-table tr.st-Confirmed{border-left:3px solid var(--st-confirmed);}
+  .assume-sheet-table tr.st-Assumed{border-left:3px solid var(--st-assumed);}
+  .assume-sheet-table tr.st-Clarification{border-left:3px solid var(--st-reported);}
+  .assume-sheet-table td.assume-trade-col{font-weight:700;color:var(--navy);}
+  .assume-sheet-table th.col-trade{width:11%;}
+  .assume-sheet-table th.col-item{width:19%;}
+  .assume-sheet-table th.col-response{width:16%;}
+  .assume-sheet-table th.col-confirmed{width:18%;}
+  .assume-sheet-table th.col-status{width:9%;}
+  .assume-sheet-table th.col-progress{width:15%;}
+  .assume-sheet-table th.col-actions{width:12%;}
+  .assume-sheet-table select{width:100%;font-size:10.5px;padding:4px 3px;}
+  .assume-sheet-table textarea{width:100%;min-height:36px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;resize:vertical;box-sizing:border-box;}
+  .assume-sheet-table select.assume-cat-select{width:100%;font-size:10.5px;padding:4px 3px;}
+  .assume-actions-stack{display:flex;flex-direction:column;gap:4px;}
+  .assume-actions-stack .btn.tiny, .assume-actions-stack .rm-btn{width:100%;text-align:center;padding:4px 2px;font-size:10px;}
+  .assume-sheet-table tr{page-break-inside:avoid;}
+  .assume-attribution{font-size:9.5px;color:#999;margin-top:3px;font-style:italic;}
 
   #planPrintView{display:none;}
+  #assumePrintView{display:none;}
   .plan-print-page{background:#fff;margin:0 auto 20px;box-shadow:0 1px 6px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;overflow:hidden;}
   .plan-print-page img{max-width:100%;max-height:100%;object-fit:contain;}
   .plan-print-page.size-letter{width:8.5in;height:11in;}
   .plan-print-page.size-tabloid{width:11in;height:17in;}
   .plan-print-page.size-ansiD{width:24in;height:36in;}
+  @page mcdDocPage{
+    margin: 0;
+  }
+  .doc-page{ page: mcdDocPage; }
   @media print{
     body *{visibility:hidden;}
-    body:not(.printing-plans) #docView, body:not(.printing-plans) #docView *{visibility:visible;}
-    body:not(.printing-plans) #docView{position:absolute;top:0;left:0;display:block !important;}
+    body:not(.printing-plans):not(.printing-assume) #docView, body:not(.printing-plans):not(.printing-assume) #docView *{visibility:visible;}
+    body:not(.printing-plans):not(.printing-assume) #docView{position:absolute;top:0;left:0;display:block !important;}
     body.printing-plans #planPrintView, body.printing-plans #planPrintView *{visibility:visible;}
     body.printing-plans #planPrintView{position:absolute;top:0;left:0;display:block !important;}
+    body.printing-assume #assumePrintView, body.printing-assume #assumePrintView *{visibility:visible;}
+    body.printing-assume #assumePrintView{position:absolute;top:0;left:0;display:block !important;}
     .doc-page, .plan-print-page{box-shadow:none;margin:0;page-break-after:always;}
+    .doc-page{min-height:0;height:auto;}
+    .doc-page-footer{position:static;margin-top:20px;}
     .no-print{display:none !important;}
   }
 </style>
@@ -321,12 +371,16 @@
 </header>
 
 <div class="tabbar no-print">
-  <button id="tabBtnSettings" onclick="showTab('settings')">Company Settings</button>
-  <button id="tabBtnBuilder" class="locked" onclick="showTab('builder')" title="Upload plan sheets first">Scope Builder</button>
+  <button id="tabBtnSettings" onclick="showTab('settings')" style="display:none;">Company Settings</button>
   <button id="tabBtnAreas" class="active" onclick="showTab('areas')">1. Plan &amp; Areas (start here)</button>
+  <button id="tabBtnBuilder" class="locked" onclick="showTab('builder')" title="Upload plan sheets first">Scope Builder</button>
   <button id="tabBtnAssume" onclick="showTab('assume')">Assumptions Review</button>
-  <button id="tabBtnScopeAdmin" onclick="showTab('scopeadmin')">Manage Scope Items</button>
+  <button id="tabBtnScopeAdmin" onclick="showTab('scopeadmin')" style="display:none;">Manage Scope Items</button>
   <button class="no-print" style="margin-left:auto;background:transparent;border:none;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;" onclick="backToDashboard()">&larr; Save &amp; Back to Dashboard</button>
+</div>
+
+<div id="scopeDirtyBanner" class="no-print" style="display:none;background:var(--rust);color:#fff;text-align:center;padding:8px;font-size:12.5px;font-weight:600;">
+  &#9888; Scope has changed since the document was last generated — click "Generate Document" to update it.
 </div>
 
 <div class="wrap no-print">
@@ -360,6 +414,12 @@
 
   <div class="tabpanel" id="tab_builder">
     <div class="panel">
+      <h2>Revision Log</h2>
+      <div class="helptext">Logged automatically when the scope is marked Approved or Finalized, and whenever a clarification from Assumptions Review is pushed into the scope.</div>
+      <div id="revisionLogList" style="max-height:160px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="panel">
       <h2>Project Information</h2>
       <div class="grid">
         <div class="field"><label>Project Name</label><input type="text" id="projName" placeholder="e.g. Blackburn"></div>
@@ -371,8 +431,16 @@
         <div class="field"><label>Office Manager</label><input type="text" id="omName" value="Kennedy Adamson"></div>
         <div class="field"><label>Office Manager Cell</label><input type="text" id="omCell" value="417.300.0468"></div>
         <div class="field"><label>Up-to-date Plans (date or link)</label><input type="text" id="plansDate"></div>
-        <div class="field"><label>Approved Date</label><input type="date" id="approvedDate"></div>
-        <div class="field"><label>Finalized Date</label><input type="date" id="finalizedDate"></div>
+        <div class="field">
+          <label>Approved Date</label>
+          <input type="date" id="approvedDate">
+          <button type="button" id="approveBtn" class="btn secondary tiny" style="margin-top:6px;" onclick="markApprovedToday()">Mark as Approved Today</button>
+        </div>
+        <div class="field">
+          <label>Finalized Date</label>
+          <input type="date" id="finalizedDate">
+          <button type="button" id="finalizeBtn" class="btn secondary tiny" style="margin-top:6px;" onclick="markFinalizedToday()">Mark as Finalized Today</button>
+        </div>
         <div class="field"><label>Project Type</label>
           <select id="projType"><option>New Custom Home</option><option>Full Renovation</option><option>Addition</option><option>Remodel (Occupied)</option></select>
         </div>
@@ -408,6 +476,24 @@
       <h2>Trade &amp; Selection Fields</h2>
       <div class="helptext">Every trade defaults to <b>not included</b>. Click "Include: Yes" to open it up. Each field shows its control type — Pick One (radio), Pick Any (checkboxes), Per-Location (add a row per instance), or Required Input (free text). The small dropdown next to each answer tracks whether it's Confirmed, Reported, Assumed, Unknown, or needs Investigation — same convention as your written SOWs.</div>
       <div id="tradeContainer"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Takeoff Attachments</h2>
+      <div class="helptext">Attach a takeoff PDF (or image) and tag it with the trade/category it belongs to. Each page is embedded as a preview at the end of the generated document, grouped under that category.</div>
+      <div class="grid">
+        <div class="field">
+          <label>Category</label>
+          <input type="text" id="takeoffLabelInput" list="takeoffLabelSuggestions" placeholder="Type or select a category from the scope of work">
+          <datalist id="takeoffLabelSuggestions"></datalist>
+        </div>
+        <div class="field">
+          <label>Upload Takeoff File(s)</label>
+          <input type="file" id="takeoffUpload" accept="application/pdf,image/*" multiple onchange="handleTakeoffUpload(event)">
+        </div>
+      </div>
+      <div class="helptext" style="margin-top:-6px;">Not seeing the category you need? Just type it in — it isn't limited to the list.</div>
+      <div id="takeoffFilesList"></div>
     </div>
   </div>
 
@@ -496,7 +582,7 @@
     <div class="panel">
       <h2>Print / Export Labeled Plan Set</h2>
       <div class="helptext">Prints every uploaded sheet with its markers and labels baked in. Use your browser's print dialog to save as a PDF, or send straight to a printer.</div>
-      <div class="grid">
+      <div class="grid no-dirty-track">
         <div class="field"><label>Print Size</label>
           <select id="printPageSize">
             <option value="letter">Letter (8.5 x 11 in)</option>
@@ -517,18 +603,38 @@
   <div class="tabpanel" id="tab_assume">
     <div class="panel">
       <h2>Assumptions Review</h2>
-      <div class="helptext">Every field you've filled in across every included trade, grouped by trade, with its status. Change the status here and it updates the same control back in Scope Builder — this is a different view of the same data, not a separate copy.</div>
+      <div class="helptext">Every field you've filled in across every included trade, one row per item, with its status. Change the status here and it updates the same control back in Scope Builder — this is a different view of the same data, not a separate copy. Use Progress Notes to track how each item is being resolved. Once a client responds, write the final wording in <b>Confirmed Scope</b> — that's the exact text that goes into the document when pushed. Use "+ Add Item" below to log a clarification or assumption directly here — those stay in this review list only and are never added to the generated Scope of Work until pushed.</div>
       <div class="assume-toolbar">
         <label style="margin:0;font-weight:600;font-size:12px;">Filter by status:</label>
-        <select id="assumeStatusFilter" onchange="renderAssumptionsTab()">
-          <option value="all">All statuses</option>
-          <option value="">Not tracked</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Assumed">Assumed</option>
-        </select>
+        <div class="assume-status-filter-group no-dirty-track" id="assumeStatusFilterGroup">
+          <label><input type="checkbox" value="Clarification" checked onchange="renderAssumptionsTab()"> Clarification</label>
+          <label><input type="checkbox" value="Assumed" checked onchange="renderAssumptionsTab()"> Assumed</label>
+        </div>
+        <button class="btn secondary tiny" onclick="addStandaloneAssumption()">+ Add Item</button>
+        <button class="btn secondary tiny" onclick="toggleAssumeArchiveView()" id="assumeArchiveToggleBtn">View Pushed Items</button>
+        <button class="btn secondary tiny" onclick="exportAssumptionsReview()">Export / Print Assumptions Review</button>
         <div class="assume-summary" id="assumeSummary"></div>
       </div>
-      <div id="assumeCardsContainer"></div>
+      <div class="assume-table-scroll">
+        <table class="assume-sheet-table" id="assumeSheetTable">
+          <thead>
+            <tr><th class="col-trade">Trade / Category</th><th class="col-item">Item / Question</th><th class="col-response">Client Response</th><th class="col-confirmed">Confirmed Scope</th><th class="col-status">Status</th><th class="col-progress">Progress Notes</th><th class="col-actions"></th></tr>
+          </thead>
+          <tbody id="assumeSheetBody"></tbody>
+        </table>
+      </div>
+      <div id="assumeArchiveWrap" style="display:none;margin-top:18px;">
+        <h2 style="font-size:13px;">Pushed / Archived Items</h2>
+        <div class="helptext">Items that have already been pushed into the scope. Kept here permanently for reference — nothing is deleted when you push.</div>
+        <div class="assume-table-scroll">
+          <table class="assume-sheet-table">
+            <thead>
+              <tr><th class="col-trade">Category</th><th class="col-item">Item / Question</th><th class="col-response">Client Response</th><th class="col-confirmed">Confirmed Scope (Pushed)</th><th>Pushed To</th><th>Pushed On</th></tr>
+            </thead>
+            <tbody id="assumeArchiveBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -550,6 +656,7 @@
       <div class="grid">
         <div class="field"><label>Trade</label>
           <select id="adminTradeSelect" onchange="renderAdminFieldList()"></select>
+          <button type="button" class="btn secondary tiny" style="margin-top:6px;border-color:var(--rust);color:var(--rust);" onclick="deleteTradeEntirely(document.getElementById('adminTradeSelect').value)">Delete This Entire Trade</button>
         </div>
         <div class="field"><label>Field</label>
           <select id="adminFieldSelect" onchange="renderAdminOptionAdder()"></select>
@@ -583,13 +690,6 @@
       <h2>Add a New Trade Section</h2>
       <div class="grid">
         <div class="field"><label>Trade Title</label><input type="text" id="adminNewTradeTitle" placeholder="e.g. 2.10 Solar / Backup Power"></div>
-        <div class="field"><label>Category</label>
-          <select id="adminNewTradeCat">
-            <option>Sitework & Structure</option>
-            <option>Core Building Systems</option>
-            <option>Interior & Exterior Finishes</option>
-          </select>
-        </div>
       </div>
       <button class="btn" onclick="addNewTrade()">Add Trade Section (then add fields to it above)</button>
     </div>
@@ -598,6 +698,7 @@
 </div>
 
 <div id="planPrintView"></div>
+<div id="assumePrintView"></div>
 
 <div class="actions no-print">
   <button class="btn secondary" onclick="loadSample()">Load Sample Data</button>
@@ -607,6 +708,7 @@
 
 <div id="docView">
   <div class="doc-page" id="pageCover">
+    <div class="doc-page-header" id="coverPageHeader"></div>
     <div class="cover-brand-block">
       <img id="docLogo" class="cover-logo" style="display:none;">
       <div id="docCompanyName" class="cover-title"></div>
@@ -622,10 +724,15 @@
   </div>
   <div class="doc-page">
     <div class="doc-page-header" id="staticHeader2"></div>
+    <div id="docPostFinalizationBanner" style="display:none;background:var(--rust);color:#fff;padding:12px 16px;border-radius:6px;font-size:12.5px;font-weight:600;margin-bottom:18px;"></div>
     <h2 class="section-head">General Notes</h2>
     <div id="docGeneralNotes" style="font-size:12.5px;line-height:1.6;margin-top:14px;"></div>
     <h2 class="section-head" style="margin-top:26px;">Table of Contents</h2>
     <div id="docTOC"></div>
+    <div id="docRevisionLogSection" style="display:none;">
+      <h2 class="section-head" style="margin-top:26px;">Revision Log</h2>
+      <div id="docRevisionLog" style="font-size:11.5px;line-height:1.6;margin-top:10px;"></div>
+    </div>
     <div class="doc-page-footer" id="staticFooter2"></div>
   </div>
   <div id="pageSectionsWrap"></div>
@@ -662,6 +769,58 @@ function renderScopeAdminPanel(){
   });
   if(current) sel.value = current;
   renderAdminFieldList();
+}
+
+function isFieldOptionInUse(section, fIdx, optIdx){
+  const base = section.id+'__'+fIdx;
+  const field = section.fields[fIdx];
+  if(field.ctype === 'pickone'){
+    const el = document.getElementById('ro_'+base+'_'+optIdx);
+    return !!(el && el.checked);
+  }
+  if(field.ctype === 'pickany'){
+    const el = document.getElementById('ck_'+base+'_'+optIdx);
+    return !!(el && el.checked);
+  }
+  return false; // per-location fields store selections by text, not index — not checked here
+}
+
+function deleteFieldOption(sectionId, fIdx, optIdx){
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(!section) return;
+  const field = section.fields[fIdx];
+  const optionText = field.options[optIdx];
+  const inUse = isFieldOptionInUse(section, fIdx, optIdx);
+  const warn = inUse
+    ? '\n\nThis option is currently selected in the project you have open right now — deleting it will clear that selection.'
+    : '\n\nIf any other saved project has this option selected, it will simply stop showing once that project is opened again — nothing will crash, but that selection will effectively disappear from its scope.';
+  if(!confirm('Delete the option "'+optionText+'" from "'+field.name+'"?'+warn)) return;
+  field.options.splice(optIdx,1);
+  saveSectionsOverride();
+  rebuildScopeUIPreservingAnswers();
+  renderAdminFieldList();
+}
+
+function deleteFieldEntirely(sectionId, fIdx){
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(!section) return;
+  const field = section.fields[fIdx];
+  if(!confirm('Delete the entire field "'+field.name+'" from "'+section.title+'"?\n\nAny answers already saved under this field — in this project or any other — will no longer appear anywhere once removed. This cannot be undone from here.')) return;
+  section.fields.splice(fIdx,1);
+  saveSectionsOverride();
+  rebuildScopeUIPreservingAnswers();
+  renderAdminFieldList();
+}
+
+function deleteTradeEntirely(sectionId){
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(!section){ alert('Pick a trade first.'); return; }
+  if(!confirm('Delete the entire trade "'+section.title+'" — including all of its fields and options — from the scope of work?\n\nAny answers already saved under this trade — in this project or any other — will no longer appear anywhere once removed. This cannot be undone from here.')) return;
+  SECTIONS = SECTIONS.filter(s=>s.id!==sectionId);
+  saveSectionsOverride();
+  rebuildScopeUIPreservingAnswers();
+  renderScopeAdminPanel();
+  populateTakeoffLabelSuggestions();
 }
 
 function renderAdminFieldList(){
@@ -752,11 +911,38 @@ function renderAdminOptionAdder(){
   };
   row.appendChild(inp); row.appendChild(btn);
   wrap.appendChild(row);
-  const list = document.createElement('div');
-  list.className = 'helptext';
-  list.style.marginTop = '8px';
-  list.textContent = 'Current options: ' + ((field.options||[]).join(', ') || '(none / free text)');
-  wrap.appendChild(list);
+
+  const optListWrap = document.createElement('div');
+  optListWrap.style.marginTop = '8px';
+  const optListLabel = document.createElement('div');
+  optListLabel.className = 'helptext';
+  optListLabel.style.marginBottom = '4px';
+  optListLabel.textContent = 'Current options (click Remove to delete one):';
+  optListWrap.appendChild(optListLabel);
+  (field.options||[]).forEach((opt, optIdx)=>{
+    const optRow = document.createElement('div');
+    optRow.style.display = 'flex'; optRow.style.justifyContent = 'space-between'; optRow.style.alignItems = 'center';
+    optRow.style.padding = '4px 8px'; optRow.style.fontSize = '12px'; optRow.style.borderBottom = '1px solid #f1ede3';
+    const optText = document.createElement('span'); optText.textContent = opt;
+    const optRmBtn = document.createElement('button');
+    optRmBtn.type = 'button'; optRmBtn.className = 'rm-btn'; optRmBtn.textContent = 'Remove';
+    optRmBtn.onclick = ()=> deleteFieldOption(section.id, fIdx, optIdx);
+    optRow.appendChild(optText); optRow.appendChild(optRmBtn);
+    optListWrap.appendChild(optRow);
+  });
+  if(!(field.options||[]).length){
+    const none = document.createElement('div');
+    none.className = 'helptext';
+    none.textContent = '(none / free text)';
+    optListWrap.appendChild(none);
+  }
+  wrap.appendChild(optListWrap);
+
+  const deleteFieldBtn = document.createElement('button');
+  deleteFieldBtn.type = 'button'; deleteFieldBtn.className = 'btn secondary tiny'; deleteFieldBtn.style.marginTop = '14px'; deleteFieldBtn.style.borderColor='var(--rust)'; deleteFieldBtn.style.color='var(--rust)';
+  deleteFieldBtn.textContent = 'Delete This Entire Field';
+  deleteFieldBtn.onclick = ()=> deleteFieldEntirely(section.id, fIdx);
+  wrap.appendChild(deleteFieldBtn);
 }
 
 function addNewFieldToTrade(){
@@ -793,9 +979,8 @@ function addNewFieldToTrade(){
 function addNewTrade(){
   const title = document.getElementById('adminNewTradeTitle').value.trim();
   if(!title){ alert('Trade title is required.'); return; }
-  const cat = document.getElementById('adminNewTradeCat').value;
   const id = 'custom_' + title.toLowerCase().replace(/[^a-z0-9]+/g,'_') + '_' + Date.now();
-  SECTIONS.push({ id, title, cat, fields: [] });
+  SECTIONS.push({ id, title, fields: [] });
   saveSectionsOverride();
   rebuildScopeUIPreservingAnswers();
   renderScopeAdminPanel();
@@ -804,7 +989,7 @@ function addNewTrade(){
   document.getElementById('adminNewTradeTitle').value = '';
   alert('Added trade "'+title+'". Now add fields to it above.');
 }
-const STATUS_OPTS = ["", "Confirmed", "Assumed"];
+const STATUS_OPTS = ["", "Clarification", "Confirmed", "Assumed"];
 
 let currentMode = 'RFP';
 let logoDataUrl = '';
@@ -812,6 +997,14 @@ let aerialDataUrl = '';
 let includeState = {}; // key: sectionId -> 'yes'|'no'
 let userSetInclude = {}; // key: sectionId -> true once the user has explicitly clicked Include Yes/No
 let matrixRows = {}; // key: sectionId -> array of {loc, cells:{fIdx:{sel,arr,note,status}}}
+let tradeNotes = {}; // key: sectionId -> {text, status} — one general note per trade, separate from per-field notes
+let assumeProgressNotes = {}; // key: statusElId -> text — tracks resolution progress on an individual assumption (e.g. "waiting on client verification")
+let standaloneAssumptions = []; // {id, category, text, status, progressNote} — items added directly in Assumptions Review, NOT tied to any scope field and NEVER included in the generated SOW/RFP document
+let docHasBeenGenerated = false; // whether this project's document has ever been generated, so it can be silently re-shown on reopen instead of requiring a manual click
+let scopeDirtySinceGenerate = false; // true once something scope-relevant changes after the last generate, until the next generate clears it
+let postFinalizationChangeDetected = false; // true if a scope edit happened while finalizedDate was already set — surfaced as a warning on the next generated document, then cleared
+let tradesRevisedAfterFinalization = {}; // sectionId -> true, so the specific trade's card can carry a "REVISED" badge in the next generated document
+let revisionLog = []; // {timestamp, entry} — logs Approved/Finalized actions and clarifications pushed into scope
 const matrixRenderers = {}; // key: sectionId -> {locFields, container} for re-rendering when areaRegister changes
 
 // ===== Plan & Areas state =====
@@ -849,14 +1042,117 @@ function setStatusValue(id, value){
   if(typeof el.onchange === 'function'){ el.onchange(); } else { el.dispatchEvent(new Event('change')); }
 }
 
+function getSelectedAssumeStatuses(){
+  const group = document.getElementById('assumeStatusFilterGroup');
+  if(!group) return ['Clarification', 'Assumed'];
+  return Array.from(group.querySelectorAll('input[type=checkbox]')).filter(c=>c.checked).map(c=>c.value);
+}
+
 function renderAssumptionsTab(){
-  const container = document.getElementById('assumeCardsContainer');
-  const filterSel = document.getElementById('assumeStatusFilter');
-  const filterVal = filterSel ? filterSel.value : 'all';
-  container.innerHTML = '';
-  const counts = { '': 0, 'Confirmed': 0, 'Assumed': 0 };
+  const tbody = document.getElementById('assumeSheetBody');
+  const selectedStatuses = getSelectedAssumeStatuses();
+  tbody.innerHTML = '';
+  const counts = { '': 0, 'Clarification': 0, 'Confirmed': 0, 'Assumed': 0 };
   let anyRowAtAll = false;
   let anyRowShown = false;
+
+  standaloneAssumptions.forEach(item=>{
+    if(item.pushedToScope) return; // lives in the archive view instead — see toggleAssumeArchiveView
+    anyRowAtAll = true;
+    counts[item.status || ''] = (counts[item.status || ''] || 0) + 1;
+    if(item.status === 'Confirmed') return; // resolved, no longer needs review
+    if(item.status && !selectedStatuses.includes(item.status)) return; // blank status always shows (needs classifying); Clarification/Assumed respect the filter
+    anyRowShown = true;
+
+    const tr = document.createElement('tr');
+    tr.className = (item.status ? 'st-'+slugStatus(item.status) : '') ;
+    tr.style.background = '#fdf9ee';
+
+    const tdCat = document.createElement('td');
+    tdCat.className = 'assume-trade-col';
+    const catSel = document.createElement('select');
+    catSel.className = 'assume-cat-select';
+    const catBlank = document.createElement('option'); catBlank.value=''; catBlank.textContent='— Select —';
+    catSel.appendChild(catBlank);
+    SECTIONS.forEach(s=>{ const o=document.createElement('option'); o.value=s.title; o.textContent=s.title; if(item.category===s.title) o.selected=true; catSel.appendChild(o); });
+    catSel.onchange = ()=>{ item.category = catSel.value; };
+    tdCat.appendChild(catSel);
+    tr.appendChild(tdCat);
+
+    const tdItem = document.createElement('td');
+    const itemTa = document.createElement('textarea');
+    itemTa.rows = 2;
+    itemTa.placeholder = 'The question...';
+    itemTa.value = item.text || '';
+    itemTa.oninput = ()=>{
+      item.text = itemTa.value;
+      if(!item.createdBy && currentUserName) { item.createdBy = currentUserName; addedByEl.textContent = 'Added by: '+item.createdBy; }
+    };
+    tdItem.appendChild(itemTa);
+    const addedByEl = document.createElement('div');
+    addedByEl.className = 'assume-attribution';
+    addedByEl.textContent = item.createdBy ? ('Added by: '+item.createdBy) : '';
+    tdItem.appendChild(addedByEl);
+    tr.appendChild(tdItem);
+
+    const tdResponse = document.createElement('td');
+    const responseTa = document.createElement('textarea');
+    responseTa.rows = 2;
+    responseTa.placeholder = 'What the client said...';
+    responseTa.value = item.clientResponse || '';
+    responseTa.oninput = ()=>{
+      item.clientResponse = responseTa.value;
+      item.respondedBy = currentUserName || item.respondedBy || '';
+      respondedByEl.textContent = item.respondedBy ? ('Answered by: '+item.respondedBy) : '';
+    };
+    tdResponse.appendChild(responseTa);
+    const respondedByEl = document.createElement('div');
+    respondedByEl.className = 'assume-attribution';
+    respondedByEl.textContent = item.respondedBy ? ('Answered by: '+item.respondedBy) : '';
+    tdResponse.appendChild(respondedByEl);
+    tr.appendChild(tdResponse);
+
+    const tdConfirmed = document.createElement('td');
+    const confirmedTa = document.createElement('textarea');
+    confirmedTa.rows = 2;
+    confirmedTa.placeholder = 'Final wording for the scope...';
+    confirmedTa.value = item.confirmedScope || '';
+    confirmedTa.oninput = ()=>{ item.confirmedScope = confirmedTa.value; };
+    tdConfirmed.appendChild(confirmedTa);
+    tr.appendChild(tdConfirmed);
+
+    const tdStatus = document.createElement('td');
+    const sel = document.createElement('select');
+    STATUS_OPTS.forEach(s=>{ const opt=document.createElement('option'); opt.value=s; opt.textContent = s || 'Not tracked'; if(s===item.status) opt.selected=true; sel.appendChild(opt); });
+    sel.onchange = ()=>{ item.status = sel.value; renderAssumptionsTab(); };
+    tdStatus.appendChild(sel);
+    tr.appendChild(tdStatus);
+
+    const tdProgress = document.createElement('td');
+    const progressTa = document.createElement('textarea');
+    progressTa.rows = 2;
+    progressTa.placeholder = 'e.g. waiting on client...';
+    progressTa.value = item.progressNote || '';
+    progressTa.oninput = ()=>{ item.progressNote = progressTa.value; };
+    tdProgress.appendChild(progressTa);
+    tr.appendChild(tdProgress);
+
+    const tdActions = document.createElement('td');
+    const actionsStack = document.createElement('div');
+    actionsStack.className = 'assume-actions-stack';
+    const pushBtn = document.createElement('button');
+    pushBtn.type = 'button'; pushBtn.className = 'btn tiny'; pushBtn.textContent = 'Push to Scope';
+    pushBtn.onclick = ()=> pushStandaloneToScope(item.id);
+    actionsStack.appendChild(pushBtn);
+    const rmBtn = document.createElement('button');
+    rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove';
+    rmBtn.onclick = ()=> removeStandaloneAssumption(item.id);
+    actionsStack.appendChild(rmBtn);
+    tdActions.appendChild(actionsStack);
+    tr.appendChild(tdActions);
+
+    tbody.appendChild(tr);
+  });
 
   SECTIONS.forEach(section=>{
     if(includeState[section.id] !== 'yes') return;
@@ -864,48 +1160,250 @@ function renderAssumptionsTab(){
     section.fields.forEach((field, fIdx)=>{
       getFieldLineObjs(section, field, fIdx).forEach(o=> rows.push(o));
     });
+    const notesArr = tradeNotes[section.id] || [];
+    notesArr.forEach((note, nIdx)=>{
+      if(note.text && note.text.trim()){
+        rows.push({ text: 'Trade Note: '+note.text.trim(), status: note.status || '', statusElId: 'tradenotestatus_'+section.id+'_'+nIdx });
+      }
+    });
     if(!rows.length) return;
-    rows.forEach(o=>{ anyRowAtAll = true; counts[o.status || ''] = (counts[o.status || ''] || 0) + 1; });
-    const filteredRows = (filterVal === 'all') ? rows : rows.filter(o => (o.status||'') === filterVal);
+    rows.forEach(o=>{ if(o.status === 'Clarification' || o.status === 'Assumed'){ anyRowAtAll = true; } counts[o.status || ''] = (counts[o.status || ''] || 0) + 1; });
+    const filteredRows = rows.filter(o => (o.status === 'Clarification' || o.status === 'Assumed') && selectedStatuses.includes(o.status));
     if(!filteredRows.length) return;
     anyRowShown = true;
 
-    const card = document.createElement('div');
-    card.className = 'assume-trade-card';
-    const head = document.createElement('div');
-    head.className = 'assume-trade-head';
-    head.innerHTML = '<span>'+esc(section.title)+'</span><span class="assume-trade-count">'+filteredRows.length+' item'+(filteredRows.length>1?'s':'')+'</span>';
-    card.appendChild(head);
-
     filteredRows.forEach(o=>{
-      const row = document.createElement('div');
-      row.className = 'assume-row ' + (o.status ? 'st-'+slugStatus(o.status) : 'st-none');
-      const textSpan = document.createElement('span');
-      textSpan.className = 'assume-row-text';
-      textSpan.textContent = o.text;
+      const tr = document.createElement('tr');
+      tr.className = o.status ? 'st-'+slugStatus(o.status) : '';
+
+      const tdTrade = document.createElement('td');
+      tdTrade.className = 'assume-trade-col';
+      tdTrade.textContent = section.title;
+      tr.appendChild(tdTrade);
+
+      const tdItem = document.createElement('td');
+      tdItem.textContent = o.text;
+      tr.appendChild(tdItem);
+
+      tr.appendChild(document.createElement('td')); // Client Response — n/a for scope-derived rows
+      tr.appendChild(document.createElement('td')); // Confirmed Scope — n/a for scope-derived rows
+
+      const tdStatus = document.createElement('td');
       const sel = document.createElement('select');
       STATUS_OPTS.forEach(s=>{ const opt=document.createElement('option'); opt.value=s; opt.textContent = s || 'Not tracked'; if(s===o.status) opt.selected=true; sel.appendChild(opt); });
       sel.onchange = ()=>{ setStatusValue(o.statusElId, sel.value); renderAssumptionsTab(); };
-      row.appendChild(textSpan);
-      row.appendChild(sel);
-      card.appendChild(row);
+      tdStatus.appendChild(sel);
+      tr.appendChild(tdStatus);
+
+      const tdProgress = document.createElement('td');
+      const progressTa = document.createElement('textarea');
+      progressTa.rows = 2;
+      progressTa.placeholder = 'e.g. waiting...';
+      progressTa.value = assumeProgressNotes[o.statusElId] || '';
+      progressTa.oninput = ()=>{ assumeProgressNotes[o.statusElId] = progressTa.value; };
+      tdProgress.appendChild(progressTa);
+      tr.appendChild(tdProgress);
+
+      tr.appendChild(document.createElement('td'));
+
+      tbody.appendChild(tr);
     });
-    container.appendChild(card);
   });
 
   const summary = document.getElementById('assumeSummary');
   if(summary){
     summary.innerHTML =
-      '<span class="assume-chip st-Confirmed">Confirmed: '+(counts['Confirmed']||0)+'</span>'+
       '<span class="assume-chip st-Assumed">Assumed: '+(counts['Assumed']||0)+'</span>'+
-      '<span class="assume-chip">Not tracked: '+(counts['']||0)+'</span>';
+      '<span class="assume-chip st-Clarification">Clarification: '+(counts['Clarification']||0)+'</span>';
   }
 
   if(!anyRowAtAll){
-    container.innerHTML = '<div class="assume-empty-note">No fields filled in yet — go to Scope Builder and include a trade to see it here.</div>';
+    tbody.innerHTML = '<tr><td colspan="7" class="assume-empty-note">No fields filled in yet — go to Scope Builder and include a trade, or click "+ Add Item" to log one directly here.</td></tr>';
   } else if(!anyRowShown){
-    container.innerHTML = '<div class="assume-empty-note">No items match this filter.</div>';
+    tbody.innerHTML = '<tr><td colspan="7" class="assume-empty-note">No items match this filter.</td></tr>';
   }
+}
+
+function addStandaloneAssumption(){
+  const id = 'standalone_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  standaloneAssumptions.unshift({id, category:'', text:'', status:'', progressNote:'', clientResponse:'', confirmedScope:'', createdBy: currentUserName || '', respondedBy: '', pushedToScope: false, pushedAt: null, pushedToSectionTitle: ''});
+  renderAssumptionsTab();
+}
+function removeStandaloneAssumption(id){
+  if(!confirm('Remove this item from the review list?')) return;
+  standaloneAssumptions = standaloneAssumptions.filter(a=>a.id!==id);
+  renderAssumptionsTab();
+}
+
+function pushStandaloneToScope(id){
+  const item = standaloneAssumptions.find(a=>a.id===id);
+  if(!item) return;
+  if(!item.text || !item.text.trim()){ alert('This item has no question/description yet — add that before pushing it to scope.'); return; }
+  const catValue = (item.category || '').trim();
+  const targetSection = SECTIONS.find(s=> s.title === catValue);
+  if(!targetSection){
+    alert('Pick a category first — use the dropdown in that row to choose which trade this belongs to.');
+    return;
+  }
+  if(!item.confirmedScope || !item.confirmedScope.trim()){
+    alert('Fill in "Confirmed Scope" first — that\u2019s the exact wording that goes into the document. The question and client response are for reference only and are not pushed.');
+    return;
+  }
+  const textToPush = item.confirmedScope.trim();
+
+  if(!confirm('Push this to "'+targetSection.title+'"?\n\n"'+textToPush+'"\n\nIt will be added as a resolved note with no status, and that trade will be marked Included if it isn\u2019t already. The original item stays here under "View Pushed Items" for reference — nothing is deleted.')) return;
+
+  tradeNotes[targetSection.id] = tradeNotes[targetSection.id] || [];
+  const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
+  const newNoteId = 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  tradeNotes[targetSection.id].push({text: textToPush, status: '', id: newNoteId, revisedAfterFinalization: !!finalizedVal});
+  const wasAlreadyIncluded = includeState[targetSection.id] === 'yes';
+  includeState[targetSection.id] = 'yes';
+  userSetInclude[targetSection.id] = true;
+
+  item.pushedToScope = true;
+  item.pushedAt = Date.now();
+  item.pushedToSectionTitle = targetSection.title;
+  item.pushedToSectionId = targetSection.id;
+  item.pushedNoteId = newNoteId;
+
+  addRevisionLogEntry('Pushed clarification to "'+targetSection.title+'": '+textToPush);
+
+  if(finalizedVal){ tradesRevisedAfterFinalization[targetSection.id] = true; }
+
+  rebuildScopeUIPreservingAnswers();
+  renderAssumptionsTab();
+  markScopeDirty(true); // trade-level tracking already handled explicitly above
+  scheduleAutosave();
+
+  alert('Pushed to "'+targetSection.title+'."' + (wasAlreadyIncluded ? '' : ' That trade has been marked Included since it wasn\u2019t already.'));
+}
+
+function toggleAssumeArchiveView(){
+  const wrap = document.getElementById('assumeArchiveWrap');
+  const btn = document.getElementById('assumeArchiveToggleBtn');
+  const showing = wrap.style.display !== 'none';
+  if(showing){
+    wrap.style.display = 'none';
+    btn.textContent = 'View Pushed Items';
+  } else {
+    renderAssumeArchive();
+    wrap.style.display = 'block';
+    btn.textContent = 'Hide Pushed Items';
+  }
+}
+
+function renderAssumeArchive(){
+  const tbody = document.getElementById('assumeArchiveBody');
+  tbody.innerHTML = '';
+  const pushed = standaloneAssumptions.filter(a=>a.pushedToScope);
+  if(!pushed.length){
+    tbody.innerHTML = '<tr><td colspan="6" class="assume-empty-note">No items have been pushed to scope yet.</td></tr>';
+    return;
+  }
+  const sorted = pushed.slice().sort((a,b)=> (b.pushedAt||0)-(a.pushedAt||0));
+  sorted.forEach(item=>{
+    const d = item.pushedAt ? new Date(item.pushedAt) : null;
+    const stamp = d ? (d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})) : '';
+    const tr = document.createElement('tr');
+
+    const tdCat = document.createElement('td');
+    tdCat.className = 'assume-trade-col';
+    tdCat.textContent = item.category || '';
+    tr.appendChild(tdCat);
+
+    const tdItem = document.createElement('td');
+    const itemTa = document.createElement('textarea');
+    itemTa.rows = 2;
+    itemTa.value = item.text || '';
+    itemTa.oninput = ()=>{ item.text = itemTa.value; scheduleAutosave(); };
+    tdItem.appendChild(itemTa);
+    if(item.createdBy){ const a=document.createElement('div'); a.className='assume-attribution'; a.textContent='Added by: '+item.createdBy; tdItem.appendChild(a); }
+    tr.appendChild(tdItem);
+
+    const tdResponse = document.createElement('td');
+    const responseTa = document.createElement('textarea');
+    responseTa.rows = 2;
+    responseTa.value = item.clientResponse || '';
+    responseTa.oninput = ()=>{ item.clientResponse = responseTa.value; scheduleAutosave(); };
+    tdResponse.appendChild(responseTa);
+    if(item.respondedBy){ const a=document.createElement('div'); a.className='assume-attribution'; a.textContent='Answered by: '+item.respondedBy; tdResponse.appendChild(a); }
+    tr.appendChild(tdResponse);
+
+    const tdConfirmed = document.createElement('td');
+    const confirmedTa = document.createElement('textarea');
+    confirmedTa.rows = 2;
+    confirmedTa.value = item.confirmedScope || '';
+    const syncNote = document.createElement('div');
+    syncNote.className = 'assume-attribution';
+    confirmedTa.oninput = ()=>{
+      const previousValue = item.confirmedScope;
+      item.confirmedScope = confirmedTa.value;
+
+      // Repair legacy items pushed before ID-based linking existed: recover the section
+      // from the recorded title, then find the matching note by its current text (which
+      // should still equal what was originally pushed, since nothing else changed it).
+      if(!item.pushedToSectionId && item.pushedToSectionTitle){
+        const matchSection = SECTIONS.find(s=>s.title === item.pushedToSectionTitle);
+        if(matchSection) item.pushedToSectionId = matchSection.id;
+      }
+      let liveNote = item.pushedNoteId ? (tradeNotes[item.pushedToSectionId]||[]).find(n=>n.id === item.pushedNoteId) : null;
+      if(!liveNote && item.pushedToSectionId && !item.pushedNoteId){
+        const candidate = (tradeNotes[item.pushedToSectionId]||[]).find(n=> n.text === previousValue);
+        if(candidate){
+          if(!candidate.id){ candidate.id = 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000); }
+          item.pushedNoteId = candidate.id;
+          liveNote = candidate;
+        }
+      }
+
+      if(liveNote){
+        liveNote.text = confirmedTa.value;
+        const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
+        if(finalizedVal){ liveNote.revisedAfterFinalization = true; tradesRevisedAfterFinalization[item.pushedToSectionId] = true; }
+        syncNote.textContent = 'Synced to live scope' + (finalizedVal ? '' : ' (mark the project Finalized for changes like this to show a Revised tag)');
+        markScopeDirty(true);
+      } else {
+        syncNote.textContent = 'Could not locate the matching note in the current scope — this happens if it was already edited directly in Scope Builder since being pushed, or removed there. Only this archived record was updated; check that trade\u2019s notes directly if the live wording needs to change too.';
+      }
+      scheduleAutosave();
+    };
+    tdConfirmed.appendChild(confirmedTa);
+    tdConfirmed.appendChild(syncNote);
+    tr.appendChild(tdConfirmed);
+
+    const tdPushedTo = document.createElement('td');
+    tdPushedTo.textContent = item.pushedToSectionTitle || '';
+    tr.appendChild(tdPushedTo);
+
+    const tdPushedOn = document.createElement('td');
+    tdPushedOn.textContent = stamp;
+    tr.appendChild(tdPushedOn);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function todayLocalISO(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return yyyy+'-'+mm+'-'+dd;
+}
+function markApprovedToday(){
+  document.getElementById('approvedDate').value = todayLocalISO();
+  addRevisionLogEntry('Marked as Approved');
+  markScopeDirty();
+  updateApproveFinalizeButtonStyles();
+  scheduleAutosave();
+}
+function markFinalizedToday(){
+  document.getElementById('finalizedDate').value = todayLocalISO();
+  addRevisionLogEntry('Marked as Finalized');
+  markScopeDirty(true); // true = don't treat the act of finalizing itself as a "change after finalization"
+  updateApproveFinalizeButtonStyles();
+  scheduleAutosave();
 }
 
 function updateBuilderTabState(){
@@ -983,33 +1481,7 @@ function buildRulesPanel(){
 
 function buildTradeUI(){
   const container = document.getElementById('tradeContainer');
-  const byCat = {};
-  SECTIONS.forEach(s=>{ const c = s.cat || 'Other'; byCat[c] = byCat[c] || []; byCat[c].push(s); });
-  const order = ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'];
-  const rendered = new Set();
-  function renderCatGroup(cat){
-    if(!byCat[cat] || !byCat[cat].length) return;
-    rendered.add(cat);
-    const catDiv = document.createElement('div');
-    catDiv.className = 'trade-cat';
-    catDiv.textContent = cat;
-    container.appendChild(catDiv);
-
-    const noteWrap = document.createElement('div');
-    noteWrap.className = 'cat-note-wrap';
-    const noteLbl = document.createElement('label');
-    noteLbl.textContent = 'General notes for ' + cat + ' (optional — appears at the top of this category page in the generated document)';
-    const noteTa = document.createElement('textarea');
-    noteTa.id = 'catnote_' + catSlug(cat);
-    noteTa.rows = 2;
-    noteWrap.appendChild(noteLbl);
-    noteWrap.appendChild(noteTa);
-    container.appendChild(noteWrap);
-
-    byCat[cat].forEach(section=> container.appendChild(renderSection(section)));
-  }
-  order.forEach(renderCatGroup);
-  Object.keys(byCat).forEach(cat=>{ if(!rendered.has(cat)) renderCatGroup(cat); });
+  SECTIONS.forEach(section=> container.appendChild(renderSection(section)));
 }
 function catSlug(cat){ return cat.replace(/[^a-zA-Z0-9]+/g,'_'); }
 
@@ -1036,6 +1508,18 @@ function rebuildScopeUIPreservingAnswers(){
     if(nBtn) nBtn.classList.toggle('active', !isYes);
   });
   refreshAllPreviews();
+  populateTakeoffLabelSuggestions();
+}
+
+function populateTakeoffLabelSuggestions(){
+  const list = document.getElementById('takeoffLabelSuggestions');
+  if(!list) return;
+  list.innerHTML = '';
+  SECTIONS.forEach(section=>{
+    const opt = document.createElement('option');
+    opt.value = section.title;
+    list.appendChild(opt);
+  });
 }
 
 function renderSection(section){
@@ -1080,6 +1564,8 @@ function renderSection(section){
     body.appendChild(renderLocationMatrix(section, g, locGroups[g]));
   });
 
+  body.appendChild(renderTradeNoteBlock(section));
+
   const preview = document.createElement('div');
   preview.className = 'assembled-preview';
   preview.id = 'preview_'+section.id;
@@ -1088,6 +1574,72 @@ function renderSection(section){
 
   div.appendChild(body);
   return div;
+}
+
+function renderTradeNoteBlock(section){
+  const wrap = document.createElement('div');
+  wrap.className = 'fld trade-note-block';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'fld-name';
+  nameEl.textContent = 'Trade Notes / Clarifications';
+  wrap.appendChild(nameEl);
+
+  const helpline = document.createElement('div');
+  helpline.className = 'helptext';
+  helpline.style.marginBottom = '8px';
+  helpline.textContent = 'Separate from the notes on individual fields above. Add one line per note and tag each independently.';
+  wrap.appendChild(helpline);
+
+  const rowsContainer = document.createElement('div');
+  rowsContainer.id = 'tradenoterows_'+section.id;
+  wrap.appendChild(rowsContainer);
+
+  function renderRows(){
+    rowsContainer.innerHTML = '';
+    const notes = tradeNotes[section.id] || [];
+    notes.forEach((note, nIdx)=>{
+      if(!note.id){ note.id = 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000); }
+      const row = document.createElement('div');
+      row.className = 'trade-note-row';
+      const ta = document.createElement('textarea');
+      ta.rows = 2;
+      ta.placeholder = 'Note, clarification, or assumption...';
+      ta.value = note.text || '';
+      ta.oninput = ()=>{
+        note.text = ta.value;
+        const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
+        if(finalizedVal){ note.revisedAfterFinalization = true; }
+      };
+      row.appendChild(ta);
+
+      const sel = buildStatusSelect('tradenotestatus_'+section.id+'_'+nIdx);
+      sel.value = note.status || '';
+      sel.className = 'status-select' + (note.status ? ' st-'+slugStatus(note.status) : '');
+      sel.onchange = ()=>{
+        note.status = sel.value;
+        sel.className = 'status-select'+(sel.value?' st-'+slugStatus(sel.value):'');
+      };
+      row.appendChild(sel);
+
+      const rmBtn = document.createElement('button');
+      rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove';
+      rmBtn.onclick = ()=>{ notes.splice(nIdx,1); renderRows(); };
+      row.appendChild(rmBtn);
+
+      rowsContainer.appendChild(row);
+    });
+  }
+  renderRows();
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button'; addBtn.className = 'add-row-btn'; addBtn.textContent = '+ Add Note';
+  addBtn.onclick = ()=>{
+    tradeNotes[section.id] = tradeNotes[section.id] || [];
+    tradeNotes[section.id].push({text:'', status:'', id: 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000)});
+    renderRows();
+  };
+  wrap.appendChild(addBtn);
+  return wrap;
 }
 
 function matrixKey(sectionId, locGroup){
@@ -1301,6 +1853,80 @@ async function addSheetFromBlob(name, blob){
     updateBuilderTabState();
   };
   img.src = url;
+}
+
+let takeoffFiles = []; // {id, label, name, imageDataUrl, storagePath}
+
+async function handleTakeoffUpload(e){
+  const files = Array.from(e.target.files || []);
+  const label = (document.getElementById('takeoffLabelInput').value || '').trim() || 'Unlabeled Takeoff';
+  for(const file of files){
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if(isPdf){
+      if(!window.pdfjsLib){
+        alert('PDF reader did not load (no internet access to the CDN?). Export the page as a PNG/JPG and upload that instead.');
+        continue;
+      }
+      try{
+        const arrayBuffer = await file.arrayBuffer();
+        const typedarray = new Uint8Array(arrayBuffer);
+        const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
+        for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+          const page = await pdf.getPage(pageNum);
+          const baseViewport = page.getViewport({scale: 2});
+          const scale = Math.min(2, MAX_SHEET_DIMENSION / Math.max(baseViewport.width, baseViewport.height));
+          const viewport = page.getViewport({scale: Math.max(scale, 0.5)});
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = viewport.width;
+          tempCanvas.height = viewport.height;
+          const ctx = tempCanvas.getContext('2d');
+          await page.render({canvasContext: ctx, viewport: viewport}).promise;
+          const blob = await new Promise(res=> tempCanvas.toBlob(res, 'image/jpeg', 0.88));
+          const pageLabel = pdf.numPages > 1 ? (file.name + ' — p' + pageNum) : file.name;
+          await addTakeoffFromBlob(label, pageLabel, blob, 'jpg');
+        }
+      } catch(err){
+        alert('Could not read "'+file.name+'" ('+err.message+'). Try exporting it as a PNG/JPG instead.');
+      }
+    } else {
+      await addTakeoffFromBlob(label, file.name, file, (file.type==='image/png' ? 'png' : 'jpg'));
+    }
+  }
+  e.target.value = '';
+  document.getElementById('takeoffLabelInput').value = '';
+}
+
+async function addTakeoffFromBlob(label, name, blob, ext){
+  const id = 'takeoff_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+  const jobPrefix = currentJobId || 'unfiled';
+  const path = jobPrefix+'/takeoffs/'+id+'.'+ext;
+  const url = await uploadToStorage(blob, path);
+  if(!url) return;
+  takeoffFiles.push({id, label, name, imageDataUrl: url, storagePath: path});
+  renderTakeoffFilesList();
+}
+
+function deleteTakeoffFile(id){
+  if(!confirm('Remove this takeoff attachment? It will no longer appear in the generated document.')) return;
+  takeoffFiles = takeoffFiles.filter(t=>t.id!==id);
+  renderTakeoffFilesList();
+}
+
+function renderTakeoffFilesList(){
+  const wrap = document.getElementById('takeoffFilesList');
+  if(!wrap) return;
+  if(!takeoffFiles.length){ wrap.innerHTML = '<div class="helptext">No takeoff files attached yet.</div>'; return; }
+  const byLabel = {};
+  takeoffFiles.forEach(t=>{ byLabel[t.label] = byLabel[t.label] || []; byLabel[t.label].push(t); });
+  let html = '';
+  Object.keys(byLabel).forEach(label=>{
+    html += `<div style="margin-top:12px;"><div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;">${esc(label)} (${byLabel[label].length})</div>`;
+    byLabel[label].forEach(t=>{
+      html += `<div class="row-item" style="justify-content:space-between;"><span style="flex:1;">${esc(t.name)}</span><button type="button" class="rm-btn" onclick="deleteTakeoffFile('${t.id}')">Remove</button></div>`;
+    });
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
 }
 
 function renderSheetThumbs(){
@@ -1990,14 +2616,33 @@ function loadSample(){
 
 function pageHeaderHtml(){
   const proj = document.getElementById('projName').value || '(Project name not set)';
-  const addr = document.getElementById('projAddress').value || '';
-  return `<div class="doc-page-header"><span class="dph-project">${esc(proj)}</span><span class="dph-address">${esc(addr)}</span></div>`;
+  const genDate = new Date().toLocaleDateString();
+  return `<div class="doc-page-header"><span class="dph-project">${esc(proj)}</span><span class="dph-address">${esc(genDate)}</span></div>`;
 }
 function pageFooterHtml(){
   return `<div class="doc-page-footer">${esc(document.getElementById('footerLine').value || '')}</div>`;
 }
 
-function generateDoc(){
+function generateDoc(silent){
+  docHasBeenGenerated = true;
+  scopeDirtySinceGenerate = false;
+  updateScopeDirtyBanner();
+
+  const finalizedValForBanner = document.getElementById('finalizedDate').value;
+  const postFinalBanner = document.getElementById('docPostFinalizationBanner');
+  if(postFinalizationChangeDetected){
+    if(finalizedValForBanner){
+      const todayStr = new Date().toLocaleDateString();
+      postFinalBanner.innerHTML = '&#9888; REVISED AFTER FINALIZATION — This document was regenerated on '+esc(todayStr)+' after being finalized on '+esc(finalizedValForBanner)+'. Trades should review the Revision Log below for what changed since finalization.';
+      postFinalBanner.style.display = 'block';
+    } else {
+      postFinalBanner.style.display = 'none';
+    }
+    postFinalizationChangeDetected = false;
+  } else {
+    postFinalBanner.style.display = 'none';
+  }
+
   if(currentJobId){ saveCurrentJob(); }
   const docView = document.getElementById('docView');
   docView.classList.add('showing');
@@ -2030,7 +2675,8 @@ function generateDoc(){
     metaItem('Approved / Finalized', (document.getElementById('approvedDate').value||'—')+' / '+(document.getElementById('finalizedDate').value||'—'));
 
   document.getElementById('staticHeader2').className = 'doc-page-header';
-  document.getElementById('staticHeader2').innerHTML = '<span class="dph-project">'+esc(document.getElementById('projName').value||'')+'</span><span class="dph-address">'+esc(document.getElementById('projAddress').value||'')+'</span>';
+  document.getElementById('staticHeader2').innerHTML = '<span class="dph-project">'+esc(document.getElementById('projName').value||'')+'</span><span class="dph-address">'+esc(new Date().toLocaleDateString())+'</span>';
+  document.getElementById('coverPageHeader').innerHTML = '<span class="dph-project">'+esc(document.getElementById('projName').value||'')+'</span><span class="dph-address">'+esc(new Date().toLocaleDateString())+'</span>';
   document.getElementById('staticFooter2').className = 'doc-page-footer';
   document.getElementById('staticFooter2').textContent = footer;
 
@@ -2046,9 +2692,10 @@ function generateDoc(){
     const badge = o.status ? ` <span class="status-badge ${o.status.replace(/ /g,'-')}">${esc(o.status)}</span>` : '';
     return `<li>${esc(o.text)}${badge}</li>`;
   }
-  function buildTradeCardHtml(tradeNum, label, lineObjs, locGroups){
+  function buildTradeCardHtml(tradeNum, label, lineObjs, locGroups, tradeNotesArr, isRevised){
     locGroups = locGroups || [];
-    if(!lineObjs.length && !locGroups.length){
+    const validNotes = (tradeNotesArr || []).filter(n=> n.text && n.text.trim());
+    if(!lineObjs.length && !locGroups.length && !validNotes.length){
       return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3><div class="empty-trade-note">Included, but no fields specified yet.</div></div>`;
     }
     let body = '';
@@ -2065,67 +2712,110 @@ function generateDoc(){
       });
       body += `</div>`;
     });
-    return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3>${body}</div>`;
+    if(validNotes.length){
+      const noteLines = validNotes.map(n=>{
+        const badge = n.status ? ` <span class="status-badge ${n.status.replace(/ /g,'-')}">${esc(n.status)}</span>` : '';
+        const revisedTag = n.revisedAfterFinalization ? ` <span class="status-badge Reported" style="text-transform:uppercase;">Revised</span>` : '';
+        return esc(n.text.trim()).replace(/\n/g,'<br>') + badge + revisedTag;
+      });
+      body += `<div class="cat-general-note" style="margin-top:14px;"><b>Trade Notes / Clarifications:</b><br>${noteLines.join('<br>')}</div>`;
+    }
+    const revisedBadge = isRevised ? ' <span class="status-badge Reported" style="text-transform:uppercase;">Revised '+esc(new Date().toLocaleDateString())+'</span>' : '';
+    return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}${revisedBadge}</h3>${body}</div>`;
   }
   function textLines(str){ return str.split('\n').filter(l=>l.trim().length).map(l=>({text:l, status:''})); }
 
-  const CATEGORY_ORDER = ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes','Selection Packages','Specialty Items','Other'];
   const included = SECTIONS.filter(s=> includeState[s.id]==='yes');
-  const byCat = {};
-  included.forEach(s=>{ const c = s.cat || 'Other'; byCat[c] = byCat[c] || []; byCat[c].push(s); });
-
   let tocHtml = '';
   let tradeCounter = 0;
   let pagesHtml = '';
-  CATEGORY_ORDER.forEach(cat=>{
-    const list = byCat[cat];
-    if(!list || !list.length) return;
-    tocHtml += `<div class="toc-category">${esc(cat)}</div>`;
-    let pageHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">${esc(cat)}</span><span class="cat-count">${list.length} trade${list.length>1?'s':''}</span></div>`;
-    const catNoteEl = document.getElementById('catnote_'+catSlug(cat));
-    if(catNoteEl && catNoteEl.value.trim()){
-      pageHtml += `<div class="cat-general-note"><b>General Notes — ${esc(cat)}:</b><br>${esc(catNoteEl.value.trim()).replace(/\n/g,'<br>')}</div>`;
-    }
-    list.forEach(s=>{
+  const revisedTradeIdsToClear = [];
+
+  if(included.length){
+    // Measure each trade card's real rendered height off-screen, then greedily pack
+    // cards into page-sized chunks. This replaces guessing at page breaks with actual
+    // pixel measurements, so the header/footer repeat at the correct physical page
+    // boundaries instead of only appearing once at the top of one long flowing block.
+    const MEASURE_WIDTH = 730; // matches .doc-page's content width (850 total minus 60px padding each side)
+    const TARGET_CHUNK_HEIGHT = 800; // conservative budget per physical page, leaving room for header/footer/margins
+    const measureEl = document.createElement('div');
+    measureEl.style.position = 'absolute';
+    measureEl.style.left = '-9999px';
+    measureEl.style.top = '0';
+    measureEl.style.width = MEASURE_WIDTH + 'px';
+    document.body.appendChild(measureEl);
+
+    const builtCards = included.map(s=>{
       tradeCounter++;
-      tocHtml += `<div class="toc-item">${tradeCounter}. ${esc(s.title)}</div>`;
+      const isRevised = !!tradesRevisedAfterFinalization[s.id];
+      if(isRevised) revisedTradeIdsToClear.push(s.id);
+      tocHtml += `<div class="toc-item">${tradeCounter}. ${esc(s.title)}${isRevised ? ' — <span style="color:var(--rust);font-weight:700;">REVISED</span>' : ''}</div>`;
       const objs = getUngroupedLineObjs(s);
       const rowGroups = getLocationGroupsForSection(s);
-      pageHtml += buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups);
+      const cardHtml = buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups, tradeNotes[s.id], isRevised);
+      measureEl.innerHTML = cardHtml;
+      const height = measureEl.offsetHeight;
+      return { cardHtml, height };
     });
-    pageHtml += pageFooterHtml() + `</div>`;
-    pagesHtml += pageHtml;
+    document.body.removeChild(measureEl);
+
+    const chunks = [];
+    let currentChunk = [];
+    let currentHeight = 0;
+    builtCards.forEach(card=>{
+      if(currentChunk.length && (currentHeight + card.height > TARGET_CHUNK_HEIGHT)){
+        chunks.push(currentChunk);
+        currentChunk = [];
+        currentHeight = 0;
+      }
+      currentChunk.push(card.cardHtml);
+      currentHeight += card.height;
+    });
+    if(currentChunk.length) chunks.push(currentChunk);
+
+    chunks.forEach(chunk=>{
+      let pageHtml = `<div class="doc-page">` + pageHeaderHtml();
+      chunk.forEach(cardHtml=>{ pageHtml += cardHtml; });
+      pageHtml += pageFooterHtml() + `</div>`;
+      pagesHtml += pageHtml;
+    });
+  }
+  revisedTradeIdsToClear.forEach(id=> delete tradesRevisedAfterFinalization[id]);
+  included.forEach(s=>{
+    (tradeNotes[s.id] || []).forEach(n=>{ if(n.revisedAfterFinalization){ n.revisedAfterFinalization = false; } });
   });
 
   // Trades explicitly marked "Include: No" — shown on the document itself so exclusion
   // is a stated fact, not an absence someone has to notice and interpret.
-  const excludedByCat = {};
-  SECTIONS.forEach(s=>{
-    if(includeState[s.id] === 'no' && userSetInclude[s.id]){
-      const c = s.cat || 'Other';
-      excludedByCat[c] = excludedByCat[c] || [];
-      excludedByCat[c].push(s.title);
-    }
-  });
-  const excludedCats = Object.keys(excludedByCat);
-  if(excludedCats.length){
-    const excludedTotal = excludedCats.reduce((n,c)=>n+excludedByCat[c].length,0);
+  const excludedTrades = SECTIONS.filter(s=> includeState[s.id] === 'no' && userSetInclude[s.id]);
+  if(excludedTrades.length){
     tocHtml += `<div class="toc-category">Excluded From This Scope</div>`;
-    let exPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Excluded From This Scope</span><span class="cat-count">${excludedTotal} trade${excludedTotal>1?'s':''}</span></div>`;
+    let exPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Excluded From This Scope</span><span class="cat-count">${excludedTrades.length} trade${excludedTrades.length>1?'s':''}</span></div>`;
     exPage += `<div class="cat-general-note">The trades below were reviewed for this project and are confirmed <b>NOT</b> part of this scope of work. If any become needed, they require a change order or scope revision.</div>`;
-    excludedCats.forEach(cat=>{
-      exPage += `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">${esc(cat)}</div><ul class="clean-list">`;
-      excludedByCat[cat].forEach(title=>{
-        exPage += `<li>${esc(title)} <span class="status-badge" style="background:rgba(117,117,117,0.14);color:#666;">NOT INCLUDED</span></li>`;
-        tocHtml += `<div class="toc-item">${esc(title)} — Not Included</div>`;
-      });
-      exPage += `</ul></div>`;
+    exPage += `<ul class="clean-list">`;
+    excludedTrades.forEach(s=>{
+      exPage += `<li>${esc(s.title)} <span class="status-badge" style="background:rgba(117,117,117,0.14);color:#666;">NOT INCLUDED</span></li>`;
+      tocHtml += `<div class="toc-item">${esc(s.title)} — Not Included</div>`;
     });
+    exPage += `</ul>`;
     exPage += pageFooterHtml() + `</div>`;
     pagesHtml += exPage;
   }
   tocHtml += `<div class="toc-category">Project Closeout</div><div class="toc-item">Final Walkthrough & Completion – Trade Requirements</div><div class="toc-item">Final Cleanup</div>`;
   document.getElementById('docTOC').innerHTML = tocHtml;
+
+  const revLogSection = document.getElementById('docRevisionLogSection');
+  if(revisionLog.length){
+    const sortedLog = revisionLog.slice().sort((a,b)=> b.timestamp - a.timestamp);
+    document.getElementById('docRevisionLog').innerHTML = sortedLog.map(r=>{
+      const d = new Date(r.timestamp);
+      const stamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      return '&bull; <b>'+esc(stamp)+(r.by?' — '+esc(r.by):'')+':</b> '+esc(r.entry);
+    }).join('<br>');
+    revLogSection.style.display = 'block';
+  } else {
+    revLogSection.style.display = 'none';
+  }
 
   let closeoutPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Closeout</span><span class="cat-count">2 items</span></div>`;
   closeoutPage += buildTradeCardHtml('W', 'Final Walkthrough & Completion – Trade Requirements', textLines(document.getElementById('closeoutWalkthrough').value));
@@ -2156,8 +2846,25 @@ function generateDoc(){
     pagesHtml += plansHtml;
   }
 
+  if(takeoffFiles.length){
+    const byLabel = {};
+    takeoffFiles.forEach(t=>{ byLabel[t.label] = byLabel[t.label] || []; byLabel[t.label].push(t); });
+    const labelKeys = Object.keys(byLabel);
+    let takeoffHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Takeoff Attachments</span><span class="cat-count">${labelKeys.length} label${labelKeys.length>1?'s':''}</span></div>`;
+    takeoffHtml += `<div class="helptext" style="margin-bottom:14px;">Reference takeoff files attached for this project, grouped by trade/label.</div>`;
+    labelKeys.forEach(label=>{
+      takeoffHtml += `<div class="loc-room-group"><div class="loc-room-label">${esc(label)}</div>`;
+      byLabel[label].forEach(t=>{
+        takeoffHtml += `<div style="margin-bottom:14px;"><div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:5px;">${esc(t.name)}</div><img src="${t.imageDataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
+      });
+      takeoffHtml += `</div>`;
+    });
+    takeoffHtml += pageFooterHtml() + `</div>`;
+    pagesHtml += takeoffHtml;
+  }
+
   document.getElementById('pageSectionsWrap').innerHTML = pagesHtml;
-  docView.scrollIntoView({behavior:'smooth'});
+  if(!silent){ docView.scrollIntoView({behavior:'smooth'}); }
 }
 
 const CLOSEOUT_DEFAULTS = {
@@ -2230,9 +2937,82 @@ function printPlanSet(){
     if(wasShowingDoc) docView.classList.add('showing');
   }, 300);
 }
+
+function exportAssumptionsReview(){
+  const selectedStatuses = getSelectedAssumeStatuses();
+  const STATUS_LABELS = { 'Clarification': 'Clarification', 'Assumed': 'Assumed' };
+  const filterLabel = (selectedStatuses.length === 2)
+    ? 'All statuses'
+    : (selectedStatuses.length ? selectedStatuses.map(s=>STATUS_LABELS[s]).join(', ') : 'None selected');
+
+  let bodyHtml = pageHeaderHtml();
+  bodyHtml += `<h2 class="section-head">Assumptions Review</h2>`;
+  bodyHtml += `<div class="helptext" style="margin:10px 0 16px;">Filter applied: ${esc(filterLabel)}</div>`;
+
+  let tableRows = '';
+  let any = false;
+
+  standaloneAssumptions.forEach(item=>{
+    if(item.pushedToScope) return;
+    if(item.status === 'Confirmed') return;
+    if(item.status && !selectedStatuses.includes(item.status)) return;
+    if(!item.text || !item.text.trim()) return;
+    any = true;
+    const statusLabel = item.status || 'Not tracked';
+    const badgeClass = item.status ? item.status.replace(/ /g,'-') : 'Unknown';
+    const addedLine = item.createdBy ? `<div class="assume-attribution">Added by: ${esc(item.createdBy)}</div>` : '';
+    const respondedLine = item.respondedBy ? `<div class="assume-attribution">Answered by: ${esc(item.respondedBy)}</div>` : '';
+    tableRows += `<tr><td class="assume-trade-col">${esc(item.category || 'General')}</td><td class="assume-item-col">${esc(item.text)}${addedLine}</td><td>${esc(item.clientResponse || '')}${respondedLine}</td><td>${esc(item.confirmedScope || '')}</td><td><span class="status-badge ${badgeClass}">${esc(statusLabel)}</span></td><td>${esc(item.progressNote || '')}</td></tr>`;
+  });
+
+  SECTIONS.forEach(section=>{
+    if(includeState[section.id] !== 'yes') return;
+    let rows = [];
+    section.fields.forEach((field, fIdx)=>{
+      getFieldLineObjs(section, field, fIdx).forEach(o=> rows.push(o));
+    });
+    (tradeNotes[section.id] || []).forEach((note, nIdx)=>{
+      if(note.text && note.text.trim()){
+        rows.push({ text: 'Trade Note: '+note.text.trim(), status: note.status || '', statusElId: 'tradenotestatus_'+section.id+'_'+nIdx });
+      }
+    });
+    if(!rows.length) return;
+    const filteredRows = rows.filter(o => (o.status === 'Clarification' || o.status === 'Assumed') && selectedStatuses.includes(o.status));
+    if(!filteredRows.length) return;
+    any = true;
+    filteredRows.forEach(o=>{
+      const statusLabel = o.status || 'Not tracked';
+      const badgeClass = o.status ? o.status.replace(/ /g,'-') : 'Unknown';
+      const progressNote = esc(assumeProgressNotes[o.statusElId] || '');
+      tableRows += `<tr><td class="assume-trade-col">${esc(section.title)}</td><td class="assume-item-col">${esc(o.text)}</td><td></td><td></td><td><span class="status-badge ${badgeClass}">${esc(statusLabel)}</span></td><td>${progressNote}</td></tr>`;
+    });
+  });
+
+  bodyHtml += `<table class="assume-sheet-table"><thead><tr><th>Trade</th><th>Item / Question</th><th>Client Response</th><th>Confirmed Scope</th><th>Status</th><th>Progress / Resolution Notes</th></tr></thead><tbody>`;
+  bodyHtml += any ? tableRows : `<tr><td colspan="6" class="assume-empty-note">No items match this filter.</td></tr>`;
+  bodyHtml += `</tbody></table>`;
+  bodyHtml += pageFooterHtml();
+
+  const container = document.getElementById('assumePrintView');
+  container.innerHTML = `<div class="doc-page">${bodyHtml}</div>`;
+
+  const docView = document.getElementById('docView');
+  const wasShowingDoc = docView.classList.contains('showing');
+  docView.classList.remove('showing');
+  document.body.classList.add('printing-assume');
+  container.style.display = 'block';
+  window.print();
+  setTimeout(function(){
+    document.body.classList.remove('printing-assume');
+    container.style.display = 'none';
+    if(wasShowingDoc) docView.classList.add('showing');
+  }, 300);
+}
 window.onafterprint = function(){
   document.body.classList.remove('printing-plans');
   document.getElementById('planPrintView').style.display = 'none';
+  document.body.classList.remove('printing-assume');
+  document.getElementById('assumePrintView').style.display = 'none';
 };
 
 let currentJobId = null;
@@ -2470,7 +3250,8 @@ function backToDashboard(){
 }
 
 function resetToolStateBlank(){
-  includeState = {}; userSetInclude = {}; matrixRows = {}; areaRegister = []; planSheets = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
+  includeState = {}; userSetInclude = {}; matrixRows = {}; tradeNotes = {}; assumeProgressNotes = {}; standaloneAssumptions = []; areaRegister = []; planSheets = []; takeoffFiles = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
+  docHasBeenGenerated = false; scopeDirtySinceGenerate = false; revisionLog = []; postFinalizationChangeDetected = false; tradesRevisedAfterFinalization = {};
   document.getElementById('tradeContainer').innerHTML = '';
   Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
   buildTradeUI();
@@ -2485,7 +3266,6 @@ function resetToolStateBlank(){
   document.getElementById('gnHOA').checked = false;
   document.getElementById('closeoutWalkthrough').value = CLOSEOUT_DEFAULTS.walkthrough;
   document.getElementById('closeoutCleanup').value = CLOSEOUT_DEFAULTS.cleanup;
-  ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'].forEach(cat=>{ const el=document.getElementById('catnote_'+catSlug(cat)); if(el) el.value=''; });
   document.getElementById('logoPreview').style.display = logoDataUrl ? 'block' : 'none';
   document.getElementById('aerialPreview').style.display='none';
   updateBuilderTabState();
@@ -2493,7 +3273,12 @@ function resetToolStateBlank(){
   renderSheetThumbs();
   drawCanvas();
   renderAreaTable();
+  renderTakeoffFilesList();
   refreshAllPreviews();
+  document.getElementById("docView").classList.remove("showing");
+  updateScopeDirtyBanner();
+  renderRevisionLog();
+  updateApproveFinalizeButtonStyles();
 }
 
 function getVal(id){ const el=document.getElementById(id); if(!el) return null; if(el.type==='checkbox') return el.checked; return el.value; }
@@ -2578,10 +3363,17 @@ function serializeCurrentProject(){
   const data = { fields:{}, checkboxes:{}, catNotes:{} };
   PROJECT_FIELD_IDS.forEach(id=> data.fields[id] = getVal(id));
   PROJECT_CHECKBOX_IDS.forEach(id=> data.checkboxes[id] = getVal(id));
-  ['Sitework & Structure','Core Building Systems','Interior & Exterior Finishes'].forEach(cat=>{ data.catNotes[catSlug(cat)] = getVal('catnote_'+catSlug(cat)); });
   data.includeState = JSON.parse(JSON.stringify(includeState));
   data.userSetInclude = JSON.parse(JSON.stringify(userSetInclude));
   data.matrixRows = JSON.parse(JSON.stringify(matrixRows));
+  data.tradeNotes = JSON.parse(JSON.stringify(tradeNotes));
+  data.assumeProgressNotes = JSON.parse(JSON.stringify(assumeProgressNotes));
+  data.takeoffFiles = takeoffFiles.map(t=>({id:t.id, label:t.label, name:t.name, imageDataUrl:t.imageDataUrl, storagePath:t.storagePath}));
+  data.standaloneAssumptions = JSON.parse(JSON.stringify(standaloneAssumptions));
+  data.docHasBeenGenerated = docHasBeenGenerated;
+  data.postFinalizationChangeDetected = postFinalizationChangeDetected;
+  data.tradesRevisedAfterFinalization = JSON.parse(JSON.stringify(tradesRevisedAfterFinalization));
+  data.revisionLog = JSON.parse(JSON.stringify(revisionLog));
   data.areaRegister = JSON.parse(JSON.stringify(areaRegister));
   // planSheets now hold Storage URLs (imageDataUrl) + storagePath, not base64 — stays small
   data.planSheets = planSheets.map(s=>({id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, storagePath:s.storagePath, sheetType:s.sheetType}));
@@ -2597,6 +3389,22 @@ function restoreProject(data){
   includeState = {}; Object.assign(includeState, data.includeState||{});
   userSetInclude = {}; Object.assign(userSetInclude, data.userSetInclude||{});
   matrixRows = {}; Object.assign(matrixRows, data.matrixRows||{});
+  tradeNotes = {};
+  const rawTradeNotes = data.tradeNotes || {};
+  Object.keys(rawTradeNotes).forEach(sid=>{
+    const val = rawTradeNotes[sid];
+    if(Array.isArray(val)){ tradeNotes[sid] = val; }
+    else if(val && (val.text || val.status)){ tradeNotes[sid] = [{text: val.text||'', status: val.status||''}]; }
+    else { tradeNotes[sid] = []; }
+  });
+  assumeProgressNotes = {}; Object.assign(assumeProgressNotes, data.assumeProgressNotes||{});
+  takeoffFiles = (data.takeoffFiles || []).slice();
+  standaloneAssumptions = (data.standaloneAssumptions || []).slice();
+  docHasBeenGenerated = !!data.docHasBeenGenerated;
+  postFinalizationChangeDetected = !!data.postFinalizationChangeDetected;
+  tradesRevisedAfterFinalization = data.tradesRevisedAfterFinalization ? JSON.parse(JSON.stringify(data.tradesRevisedAfterFinalization)) : {};
+  scopeDirtySinceGenerate = false;
+  revisionLog = (data.revisionLog || []).slice();
   areaRegister = (data.areaRegister||[]).slice();
   planSheets = (data.planSheets||[]).map(s=>{ const img = new Image(); img.crossOrigin='anonymous'; img.src = s.imageDataUrl; return {id:s.id, name:s.name, imageDataUrl:s.imageDataUrl, storagePath:s.storagePath, sheetType:s.sheetType, img}; });
   activeSheetId = planSheets.length ? planSheets[0].id : null;
@@ -2632,7 +3440,16 @@ function restoreProject(data){
   setMode(currentMode);
   drawCanvas();
   renderAreaTable();
+  renderTakeoffFilesList();
   refreshAllPreviews();
+  renderRevisionLog();
+  updateScopeDirtyBanner();
+  updateApproveFinalizeButtonStyles();
+  if(docHasBeenGenerated){
+    generateDoc(true);
+  } else {
+    document.getElementById('docView').classList.remove('showing');
+  }
 }
 
 async function saveCurrentJob(){
@@ -2661,6 +3478,65 @@ function scheduleAutosave(){
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(()=>{ saveCurrentJob(); }, 1800);
 }
+
+function markScopeDirty(eventOrSkip){
+  if(!docHasBeenGenerated) return; // nothing generated yet, nothing to go stale
+  scopeDirtySinceGenerate = true;
+  updateScopeDirtyBanner();
+  if(eventOrSkip === true) return; // explicit skip — used when the trade-specific tracking was already handled by the caller, or for actions (like finalizing itself) that shouldn't count as a post-finalization edit
+  const finalizedEl = document.getElementById('finalizedDate');
+  if(!finalizedEl || !finalizedEl.value) return;
+
+  let sectionId = null;
+  if(eventOrSkip && eventOrSkip.target && typeof eventOrSkip.target.closest === 'function'){
+    const tradeDiv = eventOrSkip.target.closest('.trade');
+    if(tradeDiv && tradeDiv.id){ sectionId = tradeDiv.id.replace(/^trade_/, ''); }
+  }
+
+  if(sectionId){
+    if(!tradesRevisedAfterFinalization[sectionId]){
+      tradesRevisedAfterFinalization[sectionId] = true;
+      const section = SECTIONS.find(s=>s.id===sectionId);
+      addRevisionLogEntry('Scope modified after finalization: "'+(section?section.title:sectionId)+'" (originally finalized '+finalizedEl.value+')');
+    }
+  } else if(!postFinalizationChangeDetected){
+    postFinalizationChangeDetected = true;
+    addRevisionLogEntry('Scope modified after finalization (originally finalized '+finalizedEl.value+')');
+  }
+}
+
+function updateApproveFinalizeButtonStyles(){
+  const approveBtn = document.getElementById('approveBtn');
+  const finalizeBtn = document.getElementById('finalizeBtn');
+  const approvedVal = document.getElementById('approvedDate') ? document.getElementById('approvedDate').value : '';
+  const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
+  if(approveBtn) approveBtn.classList.toggle('is-done', !!approvedVal);
+  if(finalizeBtn) finalizeBtn.classList.toggle('is-done', !!finalizedVal);
+}
+
+function updateScopeDirtyBanner(){
+  const banner = document.getElementById('scopeDirtyBanner');
+  if(!banner) return;
+  banner.style.display = (docHasBeenGenerated && scopeDirtySinceGenerate) ? 'block' : 'none';
+}
+
+function addRevisionLogEntry(text){
+  revisionLog.push({ timestamp: Date.now(), entry: text, by: currentUserName || '' });
+  renderRevisionLog();
+}
+
+function renderRevisionLog(){
+  const wrap = document.getElementById('revisionLogList');
+  if(!wrap) return;
+  if(!revisionLog.length){ wrap.innerHTML = '<div class="helptext" style="margin:0;">No revisions logged yet.</div>'; return; }
+  const sorted = revisionLog.slice().sort((a,b)=> b.timestamp - a.timestamp);
+  wrap.innerHTML = sorted.map(r=>{
+    const d = new Date(r.timestamp);
+    const stamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    return '<div class="revision-log-row"><span class="revision-log-stamp">'+esc(stamp)+(r.by?' — '+esc(r.by):'')+'</span><span class="revision-log-text">'+esc(r.entry)+'</span></div>';
+  }).join('');
+}
+
 window.addEventListener('beforeunload', function(){
   if(currentJobId){ clearTimeout(autosaveTimer); saveCurrentJob(); }
 });
@@ -2676,14 +3552,15 @@ async function initApp(){
   updateBuilderTabState();
   initCanvasInteractions();
   drawCanvas();
+  populateTakeoffLabelSuggestions();
   await loadCompanySettingsGlobal();
   renderScopeAdminPanel();
   await renderDashboard();
   // Wire autosave now that #toolShell exists in the DOM
   const shell = document.getElementById('toolShell');
   if(shell){
-    shell.addEventListener('input', scheduleAutosave);
-    shell.addEventListener('change', scheduleAutosave);
+    shell.addEventListener('input', (e)=>{ if(e.target.closest('.no-dirty-track')) return; scheduleAutosave(); markScopeDirty(e); });
+    shell.addEventListener('change', (e)=>{ if(e.target.closest('.no-dirty-track')) return; scheduleAutosave(); markScopeDirty(e); });
   }
 }
 
