@@ -12,30 +12,37 @@
   header.app-header h1{margin:0;font-size:19px;font-weight:600;}
   header.app-header .sub{font-size:12px;opacity:.7;}
   .mode-toggle{display:flex;gap:8px;background:rgba(255,255,255,.08);padding:4px;border-radius:8px;}
-  .mode-toggle button{border:none;background:transparent;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;opacity:.6;}
+  .mode-toggle button{border:none;background:transparent;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;opacity:.6;transition:opacity .15s ease, background-color .15s ease;}
+  .mode-toggle button:hover{opacity:.85;}
   .mode-toggle button.active{background:var(--primary);color:var(--navy);opacity:1;}
   .tabbar{display:flex;gap:4px;background:var(--navy);padding:0 28px;border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap;}
-  .tabbar button{border:none;background:transparent;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;}
+  .tabbar button{border:none;background:transparent;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s ease, border-color .15s ease;}
+  .tabbar button:hover:not(.locked){color:#fff;}
   .tabbar button.active{color:#fff;border-bottom:3px solid var(--primary);}
   .tabbar button.locked{opacity:.4;cursor:not-allowed;}
   .tabpanel{display:none;}
   .tabpanel.active{display:block;}
   .wrap{max-width:1200px;margin:0 auto;padding:24px;}
-  .panel{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .panel{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.03);transition:box-shadow .2s ease;}
   .panel h2{margin:0 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);border-bottom:2px solid var(--primary);padding-bottom:8px;}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
   label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;}
-  input[type=text], input[type=date], input[type=number], textarea, select{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;background:#fafafa;}
+  input[type=text], input[type=date], input[type=number], textarea, select{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:7px;font-size:13px;font-family:inherit;background:#fafafa;transition:border-color .15s ease, box-shadow .15s ease, background-color .15s ease;}
+  input[type=text]:focus, input[type=date]:focus, input[type=number]:focus, textarea:focus, select:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(195,173,136,.22);}
+  input[type=text]:hover, input[type=date]:hover, input[type=number]:hover, textarea:hover, select:hover{border-color:#c9c2b3;}
   textarea{min-height:70px;resize:vertical;}
   .field{margin-bottom:10px;}
   .color-row{display:flex;align-items:center;gap:10px;}
   input[type=color]{width:44px;height:32px;border:1px solid #ddd;border-radius:6px;padding:2px;cursor:pointer;}
   .logo-preview{max-height:60px;max-width:200px;border:1px dashed #ccc;padding:6px;border-radius:6px;background:#fafafa;}
-  .helptext{font-size:12px;color:#777;margin-top:-4px;margin-bottom:10px;}
+  .helptext{font-size:12px;color:#7a7a7a;line-height:1.55;margin-top:-4px;margin-bottom:10px;}
   .filecheck-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
   .filecheck-row label{display:flex;align-items:center;gap:6px;font-weight:400;font-size:13px;color:#333;}
-  .btn{background:var(--primary);color:var(--navy);border:none;padding:12px 22px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;}
-  .btn.secondary{background:transparent;border:1px solid var(--navy);color:var(--navy);}
+  .btn{background:var(--primary);color:var(--navy);border:none;padding:12px 22px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08);transition:filter .15s ease, box-shadow .15s ease, transform .1s ease;}
+  .btn:hover{filter:brightness(.96);box-shadow:0 3px 10px rgba(0,0,0,.14);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);box-shadow:0 1px 2px rgba(0,0,0,.1);}
+  .btn.secondary{background:transparent;border:1px solid var(--navy);color:var(--navy);box-shadow:none;}
+  .btn.secondary:hover{background:rgba(30,34,53,.05);filter:none;}
   .btn.is-done{background:var(--st-confirmed) !important;border-color:var(--st-confirmed) !important;color:#fff !important;}
   .btn.tiny{padding:5px 10px;font-size:11px;border-radius:14px;}
   .actions{position:sticky;bottom:0;background:var(--cream);padding:16px 0;display:flex;gap:10px;justify-content:center;border-top:1px solid #e2ddd0;flex-wrap:wrap;}
@@ -116,7 +123,7 @@
 
   #docView{display:none;}
   #docView.showing{display:block;}
-  .doc-page{background:#fff;width:850px;margin:0 auto 20px;padding:50px 60px;box-shadow:0 1px 6px rgba(0,0,0,.15);min-height:1100px;}
+  .doc-page{background:#fff;width:816px;margin:0 auto 20px;padding:72px;box-shadow:0 1px 6px rgba(0,0,0,.15);min-height:1056px;}
   .doc-page{position:relative;}
   .doc-page-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--primary);padding-bottom:9px;margin-bottom:24px;font-size:10.5px;color:var(--navy);page-break-after:avoid;}
   .doc-page-header .dph-project{font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
@@ -142,17 +149,18 @@
   .dash-status-tab{border:none;background:transparent;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;color:#777;cursor:pointer;}
   .dash-status-tab.active{background:var(--navy);color:#fff;}
   .dash-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
-  .dash-job-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;}
-  .dash-job-card:hover{border-color:var(--primary);}
+  .dash-job-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:box-shadow .2s ease, transform .15s ease, border-color .2s ease;}
+  .dash-job-card:hover{border-color:var(--primary);box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-2px);}
   .dash-job-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .dash-job-card-name{font-size:15.5px;font-weight:700;color:var(--navy);}
-  .dash-job-status-select{font-size:11px;padding:3px 8px;border-radius:12px;border:1px solid #ddd;background:#f5f3ee;color:#555;font-weight:600;}
+  .dash-job-status-select{font-size:11px;padding:3px 8px;border-radius:12px;border:1px solid #ddd;background:#f5f3ee;color:#555;font-weight:600;transition:border-color .15s ease;}
   .dash-job-meta{font-size:12px;color:#888;margin-bottom:12px;line-height:1.5;}
   .dash-progress-track{height:6px;background:#f0ede3;border-radius:3px;overflow:hidden;margin-bottom:10px;}
-  .dash-progress-fill{height:100%;background:var(--primary);}
+  .dash-progress-fill{height:100%;background:var(--primary);transition:width .3s ease;}
   .dash-job-stats{display:flex;gap:14px;font-size:11.5px;color:#666;flex-wrap:wrap;}
   .dash-job-stats b{color:var(--navy);}
-  .dash-job-card-delete{background:none;border:none;color:#c9a;font-size:11px;cursor:pointer;margin-top:8px;text-decoration:underline;}
+  .dash-job-card-delete{background:none;border:none;color:#c9a;font-size:11px;cursor:pointer;margin-top:8px;text-decoration:underline;transition:color .15s ease;}
+  .dash-job-card-delete:hover{color:var(--rust);}
   .cover-brand-block{text-align:center;padding-top:10px;margin-bottom:34px;}
   .cover-logo{display:block;max-height:220px;max-width:620px;width:auto;margin:0 auto 24px;}
   .cover-title{font-size:25px;font-weight:600;color:var(--navy);margin:6px 0 4px;letter-spacing:.01em;}
@@ -286,6 +294,33 @@
     .doc-page-footer{position:static;margin-top:20px;}
     .no-print{display:none !important;}
   }
+
+  /* ---- Aesthetic polish pass — visual refinement only, no structural or behavioral changes ---- */
+  ::-webkit-scrollbar{width:11px;height:11px;}
+  ::-webkit-scrollbar-track{background:var(--cream);}
+  ::-webkit-scrollbar-thumb{background:#d4c7a8;border-radius:10px;border:2px solid var(--cream);}
+  ::-webkit-scrollbar-thumb:hover{background:var(--primary);}
+
+  input[type=checkbox], input[type=radio]{accent-color:var(--primary);}
+
+  .trade{transition:box-shadow .2s ease;}
+  .trade:hover:not(.included){box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .trade-head{transition:background-color .15s ease;}
+  .trade-head:hover{background-color:rgba(195,173,136,.05);}
+  .include-toggle button{transition:background-color .15s ease, color .15s ease, border-color .15s ease;}
+  .add-row-btn{transition:background-color .15s ease, border-color .15s ease;}
+  .add-row-btn:hover{background:rgba(195,173,136,.08);}
+  .rm-btn{transition:filter .15s ease;}
+  .rm-btn:hover{filter:brightness(1.1);}
+
+  .assume-sheet-table tr{transition:background-color .12s ease;}
+  .assume-sheet-table tbody tr:hover{background-color:#f5f0e4 !important;}
+  .area-table tr{transition:background-color .12s ease;}
+
+  .sheet-thumb{transition:border-color .15s ease, transform .15s ease;}
+  .sheet-thumb:hover{transform:translateY(-1px);}
+
+  ::selection{background:rgba(195,173,136,.35);}
 </style>
 </head>
 <body>
@@ -344,6 +379,16 @@
       </div>
       <button class="btn" onclick="createNewJob()">Create Project</button>
       <button class="btn secondary" onclick="document.getElementById('newJobPanel').style.display='none';">Cancel</button>
+    </div>
+
+    <div class="panel" id="editJobPanel" style="display:none;">
+      <h2>Edit Project</h2>
+      <div class="grid">
+        <div class="field"><label>Project Name</label><input type="text" id="editJobName" placeholder="e.g. Morris Residence"></div>
+        <div class="field"><label>Address</label><input type="text" id="editJobAddress" placeholder="Street, City MO Zip"></div>
+      </div>
+      <button class="btn" onclick="saveEditedJob()">Save Changes</button>
+      <button class="btn secondary" onclick="cancelEditJob()">Cancel</button>
     </div>
 
     <div class="dash-status-tabs">
@@ -416,7 +461,8 @@
     <div class="panel">
       <h2>Revision Log</h2>
       <div class="helptext">Logged automatically when the scope is marked Approved or Finalized, and whenever a clarification from Assumptions Review is pushed into the scope.</div>
-      <div id="revisionLogList" style="max-height:160px;overflow-y:auto;"></div>
+      <div id="revisionLogList" style="max-height:160px;overflow-y:auto;margin-bottom:10px;"></div>
+      <button type="button" class="btn secondary tiny" style="border-color:var(--rust);color:var(--rust);" onclick="clearRevisionHistory()">Clear Revision History</button>
     </div>
 
     <div class="panel">
@@ -444,6 +490,11 @@
         <div class="field"><label>Project Type</label>
           <select id="projType"><option>New Custom Home</option><option>Full Renovation</option><option>Addition</option><option>Remodel (Occupied)</option></select>
         </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid #eee;">
+        <button type="button" class="btn secondary tiny" style="border-color:var(--rust);color:var(--rust);margin-right:10px;" onclick="clearScopeOnly()">Clear Scope (Keeps Plans, Areas &amp; Takeoffs)</button>
+        <button type="button" class="btn secondary tiny" style="border-color:var(--rust);color:var(--rust);" onclick="resetApprovalOnly()">Reset Approval Status</button>
+        <div class="helptext" style="margin-top:6px;margin-bottom:0;">"Clear Scope" wipes every trade selection, note, clarification, and assumption for this project, but leaves Approved/Finalized status untouched. "Reset Approval Status" clears the Approved/Finalized dates only, without touching any scope content. Neither one touches uploaded plan sheets, area markers, or takeoff attachments.</div>
       </div>
     </div>
 
@@ -729,10 +780,6 @@
     <div id="docGeneralNotes" style="font-size:12.5px;line-height:1.6;margin-top:14px;"></div>
     <h2 class="section-head" style="margin-top:26px;">Table of Contents</h2>
     <div id="docTOC"></div>
-    <div id="docRevisionLogSection" style="display:none;">
-      <h2 class="section-head" style="margin-top:26px;">Revision Log</h2>
-      <div id="docRevisionLog" style="font-size:11.5px;line-height:1.6;margin-top:10px;"></div>
-    </div>
     <div class="doc-page-footer" id="staticFooter2"></div>
   </div>
   <div id="pageSectionsWrap"></div>
@@ -998,6 +1045,7 @@ let includeState = {}; // key: sectionId -> 'yes'|'no'
 let userSetInclude = {}; // key: sectionId -> true once the user has explicitly clicked Include Yes/No
 let matrixRows = {}; // key: sectionId -> array of {loc, cells:{fIdx:{sel,arr,note,status}}}
 let tradeNotes = {}; // key: sectionId -> {text, status} — one general note per trade, separate from per-field notes
+let tradeClarifications = {}; // key: sectionId -> [{text}] — open questions drafted on the scope; never rendered in the document, only pushed to Assumption Review
 let assumeProgressNotes = {}; // key: statusElId -> text — tracks resolution progress on an individual assumption (e.g. "waiting on client verification")
 let standaloneAssumptions = []; // {id, category, text, status, progressNote} — items added directly in Assumptions Review, NOT tied to any scope field and NEVER included in the generated SOW/RFP document
 let docHasBeenGenerated = false; // whether this project's document has ever been generated, so it can be silently re-shown on reopen instead of requiring a manual click
@@ -1454,11 +1502,11 @@ function updateColors(){
 function esc(str){ if(!str) return ''; const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
 function slugStatus(s){ return s.replace(/ /g,'-'); }
 
-function buildStatusSelect(id){
+function buildStatusSelect(id, optionsList){
   const sel = document.createElement('select');
   sel.className = 'status-select';
   sel.id = id;
-  STATUS_OPTS.forEach(s=>{
+  (optionsList || STATUS_OPTS).forEach(s=>{
     const o = document.createElement('option');
     o.value = s; o.textContent = s || 'Status: not tracked';
     sel.appendChild(o);
@@ -1565,6 +1613,7 @@ function renderSection(section){
   });
 
   body.appendChild(renderTradeNoteBlock(section));
+  body.appendChild(renderTradeClarificationBlock(section));
 
   const preview = document.createElement('div');
   preview.className = 'assembled-preview';
@@ -1581,18 +1630,20 @@ function renderTradeNoteBlock(section){
   wrap.className = 'fld trade-note-block';
   const nameEl = document.createElement('span');
   nameEl.className = 'fld-name';
-  nameEl.textContent = 'Trade Notes / Clarifications';
+  nameEl.textContent = 'Trade Notes';
   wrap.appendChild(nameEl);
 
   const helpline = document.createElement('div');
   helpline.className = 'helptext';
   helpline.style.marginBottom = '8px';
-  helpline.textContent = 'Separate from the notes on individual fields above. Add one line per note and tag each independently.';
+  helpline.textContent = 'General notes for this trade — separate from the notes on individual fields above. For open questions that need a client answer, use Clarifications below instead.';
   wrap.appendChild(helpline);
 
   const rowsContainer = document.createElement('div');
   rowsContainer.id = 'tradenoterows_'+section.id;
   wrap.appendChild(rowsContainer);
+
+  const TRADE_NOTE_STATUS_OPTS = ["", "Confirmed", "Assumed"]; // Clarification lives in its own section now, not here
 
   function renderRows(){
     rowsContainer.innerHTML = '';
@@ -1603,7 +1654,7 @@ function renderTradeNoteBlock(section){
       row.className = 'trade-note-row';
       const ta = document.createElement('textarea');
       ta.rows = 2;
-      ta.placeholder = 'Note, clarification, or assumption...';
+      ta.placeholder = 'Note or assumption...';
       ta.value = note.text || '';
       ta.oninput = ()=>{
         note.text = ta.value;
@@ -1612,7 +1663,7 @@ function renderTradeNoteBlock(section){
       };
       row.appendChild(ta);
 
-      const sel = buildStatusSelect('tradenotestatus_'+section.id+'_'+nIdx);
+      const sel = buildStatusSelect('tradenotestatus_'+section.id+'_'+nIdx, TRADE_NOTE_STATUS_OPTS);
       sel.value = note.status || '';
       sel.className = 'status-select' + (note.status ? ' st-'+slugStatus(note.status) : '');
       sel.onchange = ()=>{
@@ -1636,6 +1687,76 @@ function renderTradeNoteBlock(section){
   addBtn.onclick = ()=>{
     tradeNotes[section.id] = tradeNotes[section.id] || [];
     tradeNotes[section.id].push({text:'', status:'', id: 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000)});
+    renderRows();
+  };
+  wrap.appendChild(addBtn);
+  return wrap;
+}
+
+function renderTradeClarificationBlock(section){
+  const wrap = document.createElement('div');
+  wrap.className = 'fld trade-note-block';
+  const nameEl = document.createElement('span');
+  nameEl.className = 'fld-name';
+  nameEl.textContent = 'Clarifications';
+  wrap.appendChild(nameEl);
+
+  const helpline = document.createElement('div');
+  helpline.className = 'helptext';
+  helpline.style.marginBottom = '8px';
+  helpline.textContent = 'Open questions for the client. These never appear on the generated Scope of Work — click "Push to Assumption Review" to send one over for tracking once you\u2019ve written it down.';
+  wrap.appendChild(helpline);
+
+  const rowsContainer = document.createElement('div');
+  rowsContainer.id = 'tradeclarrows_'+section.id;
+  wrap.appendChild(rowsContainer);
+
+  function renderRows(){
+    rowsContainer.innerHTML = '';
+    const items = tradeClarifications[section.id] || [];
+    items.forEach((clar, cIdx)=>{
+      const row = document.createElement('div');
+      row.className = 'trade-note-row';
+      const ta = document.createElement('textarea');
+      ta.rows = 2;
+      ta.placeholder = 'Question for the client...';
+      ta.value = clar.text || '';
+      ta.oninput = ()=>{ clar.text = ta.value; };
+      row.appendChild(ta);
+
+      const pushBtn = document.createElement('button');
+      pushBtn.type = 'button'; pushBtn.className = 'btn tiny'; pushBtn.textContent = 'Push to Assumption Review';
+      pushBtn.onclick = ()=>{
+        if(!clar.text || !clar.text.trim()){ alert('Write the question first, then push it.'); return; }
+        standaloneAssumptions.unshift({
+          id: 'standalone_'+Date.now()+'_'+Math.floor(Math.random()*10000),
+          category: section.title, text: clar.text.trim(), status: 'Clarification',
+          progressNote: '', clientResponse: '', confirmedScope: '',
+          createdBy: currentUserName || '', respondedBy: '',
+          pushedToScope: false, pushedAt: null, pushedToSectionTitle: ''
+        });
+        items.splice(cIdx,1);
+        renderRows();
+        scheduleAutosave();
+        alert('Sent to Assumption Review under "'+section.title+'."');
+      };
+      row.appendChild(pushBtn);
+
+      const rmBtn = document.createElement('button');
+      rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove';
+      rmBtn.onclick = ()=>{ items.splice(cIdx,1); renderRows(); };
+      row.appendChild(rmBtn);
+
+      rowsContainer.appendChild(row);
+    });
+  }
+  renderRows();
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button'; addBtn.className = 'add-row-btn'; addBtn.textContent = '+ Add Clarification';
+  addBtn.onclick = ()=>{
+    tradeClarifications[section.id] = tradeClarifications[section.id] || [];
+    tradeClarifications[section.id].push({text:''});
     renderRows();
   };
   wrap.appendChild(addBtn);
@@ -2614,6 +2735,55 @@ function loadSample(){
   refreshAllPreviews();
 }
 
+// Measures each HTML block's real rendered height off-screen, then greedily packs
+// them into page-sized groups. Used for every long-running section of the generated
+// document (trade cards, plan sheets, takeoff images) so headers/footers repeat at
+// the correct physical page boundary instead of only showing once per section,
+// regardless of how many items that section happens to contain.
+function greedyPackByHeight(items, targetHeight){ // items: [{html, height}]
+  const chunks = [];
+  let currentChunk = [];
+  let currentHeight = 0;
+  items.forEach(item=>{
+    if(currentChunk.length && (currentHeight + item.height > targetHeight)){
+      chunks.push(currentChunk);
+      currentChunk = [];
+      currentHeight = 0;
+    }
+    currentChunk.push(item.html);
+    currentHeight += item.height;
+  });
+  if(currentChunk.length) chunks.push(currentChunk);
+  return chunks;
+}
+
+function packHtmlIntoPageChunks(htmlBlocks, targetHeight){
+  targetHeight = targetHeight || 780;
+  if(!htmlBlocks.length) return [];
+  const measureEl = document.createElement('div');
+  measureEl.style.position = 'absolute';
+  measureEl.style.left = '-9999px';
+  measureEl.style.top = '0';
+  measureEl.style.width = '672px'; // matches .doc-page's content width (816 total minus 72px padding each side)
+  document.body.appendChild(measureEl);
+
+  const measured = htmlBlocks.map(html=>{
+    measureEl.innerHTML = html;
+    return { html, height: measureEl.offsetHeight };
+  });
+  document.body.removeChild(measureEl);
+  return greedyPackByHeight(measured, targetHeight);
+}
+
+function loadImageDimensions(url){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.onload = ()=> resolve({width: img.naturalWidth || 672, height: img.naturalHeight || 400});
+    img.onerror = ()=> resolve({width: 672, height: 400}); // fallback so a broken image can't hang document generation
+    img.src = url;
+  });
+}
+
 function pageHeaderHtml(){
   const proj = document.getElementById('projName').value || '(Project name not set)';
   const genDate = new Date().toLocaleDateString();
@@ -2623,7 +2793,7 @@ function pageFooterHtml(){
   return `<div class="doc-page-footer">${esc(document.getElementById('footerLine').value || '')}</div>`;
 }
 
-function generateDoc(silent){
+async function generateDoc(silent){
   docHasBeenGenerated = true;
   scopeDirtySinceGenerate = false;
   updateScopeDirtyBanner();
@@ -2718,7 +2888,7 @@ function generateDoc(silent){
         const revisedTag = n.revisedAfterFinalization ? ` <span class="status-badge Reported" style="text-transform:uppercase;">Revised</span>` : '';
         return esc(n.text.trim()).replace(/\n/g,'<br>') + badge + revisedTag;
       });
-      body += `<div class="cat-general-note" style="margin-top:14px;"><b>Trade Notes / Clarifications:</b><br>${noteLines.join('<br>')}</div>`;
+      body += `<div class="cat-general-note" style="margin-top:14px;"><b>Trade Notes:</b><br>${noteLines.join('<br>')}</div>`;
     }
     const revisedBadge = isRevised ? ' <span class="status-badge Reported" style="text-transform:uppercase;">Revised '+esc(new Date().toLocaleDateString())+'</span>' : '';
     return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}${revisedBadge}</h3>${body}</div>`;
@@ -2732,47 +2902,17 @@ function generateDoc(silent){
   const revisedTradeIdsToClear = [];
 
   if(included.length){
-    // Measure each trade card's real rendered height off-screen, then greedily pack
-    // cards into page-sized chunks. This replaces guessing at page breaks with actual
-    // pixel measurements, so the header/footer repeat at the correct physical page
-    // boundaries instead of only appearing once at the top of one long flowing block.
-    const MEASURE_WIDTH = 730; // matches .doc-page's content width (850 total minus 60px padding each side)
-    const TARGET_CHUNK_HEIGHT = 800; // conservative budget per physical page, leaving room for header/footer/margins
-    const measureEl = document.createElement('div');
-    measureEl.style.position = 'absolute';
-    measureEl.style.left = '-9999px';
-    measureEl.style.top = '0';
-    measureEl.style.width = MEASURE_WIDTH + 'px';
-    document.body.appendChild(measureEl);
-
-    const builtCards = included.map(s=>{
+    const cardHtmlBlocks = included.map(s=>{
       tradeCounter++;
       const isRevised = !!tradesRevisedAfterFinalization[s.id];
       if(isRevised) revisedTradeIdsToClear.push(s.id);
       tocHtml += `<div class="toc-item">${tradeCounter}. ${esc(s.title)}${isRevised ? ' — <span style="color:var(--rust);font-weight:700;">REVISED</span>' : ''}</div>`;
       const objs = getUngroupedLineObjs(s);
       const rowGroups = getLocationGroupsForSection(s);
-      const cardHtml = buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups, tradeNotes[s.id], isRevised);
-      measureEl.innerHTML = cardHtml;
-      const height = measureEl.offsetHeight;
-      return { cardHtml, height };
+      return buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups, tradeNotes[s.id], isRevised);
     });
-    document.body.removeChild(measureEl);
 
-    const chunks = [];
-    let currentChunk = [];
-    let currentHeight = 0;
-    builtCards.forEach(card=>{
-      if(currentChunk.length && (currentHeight + card.height > TARGET_CHUNK_HEIGHT)){
-        chunks.push(currentChunk);
-        currentChunk = [];
-        currentHeight = 0;
-      }
-      currentChunk.push(card.cardHtml);
-      currentHeight += card.height;
-    });
-    if(currentChunk.length) chunks.push(currentChunk);
-
+    const chunks = packHtmlIntoPageChunks(cardHtmlBlocks, 780);
     chunks.forEach(chunk=>{
       let pageHtml = `<div class="doc-page">` + pageHeaderHtml();
       chunk.forEach(cardHtml=>{ pageHtml += cardHtml; });
@@ -2801,21 +2941,29 @@ function generateDoc(silent){
     exPage += pageFooterHtml() + `</div>`;
     pagesHtml += exPage;
   }
-  tocHtml += `<div class="toc-category">Project Closeout</div><div class="toc-item">Final Walkthrough & Completion – Trade Requirements</div><div class="toc-item">Final Cleanup</div>`;
-  document.getElementById('docTOC').innerHTML = tocHtml;
-
-  const revLogSection = document.getElementById('docRevisionLogSection');
   if(revisionLog.length){
+    tocHtml += `<div class="toc-category">Revision Log</div><div class="toc-item">Revision Log</div>`;
     const sortedLog = revisionLog.slice().sort((a,b)=> b.timestamp - a.timestamp);
-    document.getElementById('docRevisionLog').innerHTML = sortedLog.map(r=>{
+    const logItems = sortedLog.map(r=>{
       const d = new Date(r.timestamp);
       const stamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      return '&bull; <b>'+esc(stamp)+(r.by?' — '+esc(r.by):'')+':</b> '+esc(r.entry);
-    }).join('<br>');
-    revLogSection.style.display = 'block';
-  } else {
-    revLogSection.style.display = 'none';
+      const html = `<div style="font-size:11.5px;line-height:1.6;padding:6px 0;border-bottom:1px solid #f1ede3;">&bull; <b>${esc(stamp)}${r.by?' — '+esc(r.by):''}:</b> ${esc(r.entry)}</div>`;
+      return { html, height: 34 };
+    });
+    const logChunks = greedyPackByHeight(logItems, 780);
+    logChunks.forEach((chunk, idx)=>{
+      let logPageHtml = `<div class="doc-page">` + pageHeaderHtml();
+      if(idx===0){ logPageHtml += `<h2 class="section-head">Revision Log</h2>`; }
+      logPageHtml += `<div style="margin-top:14px;">`;
+      chunk.forEach(html=>{ logPageHtml += html; });
+      logPageHtml += `</div>`;
+      logPageHtml += pageFooterHtml() + `</div>`;
+      pagesHtml += logPageHtml;
+    });
   }
+
+  tocHtml += `<div class="toc-category">Project Closeout</div><div class="toc-item">Final Walkthrough & Completion – Trade Requirements</div><div class="toc-item">Final Cleanup</div>`;
+  document.getElementById('docTOC').innerHTML = tocHtml;
 
   let closeoutPage = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Closeout</span><span class="cat-count">2 items</span></div>`;
   closeoutPage += buildTradeCardHtml('W', 'Final Walkthrough & Completion – Trade Requirements', textLines(document.getElementById('closeoutWalkthrough').value));
@@ -2835,32 +2983,53 @@ function generateDoc(silent){
   }
 
   if(planSheets.length){
-    const DOC_PLAN_TARGET_WIDTH = 730;
-    let plansHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Project Area Register — Plan Sheets</span><span class="cat-count">${planSheets.length} sheet${planSheets.length>1?'s':''}</span></div>`;
-    plansHtml += `<div class="helptext" style="margin-bottom:14px;">Reference plan sheets with area markers as laid out in the Plan & Areas step. Area IDs referenced above correspond to the markers shown here.</div>`;
-    planSheets.forEach(sheet=>{
+    const DOC_PLAN_TARGET_WIDTH = 672;
+    const planItems = planSheets.map(sheet=>{
       const dataUrl = renderSheetToDataUrl(sheet, DOC_PLAN_TARGET_WIDTH);
-      plansHtml += `<div style="margin-bottom:18px;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">${esc(sheet.name)}${sheet.sheetType && sheet.sheetType!=='Floor Plan' ? ' — '+esc(sheet.sheetType) : ''}</div><img src="${dataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
+      const aspectRatio = (sheet.img && sheet.img.naturalWidth) ? (sheet.img.naturalHeight / sheet.img.naturalWidth) : 0.75;
+      const renderedImgHeight = DOC_PLAN_TARGET_WIDTH * aspectRatio;
+      const html = `<div style="margin-bottom:18px;"><div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">${esc(sheet.name)}${sheet.sheetType && sheet.sheetType!=='Floor Plan' ? ' — '+esc(sheet.sheetType) : ''}</div><img src="${dataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
+      return { html, height: renderedImgHeight + 40 };
     });
-    plansHtml += pageFooterHtml() + `</div>`;
-    pagesHtml += plansHtml;
+    const planChunks = greedyPackByHeight(planItems, 780);
+    planChunks.forEach((chunk, idx)=>{
+      let planPageHtml = `<div class="doc-page">` + pageHeaderHtml();
+      if(idx===0){
+        planPageHtml += `<div class="doc-category-banner"><span class="cat-label">Project Area Register — Plan Sheets</span><span class="cat-count">${planSheets.length} sheet${planSheets.length>1?'s':''}</span></div>`;
+        planPageHtml += `<div class="helptext" style="margin-bottom:14px;">Reference plan sheets with area markers as laid out in the Plan & Areas step. Area IDs referenced above correspond to the markers shown here.</div>`;
+      }
+      chunk.forEach(html=>{ planPageHtml += html; });
+      planPageHtml += pageFooterHtml() + `</div>`;
+      pagesHtml += planPageHtml;
+    });
   }
 
   if(takeoffFiles.length){
     const byLabel = {};
     takeoffFiles.forEach(t=>{ byLabel[t.label] = byLabel[t.label] || []; byLabel[t.label].push(t); });
     const labelKeys = Object.keys(byLabel);
-    let takeoffHtml = `<div class="doc-page">` + pageHeaderHtml() + `<div class="doc-category-banner"><span class="cat-label">Takeoff Attachments</span><span class="cat-count">${labelKeys.length} label${labelKeys.length>1?'s':''}</span></div>`;
-    takeoffHtml += `<div class="helptext" style="margin-bottom:14px;">Reference takeoff files attached for this project, grouped by trade/label.</div>`;
-    labelKeys.forEach(label=>{
-      takeoffHtml += `<div class="loc-room-group"><div class="loc-room-label">${esc(label)}</div>`;
-      byLabel[label].forEach(t=>{
-        takeoffHtml += `<div style="margin-bottom:14px;"><div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:5px;">${esc(t.name)}</div><img src="${t.imageDataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
-      });
-      takeoffHtml += `</div>`;
+
+    const takeoffItems = [];
+    for(const label of labelKeys){
+      takeoffItems.push({ html: `<div class="loc-room-label" style="margin-top:16px;">${esc(label)}</div>`, height: 40 });
+      for(const t of byLabel[label]){
+        const dims = await loadImageDimensions(t.imageDataUrl);
+        const renderedHeight = 672 * (dims.height / dims.width);
+        const html = `<div style="margin-bottom:14px;"><div style="font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:5px;">${esc(t.name)}</div><img src="${t.imageDataUrl}" style="width:100%;border:1px solid #ddd;border-radius:4px;"></div>`;
+        takeoffItems.push({ html, height: renderedHeight + 30 });
+      }
+    }
+    const takeoffChunks = greedyPackByHeight(takeoffItems, 780);
+    takeoffChunks.forEach((chunk, idx)=>{
+      let takeoffPageHtml = `<div class="doc-page">` + pageHeaderHtml();
+      if(idx===0){
+        takeoffPageHtml += `<div class="doc-category-banner"><span class="cat-label">Takeoff Attachments</span><span class="cat-count">${labelKeys.length} label${labelKeys.length>1?'s':''}</span></div>`;
+        takeoffPageHtml += `<div class="helptext" style="margin-bottom:14px;">Reference takeoff files attached for this project, grouped by trade/label.</div>`;
+      }
+      chunk.forEach(html=>{ takeoffPageHtml += html; });
+      takeoffPageHtml += pageFooterHtml() + `</div>`;
+      pagesHtml += takeoffPageHtml;
     });
-    takeoffHtml += pageFooterHtml() + `</div>`;
-    pagesHtml += takeoffHtml;
   }
 
   document.getElementById('pageSectionsWrap').innerHTML = pagesHtml;
@@ -3184,6 +3353,10 @@ function renderDashboardFromCache(){
     const sel = card.querySelector('.dash-job-status-select');
     ['Active','Closed'].forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; if((job.status||'Active')===s) o.selected=true; sel.appendChild(o); });
     sel.onchange = ()=> setJobStatus(job.id, sel.value);
+    const editBtn = document.createElement('button');
+    editBtn.className = 'dash-job-card-delete'; editBtn.style.color = 'var(--navy)'; editBtn.style.marginRight = '14px'; editBtn.textContent = 'Edit';
+    editBtn.onclick = (e)=>{ e.stopPropagation(); startEditJob(job.id, job.name, job.address); };
+    card.appendChild(editBtn);
     const delBtn = document.createElement('button');
     delBtn.className = 'dash-job-card-delete'; delBtn.textContent = 'Delete project';
     delBtn.onclick = (e)=>{ e.stopPropagation(); deleteJob(job.id); };
@@ -3191,6 +3364,51 @@ function renderDashboardFromCache(){
     card.onclick = ()=> openJob(job.id);
     grid.appendChild(card);
   });
+}
+
+let editingJobId = null;
+
+function startEditJob(id, currentName, currentAddress){
+  editingJobId = id;
+  document.getElementById('editJobName').value = currentName || '';
+  document.getElementById('editJobAddress').value = currentAddress || '';
+  document.getElementById('newJobPanel').style.display = 'none';
+  document.getElementById('editJobPanel').style.display = 'block';
+  document.getElementById('editJobPanel').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function cancelEditJob(){
+  editingJobId = null;
+  document.getElementById('editJobPanel').style.display = 'none';
+}
+
+async function saveEditedJob(){
+  if(!editingJobId) return;
+  const name = document.getElementById('editJobName').value.trim();
+  if(!name){ alert('Project name is required.'); return; }
+  const address = document.getElementById('editJobAddress').value.trim();
+
+  const { error } = await supabaseClient.from('sow_projects').update({
+    project_name: name, address, updated_by: currentUserName, updated_at: new Date().toISOString()
+  }).eq('id', editingJobId);
+  if(error){ alert('Could not update project: ' + error.message); return; }
+
+  // Keep the full project record's own Name/Address fields in sync too, so opening
+  // the job afterward shows the corrected info instead of the old values.
+  try{
+    const { data: row } = await supabaseClient.from('sow_projects').select('data').eq('id', editingJobId).single();
+    if(row && row.data){
+      const updatedData = row.data;
+      updatedData.fields = updatedData.fields || {};
+      updatedData.fields.projName = name;
+      updatedData.fields.projAddress = address;
+      await supabaseClient.from('sow_projects').update({ data: updatedData }).eq('id', editingJobId);
+    }
+  }catch(e){ console.warn('Could not sync name/address into the full project record', e); }
+
+  editingJobId = null;
+  document.getElementById('editJobPanel').style.display = 'none';
+  await renderDashboard();
 }
 
 async function createNewJob(){
@@ -3250,7 +3468,7 @@ function backToDashboard(){
 }
 
 function resetToolStateBlank(){
-  includeState = {}; userSetInclude = {}; matrixRows = {}; tradeNotes = {}; assumeProgressNotes = {}; standaloneAssumptions = []; areaRegister = []; planSheets = []; takeoffFiles = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
+  includeState = {}; userSetInclude = {}; matrixRows = {}; tradeNotes = {}; tradeClarifications = {}; assumeProgressNotes = {}; standaloneAssumptions = []; areaRegister = []; planSheets = []; takeoffFiles = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
   docHasBeenGenerated = false; scopeDirtySinceGenerate = false; revisionLog = []; postFinalizationChangeDetected = false; tradesRevisedAfterFinalization = {};
   document.getElementById('tradeContainer').innerHTML = '';
   Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
@@ -3279,6 +3497,56 @@ function resetToolStateBlank(){
   updateScopeDirtyBanner();
   renderRevisionLog();
   updateApproveFinalizeButtonStyles();
+}
+
+function clearScopeOnly(){
+  if(!confirm('Clear all scope selections, trade notes, clarifications, and assumptions for this project?\n\nThis will NOT touch Approved/Finalized status, and will NOT delete your uploaded plan sheets, area markers, or takeoff attachments.\n\nThis cannot be undone.')) return;
+
+  includeState = {};
+  userSetInclude = {};
+  matrixRows = {};
+  tradeNotes = {};
+  tradeClarifications = {};
+  assumeProgressNotes = {};
+  standaloneAssumptions = [];
+  tradesRevisedAfterFinalization = {};
+
+  document.getElementById('tradeContainer').innerHTML = '';
+  Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
+  buildTradeUI();
+  SECTIONS.forEach(section=>{
+    const tradeDiv = document.getElementById('trade_'+section.id);
+    if(!tradeDiv) return;
+    tradeDiv.classList.toggle('included', false);
+    const yBtn = tradeDiv.querySelector('.include-toggle .yes');
+    const nBtn = tradeDiv.querySelector('.include-toggle .no');
+    if(yBtn) yBtn.classList.toggle('active', false);
+    if(nBtn) nBtn.classList.toggle('active', true);
+  });
+
+  refreshAllPreviews();
+  addRevisionLogEntry('Scope cleared (plans, areas, and takeoffs kept; approval status untouched)');
+  markScopeDirty();
+  if(document.getElementById('tab_assume').classList.contains('active')){ renderAssumptionsTab(); }
+
+  scheduleAutosave();
+  alert('Scope cleared. Plan sheets, area markers, takeoff attachments, and Approved/Finalized status were kept.');
+}
+
+function resetApprovalOnly(){
+  if(!confirm('Clear the Approved and Finalized status for this project?\n\nThis will NOT touch any scope selections, notes, or attachments.\n\nThis cannot be undone.')) return;
+
+  document.getElementById('approvedDate').value = '';
+  document.getElementById('finalizedDate').value = '';
+  postFinalizationChangeDetected = false;
+  tradesRevisedAfterFinalization = {};
+
+  updateApproveFinalizeButtonStyles();
+  addRevisionLogEntry('Approval status reset (Approved and Finalized cleared)');
+  markScopeDirty();
+
+  scheduleAutosave();
+  alert('Approved and Finalized status cleared. Scope content was not touched.');
 }
 
 function getVal(id){ const el=document.getElementById(id); if(!el) return null; if(el.type==='checkbox') return el.checked; return el.value; }
@@ -3367,6 +3635,7 @@ function serializeCurrentProject(){
   data.userSetInclude = JSON.parse(JSON.stringify(userSetInclude));
   data.matrixRows = JSON.parse(JSON.stringify(matrixRows));
   data.tradeNotes = JSON.parse(JSON.stringify(tradeNotes));
+  data.tradeClarifications = JSON.parse(JSON.stringify(tradeClarifications));
   data.assumeProgressNotes = JSON.parse(JSON.stringify(assumeProgressNotes));
   data.takeoffFiles = takeoffFiles.map(t=>({id:t.id, label:t.label, name:t.name, imageDataUrl:t.imageDataUrl, storagePath:t.storagePath}));
   data.standaloneAssumptions = JSON.parse(JSON.stringify(standaloneAssumptions));
@@ -3398,6 +3667,7 @@ function restoreProject(data){
     else { tradeNotes[sid] = []; }
   });
   assumeProgressNotes = {}; Object.assign(assumeProgressNotes, data.assumeProgressNotes||{});
+  tradeClarifications = {}; Object.assign(tradeClarifications, data.tradeClarifications||{});
   takeoffFiles = (data.takeoffFiles || []).slice();
   standaloneAssumptions = (data.standaloneAssumptions || []).slice();
   docHasBeenGenerated = !!data.docHasBeenGenerated;
@@ -3523,6 +3793,14 @@ function updateScopeDirtyBanner(){
 function addRevisionLogEntry(text){
   revisionLog.push({ timestamp: Date.now(), entry: text, by: currentUserName || '' });
   renderRevisionLog();
+}
+
+function clearRevisionHistory(){
+  if(!confirm('Clear the entire revision history for this project?\n\nThis only removes the log entries themselves — it does not change any scope content, approval status, plans, or attachments.\n\nThis cannot be undone.')) return;
+  revisionLog = [];
+  renderRevisionLog();
+  markScopeDirty();
+  scheduleAutosave();
 }
 
 function renderRevisionLog(){
