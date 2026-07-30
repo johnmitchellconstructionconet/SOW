@@ -5,7 +5,7 @@
 <title>MC&D Scope of Work Generator</title>
 <style>
   :root{--primary:#c3ad88;--navy:#575757;--cream:#f0f0f0;--rust:#B04035;--ink:#575757;
-        --st-confirmed:#2e7d32;--st-reported:#1565c0;--st-assumed:#B04035;--st-unknown:#757575;--st-invest:#8e24aa;}
+        --st-confirmed:#2e7d32;--st-reported:#1565c0;--st-assumed:#B04035;--st-unknown:#757575;--st-invest:#8e24aa;--st-planrev:#e65100;}
   *{box-sizing:border-box;}
   body{font-family: Inter, -apple-system, Segoe UI, Roboto, Arial, sans-serif;background:var(--cream);color:var(--ink);margin:0;padding:0;}
   header.app-header{background:var(--navy);color:#fff;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
@@ -22,7 +22,7 @@
   .tabbar button.locked{opacity:.4;cursor:not-allowed;}
   .tabpanel{display:none;}
   .tabpanel.active{display:block;}
-  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+  .wrap{max-width:1500px;margin:0 auto;padding:24px;}
   .panel{background:#fff;border-radius:10px;padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.03);transition:box-shadow .2s ease;}
   .panel h2{margin:0 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);border-bottom:2px solid var(--primary);padding-bottom:8px;}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
@@ -83,10 +83,10 @@
   input[type=radio],input[type=checkbox]{width:14px;height:14px;cursor:pointer;flex-shrink:0;margin-top:2px;}
   .fld-meta-row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
   .fld-meta-row input[type=text]{flex:1;min-width:160px;font-size:12px;padding:6px 8px;}
-  .status-select{width:150px;font-size:11px;padding:5px 6px;flex-shrink:0;}
+  .status-select{width:118px;font-size:10.5px;padding:4px 5px;flex-shrink:0;}
 
   .fld-meta-row textarea{flex:1;min-width:160px;font-size:12px;padding:6px 8px;resize:vertical;}
-  select.planref-select{width:180px;flex-shrink:0;font-size:11px;}
+  select.planref-select{width:130px;flex-shrink:0;font-size:10.5px;padding:4px 5px;}
   .matrix-cell textarea{width:100%;resize:vertical;}
 
   .status-select.st-Confirmed{border-left:4px solid var(--st-confirmed);}
@@ -95,6 +95,7 @@
   .status-select.st-Assumed{border-left:4px solid var(--st-assumed);}
   .status-select.st-Unknown{border-left:4px solid var(--st-unknown);}
   .status-select.st-Investigation-Required{border-left:4px solid var(--st-invest);}
+  .status-select.st-Plan-Revision{border-left:4px solid var(--st-planrev);}
 
   .row-list{margin-top:6px;}
 
@@ -153,6 +154,7 @@
   .dash-job-card:hover{border-color:var(--primary);box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-2px);}
   .dash-job-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
   .dash-job-card-name{font-size:15.5px;font-weight:700;color:var(--navy);}
+  .dash-response-badge{display:inline-block;background:var(--rust);color:#fff;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:12px;vertical-align:middle;margin-left:4px;}
   .dash-job-status-select{font-size:11px;padding:3px 8px;border-radius:12px;border:1px solid #ddd;background:#f5f3ee;color:#555;font-weight:600;transition:border-color .15s ease;}
   .dash-job-meta{font-size:12px;color:#888;margin-bottom:12px;line-height:1.5;}
   .dash-progress-track{height:6px;background:#f0ede3;border-radius:3px;overflow:hidden;margin-bottom:10px;}
@@ -201,6 +203,7 @@
   .status-badge.Assumed{background:rgba(176,64,53,0.10);color:#B04035;}
   .status-badge.Unknown{background:rgba(117,117,117,0.12);color:#757575;}
   .status-badge.Investigation-Required{background:rgba(142,36,170,0.10);color:#8e24aa;}
+  .status-badge.Plan-Revision{background:rgba(230,81,0,0.10);color:#e65100;}
 
   .sheet-thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
   .sheet-thumb{border:2px solid #ddd;border-radius:6px;padding:4px;cursor:pointer;background:#fff;text-align:center;width:110px;}
@@ -227,14 +230,16 @@
 
   .assume-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
   .assume-toolbar select{width:auto;padding:6px 10px;font-size:12.5px;}
-  .assume-status-filter-group{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-  .assume-status-filter-group label{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:400;margin:0;}
+  .assume-status-filter-group{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .assume-status-filter-group label{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;margin:0;padding:5px 12px 5px 8px;background:#fff;border:1px solid #e6e1d3;border-radius:16px;transition:border-color .15s ease, background-color .15s ease;}
+  .assume-status-filter-group label:hover{border-color:var(--primary);}
   .assume-status-filter-group input[type=checkbox]{width:13px;height:13px;}
   .assume-summary{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;}
-  .assume-chip{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;background:#f2efe6;color:#777;}
+  .assume-chip{font-size:11px;padding:4px 12px;border-radius:14px;font-weight:600;background:#f2efe6;color:#777;}
   .assume-chip.st-Confirmed{background:rgba(46,125,50,0.12);color:#2e7d32;}
   .assume-chip.st-Assumed{background:rgba(176,64,53,0.12);color:#B04035;}
   .assume-chip.st-Clarification{background:rgba(21,101,192,0.12);color:#1565c0;}
+  .assume-chip.st-Plan-Revision{background:rgba(230,81,0,0.12);color:#e65100;}
   .assume-trade-card{border:1px solid #eee;border-radius:8px;margin-bottom:14px;background:#fff;overflow:hidden;}
   .assume-trade-head{background:#f8f6f0;padding:10px 16px;font-size:13px;font-weight:700;color:var(--navy);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee;}
   .assume-trade-count{font-size:11px;color:#999;font-weight:600;}
@@ -245,30 +250,46 @@
   .assume-row.st-Confirmed{border-left-color:var(--st-confirmed);}
   .assume-row.st-Assumed{border-left-color:var(--st-assumed);}
   .assume-row.st-Clarification{border-left-color:var(--st-reported);}
+  .assume-row.st-Plan-Revision{border-left-color:var(--st-planrev);}
   .assume-empty-note{color:#999;padding:14px 16px;font-size:12.5px;}
-  .assume-table-scroll{width:100%;overflow-x:auto;}
-  .assume-sheet-table{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff;table-layout:fixed;}
-  .assume-sheet-table th{background:var(--navy);color:#fff;text-align:left;padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:.02em;word-wrap:break-word;}
-  .assume-sheet-table td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word;}
-  .assume-sheet-table tr:nth-child(even){background:#fbfaf6;}
-  .assume-sheet-table tr.st-Confirmed{border-left:3px solid var(--st-confirmed);}
-  .assume-sheet-table tr.st-Assumed{border-left:3px solid var(--st-assumed);}
-  .assume-sheet-table tr.st-Clarification{border-left:3px solid var(--st-reported);}
+  .assume-table-scroll{width:100%;overflow-x:auto;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);border:1px solid #eee;}
+  .assume-sheet-table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;table-layout:fixed;}
+  .assume-sheet-table th{background:var(--navy);color:#fff;text-align:left;padding:11px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;word-wrap:break-word;}
+  .assume-sheet-table td{padding:12px;border-bottom:1px solid #f0ede4;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word;}
+  .assume-sheet-table tbody tr{transition:background-color .15s ease;}
+  .assume-sheet-table tr:nth-child(even){background:#fafaf7;}
+  .assume-sheet-table tr.st-Confirmed{border-left:4px solid var(--st-confirmed);}
+  .assume-sheet-table tr.st-Assumed{border-left:4px solid var(--st-assumed);}
+  .assume-sheet-table tr.st-Clarification{border-left:4px solid var(--st-reported);}
+  .assume-sheet-table tr.st-Plan-Revision{border-left:4px solid var(--st-planrev);}
   .assume-sheet-table td.assume-trade-col{font-weight:700;color:var(--navy);}
-  .assume-sheet-table th.col-trade{width:11%;}
-  .assume-sheet-table th.col-item{width:19%;}
-  .assume-sheet-table th.col-response{width:16%;}
-  .assume-sheet-table th.col-confirmed{width:18%;}
-  .assume-sheet-table th.col-status{width:9%;}
-  .assume-sheet-table th.col-progress{width:15%;}
-  .assume-sheet-table th.col-actions{width:12%;}
-  .assume-sheet-table select{width:100%;font-size:10.5px;padding:4px 3px;}
-  .assume-sheet-table textarea{width:100%;min-height:36px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;resize:vertical;box-sizing:border-box;}
-  .assume-sheet-table select.assume-cat-select{width:100%;font-size:10.5px;padding:4px 3px;}
-  .assume-actions-stack{display:flex;flex-direction:column;gap:4px;}
-  .assume-actions-stack .btn.tiny, .assume-actions-stack .rm-btn{width:100%;text-align:center;padding:4px 2px;font-size:10px;}
+  .assume-sheet-table th.col-trade{width:14%;}
+  .assume-sheet-table th.col-item{width:18%;}
+  .assume-sheet-table th.col-response{width:15%;}
+  .assume-sheet-table th.col-confirmed{width:16%;}
+  .assume-sheet-table th.col-status{width:8%;}
+  .assume-sheet-table th.col-progress{width:14%;}
+  .assume-sheet-table th.col-actions{width:15%;}
+  .assume-sheet-table select{width:100%;font-size:11.5px;padding:6px 5px;border:1px solid #e2ddd0;border-radius:6px;background:#fff;transition:border-color .15s ease;}
+  .assume-sheet-table select:hover{border-color:var(--primary);}
+  .assume-sheet-table textarea{width:100%;min-height:54px;font-size:12px;padding:7px 9px;border:1px solid #e2ddd0;border-radius:6px;resize:vertical;box-sizing:border-box;transition:border-color .15s ease, box-shadow .15s ease;}
+  .assume-sheet-table textarea:focus, .assume-sheet-table select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(195,173,136,.18);}
+  .assume-sheet-table select.assume-cat-select{width:100%;font-size:11.5px;padding:6px 5px;}
+  .assume-actions-stack{display:flex;flex-direction:column;gap:6px;}
+  .assume-actions-stack .btn.tiny{width:100%;text-align:center;padding:6px 4px;font-size:10.5px;border-radius:16px;}
+  .assume-actions-stack .rm-btn{width:100%;text-align:center;padding:5px 4px;font-size:10.5px;background:transparent;border:1px solid #e2ddd0;color:#999;border-radius:16px;transition:border-color .15s ease, color .15s ease;}
+  .assume-actions-stack .rm-btn:hover{border-color:var(--rust);color:var(--rust);}
   .assume-sheet-table tr{page-break-inside:avoid;}
   .assume-attribution{font-size:9.5px;color:#999;margin-top:3px;font-style:italic;}
+
+  .review-link-card{border:1px solid #eee;border-radius:12px;padding:16px 18px;margin-bottom:12px;background:#fbfaf6;box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s ease;}
+  .review-link-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.06);}
+  .review-link-audience{font-weight:700;color:var(--navy);font-size:13.5px;margin-bottom:10px;}
+  .review-link-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .review-link-row .btn{flex-shrink:0;}
+  .review-link-row input{flex:1;font-size:12.5px;padding:9px 12px;border:1px solid #e2ddd0;border-radius:8px;background:#fff;color:#555;transition:border-color .15s ease;}
+  .review-link-row input:focus{outline:none;border-color:var(--primary);}
+  .review-link-row .btn.tiny{border-radius:16px;padding:8px 18px;}
 
   #planPrintView{display:none;}
   #assumePrintView{display:none;}
@@ -321,11 +342,75 @@
   .sheet-thumb:hover{transform:translateY(-1px);}
 
   ::selection{background:rgba(195,173,136,.35);}
+
+  .rich-note-wrap{display:flex;flex-direction:column;border:1px solid #ddd;border-radius:7px;overflow:hidden;background:#fff;transition:border-color .15s ease, box-shadow .15s ease;}
+  .rich-note-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(195,173,136,.22);}
+  .rich-note-toolbar{display:flex;gap:3px;padding:4px;background:#f5f3ee;border-bottom:1px solid #eee;}
+  .rich-note-btn{border:1px solid transparent;background:transparent;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;color:var(--navy);line-height:1.4;}
+  .rich-note-btn:hover{background:#fff;border-color:#ddd;}
+  .rich-note-dropdown-wrap{position:relative;display:inline-block;}
+  .rich-note-dropdown-menu{display:none;position:absolute;top:100%;left:0;margin-top:2px;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:50;min-width:140px;overflow:hidden;}
+  .rich-note-dropdown-menu.open{display:block;}
+  .rich-note-dropdown-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:7px 10px;font-size:12px;border:none;background:#fff;cursor:pointer;color:var(--navy);}
+  .rich-note-dropdown-item:hover{background:#f5f3ee;}
+  .rich-note-swatch{width:14px;height:14px;border-radius:3px;border:1px solid #ccc;flex-shrink:0;}
+  .multiscope-link-picker{display:none;margin-bottom:14px;}
+  .multiscope-link-picker.open{display:block;}
+  .rich-note-editor{padding:7px 9px;font-size:12px;min-height:36px;outline:none;line-height:1.45;}
+  .rich-note-editor:empty:before{content:attr(data-placeholder);color:#999;}
+  .rich-note-editor mark, .rich-note-editor span[style*="background"]{border-radius:2px;padding:0 1px;}
+  .cr-item{border:1px solid #eee;border-radius:8px;padding:16px 18px;margin-bottom:14px;background:#fbfaf6;}
+  .cr-item .cr-trade-label{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+  .cr-item .cr-question{font-size:14.5px;color:var(--navy);font-weight:600;margin-bottom:10px;line-height:1.4;}
+  .cr-item textarea{width:100%;min-height:70px;padding:10px 12px;border:1px solid #ddd;border-radius:7px;font-size:14px;font-family:inherit;resize:vertical;}
+  .cr-item textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(195,173,136,.22);}
+  .cr-state-message{text-align:center;padding:60px 20px;color:#888;font-size:15px;}
+  .cr-state-message.error{color:var(--rust);}
+  .cr-success-box{text-align:center;padding:50px 20px;}
+  .cr-success-box .cr-check{font-size:40px;color:var(--st-confirmed);margin-bottom:10px;}
+  .cr-success-box h2{color:var(--navy);margin:0 0 8px;}
+  .cr-footer-note{text-align:center;font-size:11.5px;color:#aaa;margin-top:24px;}
+  .cr-file-row{margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .cr-file-btn{font-size:12px;color:var(--navy);background:#fff;border:1px solid #ddd;border-radius:6px;padding:6px 10px;cursor:pointer;display:inline-block;}
+  .cr-file-btn:hover{border-color:var(--primary);}
+  .cr-file-name{font-size:12px;color:#666;}
+  .cr-file-existing{font-size:12px;color:var(--primary);text-decoration:underline;}
+  #crSubmitBar{display:flex;justify-content:flex-end;margin-top:10px;}
 </style>
 </head>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div id="submissionNotifyModal" class="no-print" style="display:none;position:fixed;inset:0;background:rgba(30,34,53,.55);z-index:99998;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:30px 34px;width:380px;max-width:90vw;box-shadow:0 16px 50px rgba(0,0,0,.35);text-align:center;">
+    <div style="font-size:34px;margin-bottom:8px;">&#128236;</div>
+    <h2 style="margin:0 0 12px;color:var(--navy);font-size:17px;">New Answers Since You Last Checked</h2>
+    <div id="submissionNotifyList" style="font-size:13px;color:#555;text-align:left;margin-bottom:22px;line-height:1.7;"></div>
+    <button class="btn" onclick="dismissSubmissionNotify()" style="width:100%;">Got It</button>
+  </div>
+</div>
+
+<div id="dashboardSubmissionNotifyModal" class="no-print" style="display:none;position:fixed;inset:0;background:rgba(30,34,53,.55);z-index:99998;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:30px 34px;width:400px;max-width:90vw;box-shadow:0 16px 50px rgba(0,0,0,.35);text-align:center;">
+    <div style="font-size:34px;margin-bottom:8px;">&#128236;</div>
+    <h2 style="margin:0 0 12px;color:var(--navy);font-size:17px;">New Answers Waiting For You</h2>
+    <div id="dashboardSubmissionNotifyList" style="font-size:13px;color:#555;text-align:left;margin-bottom:22px;line-height:1.7;max-height:280px;overflow-y:auto;"></div>
+    <button class="btn" onclick="document.getElementById('dashboardSubmissionNotifyModal').style.display='none';" style="width:100%;">Got It</button>
+  </div>
+</div>
+
+<div id="clientReviewRoot" style="display:none;">
+  <header style="background:var(--navy);color:#fff;padding:20px 24px;">
+    <h1 id="crPageTitle" style="margin:0;font-size:18px;font-weight:700;">Project Clarifications</h1>
+    <div id="crPageSubtitle" style="font-size:12px;opacity:.75;margin-top:3px;">Loading...</div>
+  </header>
+  <div style="max-width:760px;margin:0 auto;padding:32px 20px 60px;">
+    <div id="crContent">
+      <div class="cr-state-message">Loading your project's open questions...</div>
+    </div>
+  </div>
+</div>
 
 <div id="pinGateOverlay" style="position:fixed;inset:0;background:#575757;z-index:99999;display:flex;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:12px;padding:36px 40px;width:320px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
@@ -420,6 +505,7 @@
   <button id="tabBtnAreas" class="active" onclick="showTab('areas')">1. Plan &amp; Areas (start here)</button>
   <button id="tabBtnBuilder" class="locked" onclick="showTab('builder')" title="Upload plan sheets first">Scope Builder</button>
   <button id="tabBtnAssume" onclick="showTab('assume')">Assumptions Review</button>
+  <button id="tabBtnReview" onclick="showTab('review')">Review &amp; Send Log</button>
   <button id="tabBtnScopeAdmin" onclick="showTab('scopeadmin')" style="display:none;">Manage Scope Items</button>
   <button class="no-print" style="margin-left:auto;background:transparent;border:none;color:#cfcfd8;padding:12px 18px;font-size:13px;font-weight:600;cursor:pointer;" onclick="backToDashboard()">&larr; Save &amp; Back to Dashboard</button>
 </div>
@@ -499,6 +585,13 @@
     </div>
 
     <div class="panel">
+      <h2>Multi-Scope Bid Assignments</h2>
+      <div class="helptext">If the same contractor is bidding more than one section of this scope (e.g., your excavation company also handles septic), group those trades here. Each trade in the group will show a callout at the top of its section on the generated document, naming the other sections that same bidder needs to price.</div>
+      <div id="multiScopeGroupsList"></div>
+      <button type="button" class="btn secondary tiny" onclick="addMultiScopeGroup()">+ Add Multi-Scope Group</button>
+    </div>
+
+    <div class="panel">
       <h2>Front Page — Site Location</h2>
       <div class="grid">
         <div class="field"><label>Aerial / Site Image</label><input type="file" id="aerialUpload" accept="image/*" onchange="handleAerialUpload(event)"></div>
@@ -554,6 +647,11 @@
       <div class="helptext"><b>Required before Scope Builder unlocks.</b> Upload your plan set as a PDF (each page becomes its own sheet automatically) or as PNG/JPG images.</div>
       <div class="field"><label>Upload Plan Sheet(s)</label><input type="file" id="planUpload" accept="image/*,application/pdf" multiple onchange="handleAreaPlanUpload(event)"></div>
       <div id="sheetThumbs" class="sheet-thumbs"></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid #eee;">
+        <div class="helptext" style="margin:0 0 6px;">Got a plan revision? Replace just the drawing on the currently-selected sheet below — every area marker already pinned to it stays exactly where it was, now pointing at the new drawing. Nothing else about your scope is touched.</div>
+        <input type="file" id="replaceSheetInput" accept="image/*,application/pdf" style="display:none;" onchange="handleReplaceSheetImage(event)">
+        <button type="button" class="btn secondary tiny" onclick="triggerReplaceSheetImage()">Replace Selected Sheet's Image</button>
+      </div>
     </div>
 
     <div class="panel">
@@ -660,16 +758,27 @@
         <div class="assume-status-filter-group no-dirty-track" id="assumeStatusFilterGroup">
           <label><input type="checkbox" value="Clarification" checked onchange="renderAssumptionsTab()"> Clarification</label>
           <label><input type="checkbox" value="Assumed" checked onchange="renderAssumptionsTab()"> Assumed</label>
+          <label><input type="checkbox" value="Plan Revision" checked onchange="renderAssumptionsTab()"> Plan Revision</label>
         </div>
         <button class="btn secondary tiny" onclick="addStandaloneAssumption()">+ Add Item</button>
         <button class="btn secondary tiny" onclick="toggleAssumeArchiveView()" id="assumeArchiveToggleBtn">View Pushed Items</button>
         <button class="btn secondary tiny" onclick="exportAssumptionsReview()">Export / Print Assumptions Review</button>
         <div class="assume-summary" id="assumeSummary"></div>
       </div>
+      <div class="assume-toolbar no-dirty-track" style="margin-top:-6px;">
+        <label style="margin:0;font-weight:600;font-size:12px;">Filter by who it's for:</label>
+        <div class="assume-status-filter-group no-dirty-track" id="assumeAudienceFilterGroup">
+          <label><input type="checkbox" value="Internal Team" checked onchange="renderAssumptionsTab()"> Internal Team</label>
+          <label><input type="checkbox" value="Trade/Vendor" checked onchange="renderAssumptionsTab()"> Trade/Vendor</label>
+          <label><input type="checkbox" value="Client" checked onchange="renderAssumptionsTab()"> Client</label>
+          <label><input type="checkbox" value="Designer" checked onchange="renderAssumptionsTab()"> Designer</label>
+          <label><input type="checkbox" value="Architect" checked onchange="renderAssumptionsTab()"> Architect</label>
+        </div>
+      </div>
       <div class="assume-table-scroll">
         <table class="assume-sheet-table" id="assumeSheetTable">
           <thead>
-            <tr><th class="col-trade">Trade / Category</th><th class="col-item">Item / Question</th><th class="col-response">Client Response</th><th class="col-confirmed">Confirmed Scope</th><th class="col-status">Status</th><th class="col-progress">Progress Notes</th><th class="col-actions"></th></tr>
+            <tr><th class="col-trade">Trade / Category</th><th class="col-item">Item / Question</th><th class="col-response">Response</th><th class="col-confirmed">Confirmed Scope</th><th class="col-status">Status</th><th class="col-progress">Progress Notes</th><th class="col-actions"></th></tr>
           </thead>
           <tbody id="assumeSheetBody"></tbody>
         </table>
@@ -680,12 +789,26 @@
         <div class="assume-table-scroll">
           <table class="assume-sheet-table">
             <thead>
-              <tr><th class="col-trade">Category</th><th class="col-item">Item / Question</th><th class="col-response">Client Response</th><th class="col-confirmed">Confirmed Scope (Pushed)</th><th>Pushed To</th><th>Pushed On</th></tr>
+              <tr><th class="col-trade">Category</th><th class="col-item">Item / Question</th><th class="col-response">Response</th><th class="col-confirmed">Confirmed Scope (Pushed)</th><th>Pushed To</th><th>Pushed On</th></tr>
             </thead>
             <tbody id="assumeArchiveBody"></tbody>
           </table>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="tab_review">
+    <div class="panel">
+      <h2>Review Links</h2>
+      <div class="helptext">Every link below already exists — nothing to generate. Copy whichever one you need and send it however you normally would; copying it automatically logs it as sent below, snapshotting exactly which questions were open at that moment.</div>
+      <div id="reviewLinksList"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Send Log</h2>
+      <div class="helptext">A record of what was sent to whom, and when — click "Log This as Sent" above right after you actually send a link, and it'll snapshot exactly which questions were open at that moment. Answer this the same way you'd track rounds in a spreadsheet: each entry below is one round.</div>
+      <div id="sendLogList"></div>
     </div>
   </div>
 
@@ -1036,7 +1159,24 @@ function addNewTrade(){
   document.getElementById('adminNewTradeTitle').value = '';
   alert('Added trade "'+title+'". Now add fields to it above.');
 }
-const STATUS_OPTS = ["", "Clarification", "Confirmed", "Assumed"];
+const STATUS_OPTS = ["", "Clarification", "Confirmed", "Assumed", "Plan Revision"];
+const ASSUME_REVIEW_ELIGIBLE_STATUSES = ["Clarification", "Assumed", "Plan Revision"]; // which statuses ever surface in Assumptions Review
+
+// Everyone who can be asked a clarification. "Internal Team" never gets an external
+// link — those questions get answered right in the app, same as always.
+const REVIEW_AUDIENCES = ['Internal Team', 'Trade/Vendor', 'Client', 'Designer', 'Architect'];
+const EXTERNAL_REVIEW_AUDIENCES = REVIEW_AUDIENCES.filter(a=>a!=='Internal Team');
+
+// The things a drafted "clarification" can actually turn out to be, chosen right where
+// it's written. Each maps to the status + audience the pushed item gets in Assumptions Review.
+const CLAR_TYPES = [
+  { label: 'Trade/Vendor Clarification', status: 'Clarification', audience: 'Trade/Vendor' },
+  { label: 'Client Clarification', status: 'Clarification', audience: 'Client' },
+  { label: 'Designer Clarification', status: 'Clarification', audience: 'Designer' },
+  { label: 'Architect Clarification', status: 'Clarification', audience: 'Architect' },
+  { label: 'Internal Team Clarification', status: 'Clarification', audience: 'Internal Team' },
+  { label: 'Architect / Plan Revision', status: 'Plan Revision', audience: 'Architect' }
+];
 
 let currentMode = 'RFP';
 let logoDataUrl = '';
@@ -1046,6 +1186,10 @@ let userSetInclude = {}; // key: sectionId -> true once the user has explicitly 
 let matrixRows = {}; // key: sectionId -> array of {loc, cells:{fIdx:{sel,arr,note,status}}}
 let tradeNotes = {}; // key: sectionId -> {text, status} — one general note per trade, separate from per-field notes
 let tradeClarifications = {}; // key: sectionId -> [{text}] — open questions drafted on the scope; never rendered in the document, only pushed to Assumption Review
+let multiScopeGroups = []; // [{id, tradeIds: [sectionId, ...]}] — trades being bid together by the same contractor on this project
+let reviewTokens = {}; // audience -> token. Each audience's link stays stable once generated, so a previously-sent email keeps working
+let sendLog = []; // [{id, audience, timestamp, items:[{id, text}]}] — a snapshot of what was open each time a link was actually sent, so old "rounds" stay accurate even after items change later
+let seenSubmissionsBy = {}; // { "John Mitchell": timestamp, ... } — each person's own last-checked moment, so one teammate opening a job doesn't clear the notification for everyone else
 let assumeProgressNotes = {}; // key: statusElId -> text — tracks resolution progress on an individual assumption (e.g. "waiting on client verification")
 let standaloneAssumptions = []; // {id, category, text, status, progressNote} — items added directly in Assumptions Review, NOT tied to any scope field and NEVER included in the generated SOW/RFP document
 let docHasBeenGenerated = false; // whether this project's document has ever been generated, so it can be silently re-shown on reopen instead of requiring a manual click
@@ -1067,20 +1211,41 @@ let dragPanStart = null; // {x, y, scrollLeft, scrollTop}
 let draggingMarker = null; // reference to the areaRegister object being repositioned
 let suppressNextClick = false;
 
+// Single source of truth for whether the document preview should actually be visible:
+// it must have been generated AND the active tab must be Scope Builder, where it belongs.
+// Anything that touches docView's visibility should call this instead of setting
+// style.display directly, so a print action or an admin rebuild can't accidentally
+// leave the doc showing on a tab where it doesn't belong (or vice versa).
+function syncDocViewVisibility(){
+  const docViewEl = document.getElementById('docView');
+  if(!docViewEl) return;
+  const onBuilderTab = document.getElementById('tab_builder').classList.contains('active');
+  docViewEl.style.display = (onBuilderTab && docViewEl.classList.contains('showing')) ? 'block' : 'none';
+}
+
 function showTab(name){
   if(name==='builder' && planSheets.length===0){
     alert('Upload at least one plan sheet (PDF or image) first.\n\nScope Builder\'s location fields are tied to the Project Area Register, so there\'s nothing to link to until a plan is on the board.');
     name = 'areas';
   }
-  ['settings','builder','areas','assume','scopeadmin'].forEach(n=> document.getElementById('tab_'+n).classList.toggle('active', n===name));
+  ['settings','builder','areas','assume','review','scopeadmin'].forEach(n=> document.getElementById('tab_'+n).classList.toggle('active', n===name));
   document.getElementById('tabBtnSettings').classList.toggle('active', name==='settings');
   document.getElementById('tabBtnBuilder').classList.toggle('active', name==='builder');
   document.getElementById('tabBtnAreas').classList.toggle('active', name==='areas');
   document.getElementById('tabBtnAssume').classList.toggle('active', name==='assume');
+  document.getElementById('tabBtnReview').classList.toggle('active', name==='review');
   document.getElementById('tabBtnScopeAdmin').classList.toggle('active', name==='scopeadmin');
   if(name==='areas'){ drawCanvas(); }
   if(name==='assume'){ renderAssumptionsTab(); }
+  if(name==='review'){ renderReviewLinksList(); renderSendLog(); }
   if(name==='scopeadmin'){ renderScopeAdminPanel(); }
+
+  // The Generate/Print bar and the document preview live outside the tab system (so the
+  // preview can span full width), so their visibility has to be driven from here instead
+  // of ordinary tab CSS. They only make sense while actually on Scope Builder.
+  const actionsBar = document.querySelector('.actions.no-print');
+  if(actionsBar){ actionsBar.style.display = (name==='builder') ? 'flex' : 'none'; }
+  syncDocViewVisibility();
 }
 
 function setStatusValue(id, value){
@@ -1092,13 +1257,20 @@ function setStatusValue(id, value){
 
 function getSelectedAssumeStatuses(){
   const group = document.getElementById('assumeStatusFilterGroup');
-  if(!group) return ['Clarification', 'Assumed'];
+  if(!group) return ASSUME_REVIEW_ELIGIBLE_STATUSES.slice();
+  return Array.from(group.querySelectorAll('input[type=checkbox]')).filter(c=>c.checked).map(c=>c.value);
+}
+
+function getSelectedAssumeAudiences(){
+  const group = document.getElementById('assumeAudienceFilterGroup');
+  if(!group) return REVIEW_AUDIENCES.slice();
   return Array.from(group.querySelectorAll('input[type=checkbox]')).filter(c=>c.checked).map(c=>c.value);
 }
 
 function renderAssumptionsTab(){
   const tbody = document.getElementById('assumeSheetBody');
   const selectedStatuses = getSelectedAssumeStatuses();
+  const selectedAudiences = getSelectedAssumeAudiences();
   tbody.innerHTML = '';
   const counts = { '': 0, 'Clarification': 0, 'Confirmed': 0, 'Assumed': 0 };
   let anyRowAtAll = false;
@@ -1110,6 +1282,7 @@ function renderAssumptionsTab(){
     counts[item.status || ''] = (counts[item.status || ''] || 0) + 1;
     if(item.status === 'Confirmed') return; // resolved, no longer needs review
     if(item.status && !selectedStatuses.includes(item.status)) return; // blank status always shows (needs classifying); Clarification/Assumed respect the filter
+    if(!selectedAudiences.includes(item.audience || 'Trade/Vendor')) return;
     anyRowShown = true;
 
     const tr = document.createElement('tr');
@@ -1125,6 +1298,13 @@ function renderAssumptionsTab(){
     SECTIONS.forEach(s=>{ const o=document.createElement('option'); o.value=s.title; o.textContent=s.title; if(item.category===s.title) o.selected=true; catSel.appendChild(o); });
     catSel.onchange = ()=>{ item.category = catSel.value; };
     tdCat.appendChild(catSel);
+    const audienceSel = document.createElement('select');
+    audienceSel.className = 'assume-cat-select';
+    audienceSel.style.marginTop = '4px';
+    audienceSel.title = 'Who this clarification is directed to';
+    REVIEW_AUDIENCES.forEach(a=>{ const o=document.createElement('option'); o.value=a; o.textContent=a; if((item.audience||'Trade/Vendor')===a) o.selected=true; audienceSel.appendChild(o); });
+    audienceSel.onchange = ()=>{ item.audience = audienceSel.value; };
+    tdCat.appendChild(audienceSel);
     tr.appendChild(tdCat);
 
     const tdItem = document.createElement('td');
@@ -1158,6 +1338,14 @@ function renderAssumptionsTab(){
     respondedByEl.className = 'assume-attribution';
     respondedByEl.textContent = item.respondedBy ? ('Answered by: '+item.respondedBy) : '';
     tdResponse.appendChild(respondedByEl);
+    if(item.clientResponseAttachmentUrl){
+      const attLink = document.createElement('a');
+      attLink.href = item.clientResponseAttachmentUrl; attLink.target = '_blank'; attLink.rel = 'noopener';
+      attLink.className = 'assume-attribution';
+      attLink.style.display = 'block';
+      attLink.textContent = '\uD83D\uDCCE ' + (item.clientResponseAttachmentName || 'Attached file');
+      tdResponse.appendChild(attLink);
+    }
     tr.appendChild(tdResponse);
 
     const tdConfirmed = document.createElement('td');
@@ -1215,8 +1403,8 @@ function renderAssumptionsTab(){
       }
     });
     if(!rows.length) return;
-    rows.forEach(o=>{ if(o.status === 'Clarification' || o.status === 'Assumed'){ anyRowAtAll = true; } counts[o.status || ''] = (counts[o.status || ''] || 0) + 1; });
-    const filteredRows = rows.filter(o => (o.status === 'Clarification' || o.status === 'Assumed') && selectedStatuses.includes(o.status));
+    rows.forEach(o=>{ if(ASSUME_REVIEW_ELIGIBLE_STATUSES.includes(o.status)){ anyRowAtAll = true; } counts[o.status || ''] = (counts[o.status || ''] || 0) + 1; });
+    const filteredRows = rows.filter(o => ASSUME_REVIEW_ELIGIBLE_STATUSES.includes(o.status) && selectedStatuses.includes(o.status) && selectedAudiences.includes('Internal Team'));
     if(!filteredRows.length) return;
     anyRowShown = true;
 
@@ -1262,7 +1450,8 @@ function renderAssumptionsTab(){
   if(summary){
     summary.innerHTML =
       '<span class="assume-chip st-Assumed">Assumed: '+(counts['Assumed']||0)+'</span>'+
-      '<span class="assume-chip st-Clarification">Clarification: '+(counts['Clarification']||0)+'</span>';
+      '<span class="assume-chip st-Clarification">Clarification: '+(counts['Clarification']||0)+'</span>'+
+      '<span class="assume-chip st-Plan-Revision">Plan Revision: '+(counts['Plan Revision']||0)+'</span>';
   }
 
   if(!anyRowAtAll){
@@ -1274,7 +1463,7 @@ function renderAssumptionsTab(){
 
 function addStandaloneAssumption(){
   const id = 'standalone_'+Date.now()+'_'+Math.floor(Math.random()*10000);
-  standaloneAssumptions.unshift({id, category:'', text:'', status:'', progressNote:'', clientResponse:'', confirmedScope:'', createdBy: currentUserName || '', respondedBy: '', pushedToScope: false, pushedAt: null, pushedToSectionTitle: ''});
+  standaloneAssumptions.unshift({id, category:'', text:'', status:'', progressNote:'', clientResponse:'', confirmedScope:'', audience:'Trade/Vendor', createdBy: currentUserName || '', respondedBy: '', pushedToScope: false, pushedAt: null, pushedToSectionTitle: ''});
   renderAssumptionsTab();
 }
 function removeStandaloneAssumption(id){
@@ -1320,6 +1509,8 @@ function pushStandaloneToScope(id){
   if(finalizedVal){ tradesRevisedAfterFinalization[targetSection.id] = true; }
 
   rebuildScopeUIPreservingAnswers();
+  const targetTradeDiv = document.getElementById('trade_'+targetSection.id);
+  if(targetTradeDiv){ targetTradeDiv.classList.add('open'); }
   renderAssumptionsTab();
   markScopeDirty(true); // trade-level tracking already handled explicitly above
   scheduleAutosave();
@@ -1376,6 +1567,14 @@ function renderAssumeArchive(){
     responseTa.oninput = ()=>{ item.clientResponse = responseTa.value; scheduleAutosave(); };
     tdResponse.appendChild(responseTa);
     if(item.respondedBy){ const a=document.createElement('div'); a.className='assume-attribution'; a.textContent='Answered by: '+item.respondedBy; tdResponse.appendChild(a); }
+    if(item.clientResponseAttachmentUrl){
+      const attLink = document.createElement('a');
+      attLink.href = item.clientResponseAttachmentUrl; attLink.target = '_blank'; attLink.rel = 'noopener';
+      attLink.className = 'assume-attribution';
+      attLink.style.display = 'block';
+      attLink.textContent = '\uD83D\uDCCE ' + (item.clientResponseAttachmentName || 'Attached file');
+      tdResponse.appendChild(attLink);
+    }
     tr.appendChild(tdResponse);
 
     const tdConfirmed = document.createElement('td');
@@ -1407,6 +1606,7 @@ function renderAssumeArchive(){
 
       if(liveNote){
         liveNote.text = confirmedTa.value;
+        liveNote.textHtml = plainTextToHtmlSeed(confirmedTa.value);
         const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
         if(finalizedVal){ liveNote.revisedAfterFinalization = true; tradesRevisedAfterFinalization[item.pushedToSectionId] = true; }
         syncNote.textContent = 'Synced to live scope' + (finalizedVal ? '' : ' (mark the project Finalized for changes like this to show a Revised tag)');
@@ -1500,6 +1700,184 @@ function updateColors(){
   saveCompanySettingsGlobal();
 }
 function esc(str){ if(!str) return ''; const div=document.createElement('div'); div.textContent=str; return div.innerHTML; }
+
+// Converts a plain (legacy, pre-formatting) string into safe HTML seed content,
+// preserving line breaks. Used so old notes display byte-for-byte identical to
+// before, the very first time they're loaded under the new rich-text system.
+function plainTextToHtmlSeed(str){
+  return esc(str || '').replace(/\n/g, '<br>');
+}
+
+// For flat string stores with no separate "already rich" flag: treat as legacy plain
+// text unless it already contains a tag character, in which case trust it as-is.
+function seedMaybeRichText(str){
+  str = str || '';
+  return str.includes('<') ? str : plainTextToHtmlSeed(str);
+}
+
+// Strict allowlist sanitizer for note content. Only bold/strong/mark/span(background-
+// color only)/font(color only)/br/div survive; everything else — scripts, event
+// handlers, links, arbitrary styles — is stripped, with the element's own text kept
+// in place of anything disallowed. This runs on every edit, so what's stored is
+// always already safe to insert directly wherever a note gets displayed, including
+// the generated PDF.
+function sanitizeNoteHtml(html){
+  const temp = document.createElement('div');
+  temp.innerHTML = html || '';
+  const ALLOWED = new Set(['B','STRONG','MARK','SPAN','FONT','BR','DIV']);
+  (function clean(node){
+    Array.from(node.childNodes).forEach(child=>{
+      if(child.nodeType === 1){
+        if(!ALLOWED.has(child.tagName)){
+          node.replaceChild(document.createTextNode(child.textContent), child);
+          return;
+        }
+        Array.from(child.attributes).forEach(attr=>{
+          const keepStyle = (child.tagName==='SPAN' || child.tagName==='FONT') && attr.name==='style';
+          const keepColor = child.tagName==='FONT' && attr.name==='color';
+          if(keepStyle){
+            const bg = child.style.backgroundColor;
+            const fs = child.style.fontSize;
+            child.removeAttribute('style');
+            if(bg) child.style.backgroundColor = bg;
+            if(fs) child.style.fontSize = fs;
+          } else if(!keepColor){
+            child.removeAttribute(attr.name);
+          }
+        });
+        clean(child);
+      } else if(child.nodeType !== 3){
+        node.removeChild(child);
+      }
+    });
+  })(temp);
+  return temp.innerHTML;
+}
+
+// Builds a small rich-text note editor: a Bold/Highlight toolbar plus a contenteditable
+// area styled to match the app's existing note textareas. initialHtml should already be
+// sanitized/seeded (plainTextToHtmlSeed for legacy data, or the stored rich value).
+// onChange(cleanHtml) fires on every edit with the sanitized result.
+function applyInlineStyleToSelection(editor, styleProp, styleValue){
+  const sel = window.getSelection();
+  if(!sel || !sel.rangeCount) return false;
+  const range = sel.getRangeAt(0);
+  if(range.collapsed) return false;
+  if(!editor.contains(range.commonAncestorContainer)) return false;
+  const span = document.createElement('span');
+  span.style[styleProp] = styleValue;
+  const frag = range.extractContents();
+  span.appendChild(frag);
+  range.insertNode(span);
+  sel.removeAllRanges();
+  const newRange = document.createRange();
+  newRange.selectNodeContents(span);
+  sel.addRange(newRange);
+  return true;
+}
+
+const NOTE_HIGHLIGHT_COLORS = [
+  { label: 'Yellow', value: '#fff3a3' },
+  { label: 'Green', value: '#b7f0ad' },
+  { label: 'Blue', value: '#a8d8ff' },
+  { label: 'Pink', value: '#ffc4e1' },
+  { label: 'Orange', value: '#ffd9a0' },
+  { label: 'Remove Highlight', value: 'transparent' }
+];
+const NOTE_FONT_SIZES = [
+  { label: 'Small', value: '11px' },
+  { label: 'Normal', value: '13px' },
+  { label: 'Large', value: '16px' },
+  { label: 'X-Large', value: '20px' }
+];
+
+// Closes every open toolbar popup except the one the current mousedown originated in
+// (that one manages its own open/close state). Runs in the capture phase so it fires
+// before any button's own click logic.
+document.addEventListener('mousedown', function(e){
+  document.querySelectorAll('.rich-note-dropdown-menu.open').forEach(menu=>{
+    if(!menu.parentElement.contains(e.target)){ menu.classList.remove('open'); }
+  });
+}, true);
+
+// A toolbar button that opens a small menu of choices. Every option is itself a
+// <button> using mousedown+preventDefault, exactly like Bold — never a native <select> —
+// so clicking never shifts focus away from the editor and the text selection is never lost.
+function buildToolbarDropdownButton(label, options, onPick){
+  const wrap = document.createElement('div');
+  wrap.className = 'rich-note-dropdown-wrap';
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'rich-note-btn'; btn.textContent = label;
+  const menu = document.createElement('div');
+  menu.className = 'rich-note-dropdown-menu';
+  options.forEach(opt=>{
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'rich-note-dropdown-item';
+    if(opt.swatch){
+      const sw = document.createElement('span');
+      sw.className = 'rich-note-swatch';
+      sw.style.background = opt.swatch;
+      item.appendChild(sw);
+    }
+    item.appendChild(document.createTextNode(opt.label));
+    item.onmousedown = (e)=>{ e.preventDefault(); onPick(opt.value); menu.classList.remove('open'); };
+    menu.appendChild(item);
+  });
+  btn.onmousedown = (e)=>{ e.preventDefault(); menu.classList.toggle('open'); };
+  wrap.appendChild(btn);
+  wrap.appendChild(menu);
+  return wrap;
+}
+
+function buildRichNoteEditor(initialHtml, placeholder, onChange, rows, editorId){
+  const wrap = document.createElement('div');
+  wrap.className = 'rich-note-wrap';
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'rich-note-toolbar';
+  const boldBtn = document.createElement('button');
+  boldBtn.type = 'button'; boldBtn.className = 'rich-note-btn'; boldBtn.innerHTML = '<b>B</b>'; boldBtn.title = 'Bold selected text';
+  toolbar.appendChild(boldBtn);
+
+  const editor = document.createElement('div');
+  editor.className = 'rich-note-editor';
+  if(editorId) editor.id = editorId;
+  editor.contentEditable = 'true';
+  if(placeholder) editor.setAttribute('data-placeholder', placeholder);
+  if(rows) editor.style.minHeight = (rows * 18) + 'px';
+  editor.innerHTML = initialHtml || '';
+
+  function handleChange(){
+    const clean = sanitizeNoteHtml(editor.innerHTML);
+    if(clean !== editor.innerHTML){ editor.innerHTML = clean; }
+    onChange(clean);
+  }
+  // mousedown+preventDefault (not click) so the current text selection in the editor
+  // isn't lost before the formatting command runs.
+  boldBtn.onmousedown = (e)=>{ e.preventDefault(); editor.focus(); try{ document.execCommand('bold'); }catch(err){} handleChange(); };
+
+  const colorBtn = buildToolbarDropdownButton('Highlight', NOTE_HIGHLIGHT_COLORS.map(c=>({label:c.label, value:c.value, swatch: c.value==='transparent' ? '#fff' : c.value})), (val)=>{
+    editor.focus();
+    try{ document.execCommand('hiliteColor', false, val); }
+    catch(err){ try{ document.execCommand('backColor', false, val); }catch(err2){} }
+    handleChange();
+  });
+  toolbar.appendChild(colorBtn);
+
+  const sizeBtn = buildToolbarDropdownButton('Size', NOTE_FONT_SIZES, (val)=>{
+    editor.focus();
+    applyInlineStyleToSelection(editor, 'fontSize', val);
+    handleChange();
+  });
+  toolbar.appendChild(sizeBtn);
+
+  editor.addEventListener('input', handleChange);
+
+  wrap.appendChild(toolbar);
+  wrap.appendChild(editor);
+  return wrap;
+}
 function slugStatus(s){ return s.replace(/ /g,'-'); }
 
 function buildStatusSelect(id, optionsList){
@@ -1592,11 +1970,54 @@ function renderSection(section){
   noBtn.onclick = ()=>{ includeState[section.id]='no'; userSetInclude[section.id]=true; noBtn.classList.add('active'); yesBtn.classList.remove('active'); div.classList.remove('included'); refreshAllPreviews(); };
   toggle.appendChild(yesBtn); toggle.appendChild(noBtn);
 
-  head.appendChild(title); head.appendChild(toggle);
+  const linkBtn = document.createElement('button');
+  linkBtn.type = 'button'; linkBtn.className = 'btn secondary tiny'; linkBtn.style.marginLeft = '8px';
+  linkBtn.textContent = '\uD83D\uDD17 Bid Assignment';
+  linkBtn.title = 'Mark this trade as being bid together with another trade by the same contractor';
+  linkBtn.onclick = (e)=>{ e.stopPropagation(); div.classList.add('open'); linkPicker.classList.toggle('open'); };
+
+  head.appendChild(title); head.appendChild(toggle); head.appendChild(linkBtn);
   div.appendChild(head);
 
   const body = document.createElement('div');
   body.className = 'trade-body';
+
+  const partners = getMultiScopePartners(section.id, false);
+  if(partners.length){
+    const callout = document.createElement('div');
+    callout.className = 'multiscope-callout';
+    callout.style.cssText = 'background:#fff3cd;border:1px solid #f0d98c;border-radius:6px;padding:9px 12px;margin-bottom:14px;font-size:12px;color:#6b5900;';
+    callout.innerHTML = '<b>\u26A0 Multiple Scope Assignment:</b> This bidder is also being asked to price — ' + partners.map(p=>esc(p.title)).join(', ');
+    body.appendChild(callout);
+  }
+
+  const linkPicker = document.createElement('div');
+  linkPicker.className = 'multiscope-link-picker';
+  function renderLinkPickerContents(){
+    linkPicker.innerHTML = '';
+    const label = document.createElement('div');
+    label.className = 'helptext';
+    label.style.cssText = 'margin:0 0 6px;';
+    label.textContent = 'Check any other trade this same bidder is also pricing:';
+    linkPicker.appendChild(label);
+    const grid = document.createElement('div');
+    grid.style.cssText = 'max-height:160px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px;padding:8px;background:#fff;border-radius:6px;border:1px solid #eee;';
+    SECTIONS.filter(s=>s.id!==section.id).forEach(s=>{
+      const rowLabel = document.createElement('label');
+      rowLabel.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;margin:0;';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = multiScopeGroups.some(g=> g.tradeIds.includes(section.id) && g.tradeIds.includes(s.id));
+      cb.onchange = ()=> toggleTradeLinkFromCard(section.id, s.id, cb.checked);
+      rowLabel.appendChild(cb);
+      rowLabel.appendChild(document.createTextNode(s.title));
+      grid.appendChild(rowLabel);
+    });
+    linkPicker.appendChild(grid);
+  }
+  linkPicker._refresh = renderLinkPickerContents;
+  renderLinkPickerContents();
+  body.appendChild(linkPicker);
 
   const locGroups = {};
   section.fields.forEach((field, fIdx)=>{
@@ -1643,7 +2064,7 @@ function renderTradeNoteBlock(section){
   rowsContainer.id = 'tradenoterows_'+section.id;
   wrap.appendChild(rowsContainer);
 
-  const TRADE_NOTE_STATUS_OPTS = ["", "Confirmed", "Assumed"]; // Clarification lives in its own section now, not here
+  const TRADE_NOTE_STATUS_OPTS = ["", "Confirmed", "Assumed", "Plan Revision"]; // Clarification lives in its own section now, not here
 
   function renderRows(){
     rowsContainer.innerHTML = '';
@@ -1652,16 +2073,17 @@ function renderTradeNoteBlock(section){
       if(!note.id){ note.id = 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000); }
       const row = document.createElement('div');
       row.className = 'trade-note-row';
-      const ta = document.createElement('textarea');
-      ta.rows = 2;
-      ta.placeholder = 'Note or assumption...';
-      ta.value = note.text || '';
-      ta.oninput = ()=>{
-        note.text = ta.value;
+
+      const seedHtml = (note.textHtml != null) ? note.textHtml : plainTextToHtmlSeed(note.text);
+      const editorWrap = buildRichNoteEditor(seedHtml, 'Note or assumption...', (html)=>{
+        note.textHtml = html;
+        const tmp = document.createElement('div'); tmp.innerHTML = html;
+        note.text = tmp.textContent;
         const finalizedVal = document.getElementById('finalizedDate') ? document.getElementById('finalizedDate').value : '';
         if(finalizedVal){ note.revisedAfterFinalization = true; }
-      };
-      row.appendChild(ta);
+      });
+      editorWrap.style.flex = '1';
+      row.appendChild(editorWrap);
 
       const sel = buildStatusSelect('tradenotestatus_'+section.id+'_'+nIdx, TRADE_NOTE_STATUS_OPTS);
       sel.value = note.status || '';
@@ -1686,7 +2108,7 @@ function renderTradeNoteBlock(section){
   addBtn.type = 'button'; addBtn.className = 'add-row-btn'; addBtn.textContent = '+ Add Note';
   addBtn.onclick = ()=>{
     tradeNotes[section.id] = tradeNotes[section.id] || [];
-    tradeNotes[section.id].push({text:'', status:'', id: 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000)});
+    tradeNotes[section.id].push({text:'', textHtml:'', status:'', id: 'tn_'+Date.now()+'_'+Math.floor(Math.random()*10000)});
     renderRows();
   };
   wrap.appendChild(addBtn);
@@ -1704,7 +2126,7 @@ function renderTradeClarificationBlock(section){
   const helpline = document.createElement('div');
   helpline.className = 'helptext';
   helpline.style.marginBottom = '8px';
-  helpline.textContent = 'Open questions for the client. These never appear on the generated Scope of Work — click "Push to Assumption Review" to send one over for tracking once you\u2019ve written it down.';
+  helpline.textContent = 'Open questions or plan issues — tag each one below. These never appear on the generated Scope of Work — click "Push to Assumption Review" to send one over for tracking once you\u2019ve written it down.';
   wrap.appendChild(helpline);
 
   const rowsContainer = document.createElement('div');
@@ -1717,20 +2139,35 @@ function renderTradeClarificationBlock(section){
     items.forEach((clar, cIdx)=>{
       const row = document.createElement('div');
       row.className = 'trade-note-row';
+
+      const inputWrap = document.createElement('div');
+      inputWrap.style.cssText = 'flex:1;display:flex;flex-direction:column;gap:5px;';
+
+      const typeSel = document.createElement('select');
+      typeSel.className = 'assume-cat-select';
+      typeSel.style.maxWidth = '230px';
+      CLAR_TYPES.forEach((t, tIdx)=>{ const o=document.createElement('option'); o.value=tIdx; o.textContent=t.label; typeSel.appendChild(o); });
+      typeSel.selectedIndex = clar.clarTypeIdx != null ? clar.clarTypeIdx : 0;
+      typeSel.onchange = ()=>{ clar.clarTypeIdx = parseInt(typeSel.value, 10); };
+      inputWrap.appendChild(typeSel);
+
       const ta = document.createElement('textarea');
       ta.rows = 2;
-      ta.placeholder = 'Question for the client...';
+      ta.placeholder = 'Question or plan issue...';
       ta.value = clar.text || '';
       ta.oninput = ()=>{ clar.text = ta.value; };
-      row.appendChild(ta);
+      inputWrap.appendChild(ta);
+
+      row.appendChild(inputWrap);
 
       const pushBtn = document.createElement('button');
       pushBtn.type = 'button'; pushBtn.className = 'btn tiny'; pushBtn.textContent = 'Push to Assumption Review';
       pushBtn.onclick = ()=>{
         if(!clar.text || !clar.text.trim()){ alert('Write the question first, then push it.'); return; }
+        const type = CLAR_TYPES[clar.clarTypeIdx != null ? clar.clarTypeIdx : 0];
         standaloneAssumptions.unshift({
           id: 'standalone_'+Date.now()+'_'+Math.floor(Math.random()*10000),
-          category: section.title, text: clar.text.trim(), status: 'Clarification',
+          category: section.title, text: clar.text.trim(), status: type.status, audience: type.audience,
           progressNote: '', clientResponse: '', confirmedScope: '',
           createdBy: currentUserName || '', respondedBy: '',
           pushedToScope: false, pushedAt: null, pushedToSectionTitle: ''
@@ -1738,7 +2175,7 @@ function renderTradeClarificationBlock(section){
         items.splice(cIdx,1);
         renderRows();
         scheduleAutosave();
-        alert('Sent to Assumption Review under "'+section.title+'."');
+        alert('Sent to Assumption Review under "'+section.title+'" as '+type.label+'.');
       };
       row.appendChild(pushBtn);
 
@@ -1761,6 +2198,21 @@ function renderTradeClarificationBlock(section){
   };
   wrap.appendChild(addBtn);
   return wrap;
+}
+
+// Returns the other SECTIONS entries this trade is bid together with, per multiScopeGroups.
+// onlyIncluded=true filters to trades actually marked Include:Yes — used for the generated
+// document, since there's no point telling a bidder to price a trade that isn't in scope.
+function getMultiScopePartners(sectionId, onlyIncluded){
+  const partnerIds = new Set();
+  multiScopeGroups.forEach(group=>{
+    if(group.tradeIds.includes(sectionId)){
+      group.tradeIds.forEach(id=>{ if(id !== sectionId) partnerIds.add(id); });
+    }
+  });
+  let partners = SECTIONS.filter(s=> partnerIds.has(s.id));
+  if(onlyIncluded){ partners = partners.filter(s=> includeState[s.id] === 'yes'); }
+  return partners;
 }
 
 function matrixKey(sectionId, locGroup){
@@ -1972,6 +2424,86 @@ async function addSheetFromBlob(name, blob){
     renderSheetThumbs();
     if(!activeSheetId){ setActiveSheet(id); }
     updateBuilderTabState();
+  };
+  img.src = url;
+}
+
+function triggerReplaceSheetImage(){
+  if(!activeSheetId){ alert('Select a sheet first by clicking its thumbnail, then try again.'); return; }
+  document.getElementById('replaceSheetInput').click();
+}
+
+async function handleReplaceSheetImage(e){
+  const file = e.target.files && e.target.files[0];
+  e.target.value = ''; // reset so choosing the same file again still fires onchange next time
+  if(!file) return;
+  if(!activeSheetId){ alert('Select a sheet first.'); return; }
+  const sheet = planSheets.find(s=>s.id===activeSheetId);
+  if(!sheet){ alert('Could not find the selected sheet.'); return; }
+
+  const markerCount = areaRegister.filter(a=>a.sheetId===activeSheetId).length;
+  const warnText = markerCount
+    ? '\n\n'+markerCount+' area marker'+(markerCount===1?'':'s')+' already placed on this sheet will stay right where they are, now pointing at the same spot on the new drawing. If the revision moved rooms around, you may need to nudge a few afterward.'
+    : '';
+  if(!confirm('Replace the image for "'+sheet.name+'" with this file?'+warnText+'\n\nThis cannot be undone.')) return;
+
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  let blob;
+  if(isPdf){
+    if(!window.pdfjsLib){ alert('PDF reader did not load (no internet access to the CDN?). Export the page as a PNG/JPG and upload that instead.'); return; }
+    try{
+      const arrayBuffer = await file.arrayBuffer();
+      const typedarray = new Uint8Array(arrayBuffer);
+      const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
+      if(pdf.numPages > 1 && !confirm('This PDF has '+pdf.numPages+' pages. Only the first page will be used to replace this sheet. Continue?')) return;
+      const page = await pdf.getPage(1);
+      const baseViewport = page.getViewport({scale: 2});
+      const scale = Math.min(2, MAX_SHEET_DIMENSION / Math.max(baseViewport.width, baseViewport.height));
+      const viewport = page.getViewport({scale: Math.max(scale, 0.5)});
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = viewport.width;
+      tempCanvas.height = viewport.height;
+      const ctx = tempCanvas.getContext('2d');
+      await page.render({canvasContext: ctx, viewport: viewport}).promise;
+      blob = await new Promise(res=> tempCanvas.toBlob(res, 'image/jpeg', 0.88));
+    }catch(err){
+      alert('Could not read this PDF (' + err.message + '). Try exporting the page as a PNG/JPG and uploading that instead.');
+      return;
+    }
+  } else {
+    blob = file;
+  }
+
+  await replaceSheetImageWithBlob(activeSheetId, blob);
+}
+
+async function replaceSheetImageWithBlob(sheetId, blob){
+  const sheet = planSheets.find(s=>s.id===sheetId);
+  if(!sheet) return;
+  const oldAspect = (sheet.img && sheet.img.naturalWidth) ? (sheet.img.naturalWidth / sheet.img.naturalHeight) : null;
+  const ext = (blob.type === 'image/png') ? 'png' : 'jpg';
+  const jobPrefix = currentJobId || 'unfiled';
+  const path = jobPrefix+'/'+sheetId+'_rev'+Date.now()+'.'+ext;
+  const url = await uploadToStorage(blob, path);
+  if(!url) return;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = ()=>{
+    sheet.imageDataUrl = url;
+    sheet.storagePath = path;
+    sheet.img = img;
+    renderSheetThumbs();
+    if(activeSheetId === sheetId){ setActiveSheet(sheetId); }
+    scheduleAutosave();
+    addRevisionLogEntry('Plan sheet "'+sheet.name+'" image replaced with a revision');
+
+    const newAspect = img.naturalWidth / img.naturalHeight;
+    const aspectShift = oldAspect ? Math.abs(newAspect - oldAspect) / oldAspect : 0;
+    if(oldAspect && aspectShift > 0.08){
+      alert('Sheet image replaced. Heads up — this new drawing has noticeably different proportions than the old one, so your existing markers likely landed off-target and will need repositioning.');
+    } else {
+      alert('Sheet image replaced. Existing markers on this sheet were kept in place.');
+    }
   };
   img.src = url;
 }
@@ -2545,12 +3077,9 @@ function planRefLabel(value){
 function buildMetaRow(base, field){
   const metaRow = document.createElement('div');
   metaRow.className = 'fld-meta-row';
-  const noteInp = document.createElement('textarea');
-  noteInp.id='note_'+base;
-  noteInp.rows = 2;
-  noteInp.placeholder = field.note || 'Details / quantity / location (optional — Enter for a new line)';
-  noteInp.oninput = refreshAllPreviews;
-  metaRow.appendChild(noteInp);
+  const editorWrap = buildRichNoteEditor('', field.note || 'Details / quantity / location (optional — Enter for a new line)', refreshAllPreviews, 2, 'note_'+base);
+  editorWrap.style.flex = '1';
+  metaRow.appendChild(editorWrap);
   metaRow.appendChild(buildPlanRefSelect('planref_'+base));
   metaRow.appendChild(buildStatusSelect('status_'+base));
   return metaRow;
@@ -2566,11 +3095,14 @@ function getFieldLineObjs(section, field, fIdx){
         const statusEl = document.getElementById('status_'+base);
         const noteEl = document.getElementById('note_'+base);
         const planRefEl = document.getElementById('planref_'+base);
+        const noteText = noteEl ? noteEl.textContent.trim() : '';
+        const noteHtml = noteEl ? sanitizeNoteHtml(noteEl.innerHTML) : '';
         let text = field.name+': '+opt;
-        if(noteEl && noteEl.value.trim()) text += ' ('+noteEl.value.trim()+')';
+        let html = esc(field.name)+': '+esc(opt);
+        if(noteText){ text += ' ('+noteText+')'; html += ' ('+noteHtml+')'; }
         const refLabel = planRefEl ? planRefLabel(planRefEl.value) : '';
-        if(refLabel) text += ' [Ref: '+refLabel+']';
-        out.push({text, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
+        if(refLabel){ text += ' [Ref: '+refLabel+']'; html += ' [Ref: '+esc(refLabel)+']'; }
+        out.push({text, html, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
       }
     });
   } else if(field.ctype === 'pickany'){
@@ -2578,18 +3110,21 @@ function getFieldLineObjs(section, field, fIdx){
     const noteEl = document.getElementById('note_'+base);
     const planRefEl = document.getElementById('planref_'+base);
     const sharedRef = planRefEl ? planRefLabel(planRefEl.value) : '';
+    const noteText = noteEl ? noteEl.textContent.trim() : '';
+    const noteHtml = noteEl ? sanitizeNoteHtml(noteEl.innerHTML) : '';
     (field.options||[]).forEach((opt,oIdx)=>{
       const c = document.getElementById('ck_'+base+'_'+oIdx);
       if(!c || !c.checked) return;
       let text = field.name+': '+opt;
+      let html = esc(field.name)+': '+esc(opt);
       const otherInp = document.getElementById('ckother_'+base+'_'+oIdx);
-      if(otherInp && otherInp.value.trim()) text += ' — '+otherInp.value.trim();
+      if(otherInp && otherInp.value.trim()){ text += ' — '+otherInp.value.trim(); html += ' — '+esc(otherInp.value.trim()); }
       const locSel = document.getElementById('ckloc_'+base+'_'+oIdx);
       const itemRef = locSel ? planRefLabel(locSel.value) : '';
-      if(itemRef) text += ' ['+itemRef+']';
-      else if(sharedRef) text += ' [Ref: '+sharedRef+']';
-      if(noteEl && noteEl.value.trim()) text += ' ('+noteEl.value.trim()+')';
-      out.push({text, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
+      if(itemRef){ text += ' ['+itemRef+']'; html += ' ['+esc(itemRef)+']'; }
+      else if(sharedRef){ text += ' [Ref: '+sharedRef+']'; html += ' [Ref: '+esc(sharedRef)+']'; }
+      if(noteText){ text += ' ('+noteText+')'; html += ' ('+noteHtml+')'; }
+      out.push({text, html, status: statusEl ? statusEl.value : '', statusElId: 'status_'+base});
     });
   } else if(field.ctype === 'perloc' || field.ctype === 'permulti'){
     const key = matrixKey(section.id, field.locGroup || 'Per Location');
@@ -2816,6 +3351,7 @@ async function generateDoc(silent){
   if(currentJobId){ saveCurrentJob(); }
   const docView = document.getElementById('docView');
   docView.classList.add('showing');
+  syncDocViewVisibility();
   const companyName = document.getElementById('companyName').value;
   const tagline = document.getElementById('companyTagline').value;
   const footer = document.getElementById('footerLine').value;
@@ -2860,15 +3396,20 @@ async function generateDoc(silent){
 
   function lineToLi(o){
     const badge = o.status ? ` <span class="status-badge ${o.status.replace(/ /g,'-')}">${esc(o.status)}</span>` : '';
-    return `<li>${esc(o.text)}${badge}</li>`;
+    const bodyHtml = (o.html != null) ? o.html : esc(o.text);
+    return `<li>${bodyHtml}${badge}</li>`;
   }
-  function buildTradeCardHtml(tradeNum, label, lineObjs, locGroups, tradeNotesArr, isRevised){
+  function buildTradeCardHtml(tradeNum, label, lineObjs, locGroups, tradeNotesArr, isRevised, sectionId){
     locGroups = locGroups || [];
     const validNotes = (tradeNotesArr || []).filter(n=> n.text && n.text.trim());
+    const partners = sectionId ? getMultiScopePartners(sectionId, true) : [];
+    const calloutHtml = partners.length
+      ? `<div style="background:#fff3cd;border:1px solid #f0d98c;border-radius:6px;padding:9px 12px;margin-bottom:14px;font-size:11.5px;color:#6b5900;"><b>\u26A0 Multiple Scope Assignment:</b> This bidder is also being asked to price — ${partners.map(p=>esc(p.title)).join(', ')}</div>`
+      : '';
     if(!lineObjs.length && !locGroups.length && !validNotes.length){
-      return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3><div class="empty-trade-note">Included, but no fields specified yet.</div></div>`;
+      return `<div class="trade-card"><h3><span class="trade-num-badge">${tradeNum}</span>${esc(label)}</h3>${calloutHtml}<div class="empty-trade-note">Included, but no fields specified yet.</div></div>`;
     }
-    let body = '';
+    let body = calloutHtml;
     if(lineObjs.length){
       body += `<ul class="clean-list">${lineObjs.map(lineToLi).join('')}</ul>`;
     }
@@ -2886,7 +3427,8 @@ async function generateDoc(silent){
       const noteLines = validNotes.map(n=>{
         const badge = n.status ? ` <span class="status-badge ${n.status.replace(/ /g,'-')}">${esc(n.status)}</span>` : '';
         const revisedTag = n.revisedAfterFinalization ? ` <span class="status-badge Reported" style="text-transform:uppercase;">Revised</span>` : '';
-        return esc(n.text.trim()).replace(/\n/g,'<br>') + badge + revisedTag;
+        const bodyHtml = (n.textHtml != null) ? n.textHtml : plainTextToHtmlSeed(n.text.trim());
+        return bodyHtml + badge + revisedTag;
       });
       body += `<div class="cat-general-note" style="margin-top:14px;"><b>Trade Notes:</b><br>${noteLines.join('<br>')}</div>`;
     }
@@ -2909,7 +3451,7 @@ async function generateDoc(silent){
       tocHtml += `<div class="toc-item">${tradeCounter}. ${esc(s.title)}${isRevised ? ' — <span style="color:var(--rust);font-weight:700;">REVISED</span>' : ''}</div>`;
       const objs = getUngroupedLineObjs(s);
       const rowGroups = getLocationGroupsForSection(s);
-      return buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups, tradeNotes[s.id], isRevised);
+      return buildTradeCardHtml(tradeCounter, s.title, objs, rowGroups, tradeNotes[s.id], isRevised, s.id);
     });
 
     const chunks = packHtmlIntoPageChunks(cardHtmlBlocks, 780);
@@ -3103,14 +3645,15 @@ function printPlanSet(){
   setTimeout(function(){
     document.body.classList.remove('printing-plans');
     container.style.display = 'none';
-    if(wasShowingDoc) docView.classList.add('showing');
+    if(wasShowingDoc){ docView.classList.add('showing'); } syncDocViewVisibility();
   }, 300);
 }
 
 function exportAssumptionsReview(){
   const selectedStatuses = getSelectedAssumeStatuses();
-  const STATUS_LABELS = { 'Clarification': 'Clarification', 'Assumed': 'Assumed' };
-  const filterLabel = (selectedStatuses.length === 2)
+  const selectedAudiences = getSelectedAssumeAudiences();
+  const STATUS_LABELS = { 'Clarification': 'Clarification', 'Assumed': 'Assumed', 'Plan Revision': 'Plan Revision' };
+  const filterLabel = (selectedStatuses.length === ASSUME_REVIEW_ELIGIBLE_STATUSES.length)
     ? 'All statuses'
     : (selectedStatuses.length ? selectedStatuses.map(s=>STATUS_LABELS[s]).join(', ') : 'None selected');
 
@@ -3125,6 +3668,7 @@ function exportAssumptionsReview(){
     if(item.pushedToScope) return;
     if(item.status === 'Confirmed') return;
     if(item.status && !selectedStatuses.includes(item.status)) return;
+    if(!selectedAudiences.includes(item.audience || 'Trade/Vendor')) return;
     if(!item.text || !item.text.trim()) return;
     any = true;
     const statusLabel = item.status || 'Not tracked';
@@ -3146,7 +3690,7 @@ function exportAssumptionsReview(){
       }
     });
     if(!rows.length) return;
-    const filteredRows = rows.filter(o => (o.status === 'Clarification' || o.status === 'Assumed') && selectedStatuses.includes(o.status));
+    const filteredRows = rows.filter(o => ASSUME_REVIEW_ELIGIBLE_STATUSES.includes(o.status) && selectedStatuses.includes(o.status) && selectedAudiences.includes('Internal Team'));
     if(!filteredRows.length) return;
     any = true;
     filteredRows.forEach(o=>{
@@ -3157,7 +3701,7 @@ function exportAssumptionsReview(){
     });
   });
 
-  bodyHtml += `<table class="assume-sheet-table"><thead><tr><th>Trade</th><th>Item / Question</th><th>Client Response</th><th>Confirmed Scope</th><th>Status</th><th>Progress / Resolution Notes</th></tr></thead><tbody>`;
+  bodyHtml += `<table class="assume-sheet-table"><thead><tr><th>Trade</th><th>Item / Question</th><th>Response</th><th>Confirmed Scope</th><th>Status</th><th>Progress / Resolution Notes</th></tr></thead><tbody>`;
   bodyHtml += any ? tableRows : `<tr><td colspan="6" class="assume-empty-note">No items match this filter.</td></tr>`;
   bodyHtml += `</tbody></table>`;
   bodyHtml += pageFooterHtml();
@@ -3174,7 +3718,7 @@ function exportAssumptionsReview(){
   setTimeout(function(){
     document.body.classList.remove('printing-assume');
     container.style.display = 'none';
-    if(wasShowingDoc) docView.classList.add('showing');
+    if(wasShowingDoc){ docView.classList.add('showing'); } syncDocViewVisibility();
   }, 300);
 }
 window.onafterprint = function(){
@@ -3267,13 +3811,20 @@ async function saveCompanySettingsGlobal(){
 // ===== Jobs list (Supabase) =====
 async function getJobsListAsync(){
   try{
-    const { data, error } = await supabaseClient.from('sow_projects').select('id,project_name,address,pm_name,mode,status,included_trade_count,total_trade_count,updated_at');
+    const { data, error } = await supabaseClient.from('sow_projects').select('id,project_name,address,pm_name,mode,status,included_trade_count,total_trade_count,updated_at,data');
     if(error){ console.warn(error); return []; }
-    return data.map(r=>({
-      id:r.id, name:r.project_name, address:r.address, pmName:r.pm_name, mode:r.mode,
-      status:r.status, includedTradeCount:r.included_trade_count, totalTradeCount:r.total_trade_count,
-      updatedAt: new Date(r.updated_at).getTime()
-    }));
+    return data.map(r=>{
+      const projData = r.data || {};
+      const items = projData.standaloneAssumptions || [];
+      const seenMap = projData.seenSubmissionsBy || {};
+      const lastSeen = seenMap[currentUserName] != null ? seenMap[currentUserName] : (seenMap._legacyDefault || 0);
+      const pendingResponseCount = items.filter(item => item.respondedAt && item.respondedAt > lastSeen).length;
+      return {
+        id:r.id, name:r.project_name, address:r.address, pmName:r.pm_name, mode:r.mode,
+        status:r.status, includedTradeCount:r.included_trade_count, totalTradeCount:r.total_trade_count,
+        updatedAt: new Date(r.updated_at).getTime(), pendingResponseCount
+      };
+    });
   }catch(e){ console.warn(e); return []; }
 }
 
@@ -3306,6 +3857,21 @@ async function setJobStatus(id, status){
 async function renderDashboard(){
   cachedJobsList = await getJobsListAsync();
   renderDashboardFromCache();
+  checkDashboardForPendingResponses();
+}
+
+// Summarizes pending responses across every job at once, right when the dashboard loads —
+// this is what a teammate sees without having to open each job individually. Dismissing
+// this doesn't mark anything as "seen" — that only happens for real once someone actually
+// opens the affected job, so it'll keep showing until each job has genuinely been checked.
+function checkDashboardForPendingResponses(){
+  const jobsWithPending = cachedJobsList.filter(j => j.pendingResponseCount > 0);
+  if(!jobsWithPending.length) return;
+  const listHtml = jobsWithPending.map(j=>
+    '<div style="padding:6px 0;border-bottom:1px solid #f1ede3;"><b>'+esc(j.name)+'</b> — '+j.pendingResponseCount+' new response'+(j.pendingResponseCount===1?'':'s')+'</div>'
+  ).join('');
+  document.getElementById('dashboardSubmissionNotifyList').innerHTML = listHtml;
+  document.getElementById('dashboardSubmissionNotifyModal').style.display = 'flex';
 }
 
 function renderDashboardFromCache(){
@@ -3337,9 +3903,12 @@ function renderDashboardFromCache(){
     const card = document.createElement('div');
     card.className = 'dash-job-card';
     const metaParts = [job.address, job.pmName].filter(Boolean).join(' &middot; ');
+    const pendingBadge = job.pendingResponseCount
+      ? ` <span class="dash-response-badge">&#128236; ${job.pendingResponseCount} new response${job.pendingResponseCount===1?'':'s'}</span>`
+      : '';
     card.innerHTML = `
       <div class="dash-job-card-head">
-        <div class="dash-job-card-name">${esc(job.name)}</div>
+        <div class="dash-job-card-name">${esc(job.name)}${pendingBadge}</div>
         <select class="dash-job-status-select" onclick="event.stopPropagation()"></select>
       </div>
       <div class="dash-job-meta">${metaParts || '&nbsp;'}</div>
@@ -3468,7 +4037,7 @@ function backToDashboard(){
 }
 
 function resetToolStateBlank(){
-  includeState = {}; userSetInclude = {}; matrixRows = {}; tradeNotes = {}; tradeClarifications = {}; assumeProgressNotes = {}; standaloneAssumptions = []; areaRegister = []; planSheets = []; takeoffFiles = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
+  includeState = {}; userSetInclude = {}; matrixRows = {}; tradeNotes = {}; tradeClarifications = {}; multiScopeGroups = []; reviewTokens = {}; sendLog = []; seenSubmissionsBy = {}; assumeProgressNotes = {}; standaloneAssumptions = []; areaRegister = []; planSheets = []; takeoffFiles = []; activeSheetId = null; aerialDataUrl = ''; zoomLevel = 1; currentMode = 'RFP';
   docHasBeenGenerated = false; scopeDirtySinceGenerate = false; revisionLog = []; postFinalizationChangeDetected = false; tradesRevisedAfterFinalization = {};
   document.getElementById('tradeContainer').innerHTML = '';
   Object.keys(matrixRenderers).forEach(k=>delete matrixRenderers[k]);
@@ -3493,9 +4062,12 @@ function resetToolStateBlank(){
   renderAreaTable();
   renderTakeoffFilesList();
   refreshAllPreviews();
-  document.getElementById("docView").classList.remove("showing");
+  document.getElementById("docView").classList.remove("showing"); syncDocViewVisibility();
   updateScopeDirtyBanner();
   renderRevisionLog();
+  updateSendLogBadge();
+  ensureAllReviewLinksGenerated();
+  renderMultiScopeGroups();
   updateApproveFinalizeButtonStyles();
 }
 
@@ -3507,6 +4079,7 @@ function clearScopeOnly(){
   matrixRows = {};
   tradeNotes = {};
   tradeClarifications = {};
+  multiScopeGroups = [];
   assumeProgressNotes = {};
   standaloneAssumptions = [];
   tradesRevisedAfterFinalization = {};
@@ -3536,17 +4109,369 @@ function clearScopeOnly(){
 function resetApprovalOnly(){
   if(!confirm('Clear the Approved and Finalized status for this project?\n\nThis will NOT touch any scope selections, notes, or attachments.\n\nThis cannot be undone.')) return;
 
+  addRevisionLogEntry('Approval status reset (Approved and Finalized cleared)'); // log first — the gate below needs to still see the finalized date that's about to be cleared
+
   document.getElementById('approvedDate').value = '';
   document.getElementById('finalizedDate').value = '';
   postFinalizationChangeDetected = false;
   tradesRevisedAfterFinalization = {};
 
   updateApproveFinalizeButtonStyles();
-  addRevisionLogEntry('Approval status reset (Approved and Finalized cleared)');
   markScopeDirty();
 
   scheduleAutosave();
   alert('Approved and Finalized status cleared. Scope content was not touched.');
+}
+
+// Makes sure every external audience already has a working link, with no manual step.
+// Called whenever a project opens or is created. Only writes to the database if something
+// was actually missing, so this is a no-op (and free) on every subsequent open.
+async function ensureAllReviewLinksGenerated(){
+  let changed = false;
+  EXTERNAL_REVIEW_AUDIENCES.forEach(audience=>{
+    if(!reviewTokens[audience]){
+      reviewTokens[audience] = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ('crt_'+Date.now()+'_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2));
+      changed = true;
+    }
+  });
+  if(changed && currentJobId){ await saveCurrentJob(); }
+  renderReviewLinksList();
+}
+
+function reviewLinkInputId(audience){ return 'reviewLinkInput_'+audience.replace(/[^a-zA-Z0-9]/g,''); }
+
+function renderReviewLinksList(){
+  const wrap = document.getElementById('reviewLinksList');
+  if(!wrap) return;
+
+  let html = '';
+  if(window.location.protocol === 'file:'){
+    html += '<div style="background:#fff3cd;border:1px solid #f0d98c;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:#6b5900;">'+
+      '<b>\u26A0 You\u2019re viewing this from a local file, not the live site.</b> The links below point at a file on your own computer and won\u2019t work for anyone else — open this tool from the actual deployed website before sending any of these out.'+
+    '</div>';
+  }
+
+  html += EXTERNAL_REVIEW_AUDIENCES.map(audience=>{
+    const token = reviewTokens[audience];
+    const url = token ? (window.location.origin + window.location.pathname + '?review=' + encodeURIComponent(token)) : '';
+    return '<div class="review-link-card">'+
+      '<div class="review-link-audience">'+esc(audience)+'</div>'+
+      '<div class="review-link-row">'+
+        '<input type="text" id="'+reviewLinkInputId(audience)+'" readonly value="'+esc(url)+'">'+
+        '<button type="button" class="btn tiny" onclick="copyReviewLink(\''+audience+'\')">Copy Link</button>'+
+        '<button type="button" class="btn secondary tiny" onclick="confirmReviewSent(\''+audience+'\')">Confirm Sent</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  wrap.innerHTML = html;
+}
+
+async function copyReviewLink(audience){
+  const inp = document.getElementById(reviewLinkInputId(audience));
+  if(!inp || !inp.value) return;
+
+  // Log first, unconditionally. Clicking Copy means "I'm about to send this" — that intent
+  // shouldn't depend on whether the browser's clipboard API happens to cooperate, which it
+  // often won't on a local file:// page (a security restriction, not a bug in this app).
+  const logged = logReviewSendFor(audience);
+
+  inp.select();
+  inp.setSelectionRange(0, 99999);
+  let copySucceeded = false;
+  try{
+    await navigator.clipboard.writeText(inp.value);
+    copySucceeded = true;
+  }catch(e){
+    try{ copySucceeded = document.execCommand('copy'); }catch(e2){ copySucceeded = false; }
+  }
+
+  const logNote = logged ? 'Logged as sent below.' : ('Nothing is currently tagged as a '+audience+' Clarification or Plan Revision, so there\u2019s nothing to log yet.');
+  if(copySucceeded){
+    alert(audience+' link copied. '+logNote);
+  } else {
+    alert('Could not copy automatically — this happens when testing from a local file instead of the live site. Select the link text above and copy it manually. '+logNote);
+  }
+}
+
+// Snapshots whatever's currently open for this audience into a new Send Log round.
+// Returns true if something was actually logged (either just now, or already covered by
+// a recent duplicate), false if there was nothing open to log at all — the caller uses
+// this to give an honest confirmation instead of always claiming success.
+// Explicit manual confirmation, independent of the Copy button entirely — useful if the
+// link was copied some other way (dictated, selected by hand, sent from a different device)
+// or if someone just wants to deliberately confirm a send rather than rely on the automatic
+// log-on-copy. Same underlying log as copying triggers, just a second, separate way in.
+function confirmReviewSent(audience){
+  const logged = logReviewSendFor(audience);
+  if(logged){
+    alert('Confirmed — logged as sent to '+audience+' below.');
+  } else {
+    alert('Nothing is currently tagged as a '+audience+' Clarification or Plan Revision, so there\u2019s nothing to log yet.');
+  }
+}
+
+function logReviewSendFor(audience){
+  const openItems = standaloneAssumptions.filter(item =>
+    item.audience === audience &&
+    (item.status === 'Clarification' || item.status === 'Plan Revision') &&
+    !item.pushedToScope &&
+    item.text && item.text.trim()
+  );
+  if(!openItems.length) return false;
+
+  const openIds = openItems.map(i=>i.id).sort().join(',');
+  const recentDuplicate = sendLog.find(entry=>
+    entry.audience === audience &&
+    (Date.now() - entry.timestamp) < 5*60*1000 &&
+    entry.items.map(i=>i.id).sort().join(',') === openIds
+  );
+  if(recentDuplicate) return true;
+
+  sendLog.push({
+    id: 'send_'+Date.now()+'_'+Math.floor(Math.random()*10000),
+    audience: audience,
+    timestamp: Date.now(),
+    by: currentUserName || '',
+    items: openItems.map(item=>({ id: item.id, text: item.text }))
+  });
+  renderSendLog();
+  scheduleAutosave();
+  return true;
+}
+
+function renderSendLog(){
+  const wrap = document.getElementById('sendLogList');
+  if(!wrap) return;
+  if(!sendLog.length){
+    wrap.innerHTML = '<div class="helptext" style="margin:0;">Nothing logged yet. Once you send a link, come back here and click "Log This as Sent."</div>';
+    updateSendLogBadge();
+    return;
+  }
+  const sorted = sendLog.slice().sort((a,b)=> b.timestamp - a.timestamp);
+  // Number each audience's rounds in chronological order (oldest = Round 1), even though we're displaying newest-first
+  const roundNumberById = {};
+  const perAudienceCounter = {};
+  sendLog.slice().sort((a,b)=> a.timestamp - b.timestamp).forEach(entry=>{
+    perAudienceCounter[entry.audience] = (perAudienceCounter[entry.audience] || 0) + 1;
+    roundNumberById[entry.id] = perAudienceCounter[entry.audience];
+  });
+
+  wrap.innerHTML = sorted.map(entry=>{
+    const d = new Date(entry.timestamp);
+    const stamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+    let answeredCount = 0;
+    const itemsHtml = entry.items.map(it=>{
+      const live = standaloneAssumptions.find(a=>a.id===it.id);
+      const answered = !!(live && live.clientResponse && live.clientResponse.trim());
+      if(answered) answeredCount++;
+      const mark = answered
+        ? '<span style="color:var(--st-confirmed);font-weight:700;">\u2713 Answered</span>'
+        : '<span style="color:#999;">\u23F3 Waiting</span>';
+      return '<li>'+esc(it.text)+' — '+mark+'</li>';
+    }).join('');
+
+    const total = entry.items.length;
+    let statusBadge;
+    if(answeredCount === total){
+      statusBadge = '<span class="status-badge" style="background:rgba(46,125,50,0.12);color:var(--st-confirmed);">\u2713 All '+total+' answered</span>';
+    } else if(answeredCount === 0){
+      statusBadge = '<span class="status-badge" style="background:rgba(117,117,117,0.12);color:#757575;">\u23F3 Awaiting response</span>';
+    } else {
+      statusBadge = '<span class="status-badge" style="background:rgba(230,81,0,0.12);color:#e65100;">\u23F3 '+answeredCount+' of '+total+' answered</span>';
+    }
+
+    return '<div class="review-link-card">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:4px;">'+
+        '<div class="review-link-audience" style="margin:0;">'+esc(entry.audience)+' — Round '+roundNumberById[entry.id]+'</div>'+
+        statusBadge+
+      '</div>'+
+      '<div class="helptext" style="margin:0 0 8px;">Sent '+esc(stamp)+(entry.by?' by '+esc(entry.by):'')+'</div>'+
+      '<ul class="clean-list" style="margin:0;">'+itemsHtml+'</ul>'+
+    '</div>';
+  }).join('');
+
+  updateSendLogBadge();
+}
+
+// The closest thing to a real notification this architecture can give: a visible count
+// on the tab itself, so a submitted response is noticeable without having to open the
+// tab and check each round by hand. Recomputed every time the log renders.
+function updateSendLogBadge(){
+  const btn = document.getElementById('tabBtnReview');
+  if(!btn) return;
+  let pendingRounds = 0;
+  sendLog.forEach(entry=>{
+    const anyUnanswered = entry.items.some(it=>{
+      const live = standaloneAssumptions.find(a=>a.id===it.id);
+      return !(live && live.clientResponse && live.clientResponse.trim());
+    });
+    if(anyUnanswered) pendingRounds++;
+  });
+  let badge = document.getElementById('sendLogTabBadge');
+  if(!pendingRounds){
+    if(badge) badge.remove();
+    return;
+  }
+  if(!badge){
+    badge = document.createElement('span');
+    badge.id = 'sendLogTabBadge';
+    badge.style.cssText = 'background:var(--rust);color:#fff;border-radius:10px;padding:1px 7px;font-size:10.5px;font-weight:700;margin-left:6px;';
+    btn.appendChild(badge);
+  }
+  badge.textContent = pendingRounds;
+}
+
+// Pops up automatically when a job is opened (called at the end of restoreProject) if
+// anything has been answered since the last time this project was checked. Not a real
+// push notification — this app has no server to send one from — but it surfaces new
+// answers the moment you actually look at the project, rather than making you go hunting
+// through Assumptions Review to notice something came in.
+function checkForNewSubmissions(){
+  const lastSeen = seenSubmissionsBy[currentUserName] != null ? seenSubmissionsBy[currentUserName] : (seenSubmissionsBy._legacyDefault || 0);
+  const newItems = standaloneAssumptions.filter(item => item.respondedAt && item.respondedAt > lastSeen);
+  if(!newItems.length) return;
+
+  const byResponder = {};
+  newItems.forEach(item=>{
+    const who = item.respondedBy || 'Someone';
+    byResponder[who] = (byResponder[who] || 0) + 1;
+  });
+
+  const listHtml = Object.keys(byResponder).map(who=>
+    '<div style="padding:6px 0;border-bottom:1px solid #f1ede3;"><b>'+esc(who)+'</b> submitted '+byResponder[who]+' answer'+(byResponder[who]===1?'':'s')+'</div>'
+  ).join('');
+  document.getElementById('submissionNotifyList').innerHTML = listHtml;
+  document.getElementById('submissionNotifyModal').style.display = 'flex';
+}
+
+function dismissSubmissionNotify(){
+  document.getElementById('submissionNotifyModal').style.display = 'none';
+  seenSubmissionsBy[currentUserName || ''] = Date.now();
+  scheduleAutosave();
+}
+
+function addMultiScopeGroup(){
+  multiScopeGroups.push({ id: 'msg_'+Date.now()+'_'+Math.floor(Math.random()*10000), tradeIds: [] });
+  renderMultiScopeGroups();
+  scheduleAutosave();
+}
+
+function removeMultiScopeGroup(groupId){
+  if(!confirm('Remove this multi-scope group? The trades themselves are unaffected — this only removes the "also bidding on" callout between them.')) return;
+  multiScopeGroups = multiScopeGroups.filter(g=>g.id!==groupId);
+  renderMultiScopeGroups();
+  refreshAllMultiScopeCallouts();
+  scheduleAutosave();
+  markScopeDirty();
+}
+
+function toggleMultiScopeGroupTrade(groupId, sectionId, checked){
+  const group = multiScopeGroups.find(g=>g.id===groupId);
+  if(!group) return;
+  if(checked){ if(!group.tradeIds.includes(sectionId)) group.tradeIds.push(sectionId); }
+  else { group.tradeIds = group.tradeIds.filter(id=>id!==sectionId); }
+  refreshAllMultiScopeCallouts();
+  scheduleAutosave();
+  markScopeDirty();
+}
+
+// Quick per-card toggle, used by the "Bid Assignment" button on each trade. Finds or
+// creates the right group behind the scenes so the user never has to think about groups
+// directly — just "is this trade also bidding on that one, yes or no."
+function toggleTradeLinkFromCard(sectionId, otherSectionId, checked){
+  if(checked){
+    let group = multiScopeGroups.find(g=>g.tradeIds.includes(sectionId)) || multiScopeGroups.find(g=>g.tradeIds.includes(otherSectionId));
+    if(!group){
+      group = { id: 'msg_'+Date.now()+'_'+Math.floor(Math.random()*10000), tradeIds: [] };
+      multiScopeGroups.push(group);
+    }
+    if(!group.tradeIds.includes(sectionId)) group.tradeIds.push(sectionId);
+    if(!group.tradeIds.includes(otherSectionId)) group.tradeIds.push(otherSectionId);
+  } else {
+    const group = multiScopeGroups.find(g=> g.tradeIds.includes(sectionId) && g.tradeIds.includes(otherSectionId));
+    if(group){
+      group.tradeIds = group.tradeIds.filter(id=>id!==otherSectionId);
+      if(group.tradeIds.length < 2){ multiScopeGroups = multiScopeGroups.filter(g=>g.id!==group.id); }
+    }
+  }
+  renderMultiScopeGroups();
+  refreshAllMultiScopeCallouts();
+  scheduleAutosave();
+  markScopeDirty();
+}
+
+// Updates the passive "Multiple Scope Assignment" banner on every trade card in place,
+// without rebuilding the trade list — rebuilding would collapse every card back closed,
+// which would make checking more than one box in a row deeply annoying.
+function refreshAllMultiScopeCallouts(){
+  SECTIONS.forEach(s=>{
+    const tradeDiv = document.getElementById('trade_'+s.id);
+    if(!tradeDiv) return;
+    const body = tradeDiv.querySelector('.trade-body');
+    if(!body) return;
+    let calloutEl = body.querySelector('.multiscope-callout');
+    const partners = getMultiScopePartners(s.id, false);
+    if(partners.length){
+      const html = '<b>\u26A0 Multiple Scope Assignment:</b> This bidder is also being asked to price — ' + partners.map(p=>esc(p.title)).join(', ');
+      if(calloutEl){ calloutEl.innerHTML = html; }
+      else {
+        calloutEl = document.createElement('div');
+        calloutEl.className = 'multiscope-callout';
+        calloutEl.style.cssText = 'background:#fff3cd;border:1px solid #f0d98c;border-radius:6px;padding:9px 12px;margin-bottom:14px;font-size:12px;color:#6b5900;';
+        calloutEl.innerHTML = html;
+        body.insertBefore(calloutEl, body.firstChild);
+      }
+    } else if(calloutEl){
+      calloutEl.remove();
+    }
+    const picker = tradeDiv.querySelector('.multiscope-link-picker');
+    if(picker && picker._refresh){ picker._refresh(); }
+  });
+}
+
+function renderMultiScopeGroups(){
+  const container = document.getElementById('multiScopeGroupsList');
+  if(!container) return;
+  if(!multiScopeGroups.length){
+    container.innerHTML = '<div class="helptext" style="margin:0 0 10px;">No multi-scope groups yet — trades bid independently by default.</div>';
+    return;
+  }
+  container.innerHTML = '';
+  multiScopeGroups.forEach((group, gIdx)=>{
+    const groupDiv = document.createElement('div');
+    groupDiv.style.cssText = 'border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#fbfaf6;';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;';
+    const title = document.createElement('div');
+    title.style.cssText = 'font-weight:700;color:var(--navy);font-size:13px;';
+    const namedTrades = SECTIONS.filter(s=>group.tradeIds.includes(s.id));
+    title.textContent = namedTrades.length ? namedTrades.map(s=>s.title).join('  +  ') : ('Combined Bid Group '+(gIdx+1)+' (pick trades below)');
+    header.appendChild(title);
+    const rmBtn = document.createElement('button');
+    rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove Group';
+    rmBtn.onclick = ()=> removeMultiScopeGroup(group.id);
+    header.appendChild(rmBtn);
+    groupDiv.appendChild(header);
+
+    const checklistWrap = document.createElement('div');
+    checklistWrap.style.cssText = 'max-height:180px;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px;padding:8px;background:#fff;border-radius:6px;border:1px solid #eee;';
+    SECTIONS.forEach(s=>{
+      const label = document.createElement('label');
+      label.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;font-weight:400;margin:0;';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = group.tradeIds.includes(s.id);
+      cb.onchange = ()=> toggleMultiScopeGroupTrade(group.id, s.id, cb.checked);
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(s.title));
+      checklistWrap.appendChild(label);
+    });
+    groupDiv.appendChild(checklistWrap);
+    container.appendChild(groupDiv);
+  });
 }
 
 function getVal(id){ const el=document.getElementById(id); if(!el) return null; if(el.type==='checkbox') return el.checked; return el.value; }
@@ -3566,7 +4491,7 @@ function serializeFieldStates(){
           const el = document.getElementById('ro_'+base+'_'+oIdx);
           if(el && el.checked) rec.selectedIdx = oIdx;
         });
-        const noteEl = document.getElementById('note_'+base); if(noteEl) rec.note = noteEl.value;
+        const noteEl = document.getElementById('note_'+base); if(noteEl){ rec.note = noteEl.textContent; rec.noteHtml = sanitizeNoteHtml(noteEl.innerHTML); }
         const planRefEl = document.getElementById('planref_'+base); if(planRefEl) rec.planref = planRefEl.value;
         const statusEl = document.getElementById('status_'+base); if(statusEl) rec.status = statusEl.value;
         out[base] = rec;
@@ -3580,7 +4505,7 @@ function serializeFieldStates(){
             rec.checked.push({oIdx, other: otherEl?otherEl.value:undefined, loc: locEl?locEl.value:undefined});
           }
         });
-        const noteEl = document.getElementById('note_'+base); if(noteEl) rec.note = noteEl.value;
+        const noteEl = document.getElementById('note_'+base); if(noteEl){ rec.note = noteEl.textContent; rec.noteHtml = sanitizeNoteHtml(noteEl.innerHTML); }
         const planRefEl = document.getElementById('planref_'+base); if(planRefEl) rec.planref = planRefEl.value;
         const statusEl = document.getElementById('status_'+base); if(statusEl) rec.status = statusEl.value;
         out[base] = rec;
@@ -3596,7 +4521,10 @@ function serializeFieldStates(){
 }
 
 function applyStatusAndNote(base, st){
-  const noteEl = document.getElementById('note_'+base); if(noteEl && st.note!=null) noteEl.value = st.note;
+  const noteEl = document.getElementById('note_'+base);
+  if(noteEl && (st.note!=null || st.noteHtml!=null)){
+    noteEl.innerHTML = (st.noteHtml != null) ? st.noteHtml : plainTextToHtmlSeed(st.note);
+  }
   const planRefEl = document.getElementById('planref_'+base); if(planRefEl && st.planref!=null) planRefEl.value = st.planref;
   const statusEl = document.getElementById('status_'+base);
   if(statusEl && st.status!=null){ statusEl.value = st.status; statusEl.className = 'status-select'+(st.status?' st-'+slugStatus(st.status):''); }
@@ -3636,6 +4564,10 @@ function serializeCurrentProject(){
   data.matrixRows = JSON.parse(JSON.stringify(matrixRows));
   data.tradeNotes = JSON.parse(JSON.stringify(tradeNotes));
   data.tradeClarifications = JSON.parse(JSON.stringify(tradeClarifications));
+  data.multiScopeGroups = JSON.parse(JSON.stringify(multiScopeGroups));
+  data.reviewTokens = JSON.parse(JSON.stringify(reviewTokens));
+  data.sendLog = JSON.parse(JSON.stringify(sendLog));
+  data.seenSubmissionsBy = JSON.parse(JSON.stringify(seenSubmissionsBy));
   data.assumeProgressNotes = JSON.parse(JSON.stringify(assumeProgressNotes));
   data.takeoffFiles = takeoffFiles.map(t=>({id:t.id, label:t.label, name:t.name, imageDataUrl:t.imageDataUrl, storagePath:t.storagePath}));
   data.standaloneAssumptions = JSON.parse(JSON.stringify(standaloneAssumptions));
@@ -3668,6 +4600,10 @@ function restoreProject(data){
   });
   assumeProgressNotes = {}; Object.assign(assumeProgressNotes, data.assumeProgressNotes||{});
   tradeClarifications = {}; Object.assign(tradeClarifications, data.tradeClarifications||{});
+  multiScopeGroups = (data.multiScopeGroups || []).slice();
+  reviewTokens = data.reviewTokens ? JSON.parse(JSON.stringify(data.reviewTokens)) : (data.clientReviewToken ? { Client: data.clientReviewToken } : {});
+  sendLog = (data.sendLog || []).slice();
+  seenSubmissionsBy = data.seenSubmissionsBy ? JSON.parse(JSON.stringify(data.seenSubmissionsBy)) : (data.lastCheckedSubmissionsAt ? {_legacyDefault: data.lastCheckedSubmissionsAt} : {});
   takeoffFiles = (data.takeoffFiles || []).slice();
   standaloneAssumptions = (data.standaloneAssumptions || []).slice();
   docHasBeenGenerated = !!data.docHasBeenGenerated;
@@ -3713,12 +4649,16 @@ function restoreProject(data){
   renderTakeoffFilesList();
   refreshAllPreviews();
   renderRevisionLog();
+  updateSendLogBadge();
+  checkForNewSubmissions();
+  ensureAllReviewLinksGenerated();
+  renderMultiScopeGroups();
   updateScopeDirtyBanner();
   updateApproveFinalizeButtonStyles();
   if(docHasBeenGenerated){
     generateDoc(true);
   } else {
-    document.getElementById('docView').classList.remove('showing');
+    document.getElementById('docView').classList.remove('showing'); syncDocViewVisibility();
   }
 }
 
@@ -3791,6 +4731,8 @@ function updateScopeDirtyBanner(){
 }
 
 function addRevisionLogEntry(text){
+  const finalizedEl = document.getElementById('finalizedDate');
+  if(!finalizedEl || !finalizedEl.value) return; // the log only tracks activity from finalization onward — drafting before that isn't logged
   revisionLog.push({ timestamp: Date.now(), entry: text, by: currentUserName || '' });
   renderRevisionLog();
 }
@@ -3842,11 +4784,201 @@ async function initApp(){
   }
 }
 
-const savedUser = sessionStorage.getItem('mcd_session_user');
-if(savedUser){
-  currentUserName = savedUser;
+// ===== Client Review Mode =====
+// Reached only via a link containing ?clientReview=TOKEN. Shows a no-login page with just
+// that project's open Client-audience clarifications. Deliberately does not touch, call,
+// or depend on any of the normal app's state (currentJobId, includeState, etc.) — a client
+// visiting this link never runs any of the internal-tool code above.
+let crProjectId = null;
+let crAudience = null; // which audience's link this visitor came in on — determines what they see and what gets stamped as respondedBy
+let crOpenItems = [];
+
+function getClientReviewToken(){
+  const params = new URLSearchParams(window.location.search);
+  return (params.get('review') || params.get('clientReview') || '').trim();
+}
+
+async function initClientReviewMode(token){
+  const content = document.getElementById('crContent');
+  let matchedRow = null;
+  let matchedAudience = null;
+  try{
+    // A per-audience token lives in a nested object, which isn't reliably filterable
+    // with a simple equality query — so we fetch the lightweight token maps for every
+    // project and match client-side instead. Safer than a JSONB path query we can't
+    // test against the live database from here.
+    const { data: rows, error } = await supabaseClient
+      .from('sow_projects')
+      .select('id, project_name, data');
+    if(error) throw error;
+    for(const r of (rows || [])){
+      const tokens = (r.data && r.data.reviewTokens) || {};
+      const foundAudience = Object.keys(tokens).find(aud => tokens[aud] === token);
+      if(foundAudience){ matchedRow = r; matchedAudience = foundAudience; break; }
+      if(r.data && r.data.clientReviewToken === token){ matchedRow = r; matchedAudience = 'Client'; break; } // legacy single-token links
+    }
+  }catch(e){
+    document.getElementById('crPageSubtitle').textContent = '';
+    content.innerHTML = '<div class="cr-state-message error">Something went wrong loading this page. Please try the link again in a moment, or contact your project manager.</div>';
+    console.error(e);
+    return;
+  }
+
+  if(!matchedRow){
+    document.getElementById('crPageSubtitle').textContent = '';
+    content.innerHTML = '<div class="cr-state-message error">This link is invalid or is no longer active. Please contact your project manager for an updated link.</div>';
+    return;
+  }
+
+  crProjectId = matchedRow.id;
+  crAudience = matchedAudience;
+  const projectName = matchedRow.project_name || (matchedRow.data && matchedRow.data.fields && matchedRow.data.fields.projName) || 'Your Project';
+  document.getElementById('crPageTitle').textContent = projectName;
+  document.getElementById('crPageSubtitle').textContent = 'Open questions for your review';
+
+  const all = (matchedRow.data && matchedRow.data.standaloneAssumptions) || [];
+  crOpenItems = all.filter(item => item.audience === crAudience && (item.status === 'Clarification' || item.status === 'Plan Revision') && !item.pushedToScope);
+
+  renderClientReviewForm();
+}
+
+const crSelectedFiles = new Map(); // item id -> File object, chosen but not yet uploaded
+
+function handleCrFileSelect(inputEl, itemId){
+  const file = inputEl.files && inputEl.files[0];
+  const nameEl = document.querySelector('.cr-item[data-id="'+CSS.escape(itemId)+'"] .cr-file-name');
+  if(!file){ crSelectedFiles.delete(itemId); if(nameEl) nameEl.textContent = ''; return; }
+  if(file.size > 10*1024*1024){
+    alert('That file is larger than 10MB. Please choose a smaller file.');
+    inputEl.value = '';
+    crSelectedFiles.delete(itemId);
+    if(nameEl) nameEl.textContent = '';
+    return;
+  }
+  crSelectedFiles.set(itemId, file);
+  if(nameEl) nameEl.textContent = 'Selected: ' + file.name;
+}
+
+function renderClientReviewForm(){
+  const content = document.getElementById('crContent');
+  if(!crOpenItems.length){
+    content.innerHTML =
+      '<div class="panel"><div class="cr-success-box">' +
+        '<div class="cr-check">&#10003;</div>' +
+        '<h2>Nothing needs your attention right now</h2>' +
+        '<div class="helptext" style="margin:0;">There are no open questions for you at this time. If you were expecting something here, please reach out to your project manager.</div>' +
+      '</div></div>';
+    return;
+  }
+
+  let html = '<div class="panel"><h2>A few things we need from you</h2><div class="helptext">Please answer the question(s) below, then click Submit. You can also attach a PDF or photo to any answer if that\u2019s easier than typing it out. Your answers go straight back to your project team.</div></div>';
+  crOpenItems.forEach(item=>{
+    html += '<div class="cr-item" data-id="'+esc(item.id)+'">';
+    if(item.category){ html += '<div class="cr-trade-label">'+esc(item.category)+'</div>'; }
+    html += '<div class="cr-question">'+esc(item.text)+'</div>';
+    html += '<textarea placeholder="Type your answer here...">'+esc(item.clientResponse||'')+'</textarea>';
+    html += '<div class="cr-file-row">';
+    html += '<label class="cr-file-btn">\uD83D\uDCCE Attach a file (PDF or photo, optional)<input type="file" accept="application/pdf,image/*" style="display:none;" onchange="handleCrFileSelect(this, \''+item.id+'\')"></label>';
+    html += '<span class="cr-file-name"></span>';
+    if(item.clientResponseAttachmentUrl){ html += '<a href="'+esc(item.clientResponseAttachmentUrl)+'" target="_blank" rel="noopener" class="cr-file-existing">Current attachment: '+esc(item.clientResponseAttachmentName||'file')+'</a>'; }
+    html += '</div>';
+    html += '</div>';
+  });
+  html += '<div id="crSubmitBar"><button class="btn" id="crSubmitBtn" onclick="submitClientReviewAnswers()">Submit My Answers</button></div>';
+  html += '<div class="cr-footer-note">This link is unique to your project. No account or login is needed.</div>';
+  content.innerHTML = html;
+}
+
+async function submitClientReviewAnswers(){
+  const submitBtn = document.getElementById('crSubmitBtn');
+  const itemEls = document.querySelectorAll('.cr-item');
+  const answers = {};
+  let anyBlank = false;
+  itemEls.forEach(el=>{
+    const val = el.querySelector('textarea').value.trim();
+    answers[el.getAttribute('data-id')] = val;
+    if(!val && !crSelectedFiles.has(el.getAttribute('data-id'))) anyBlank = true;
+  });
+  if(anyBlank && !confirm('One or more answers are blank. Submit anyway?')) return;
+
+  submitBtn.disabled = true;
+
+  // Upload any attached files first. If one fails, stop rather than submit half-attached —
+  // easier for them to just hit Submit again than to silently lose a file.
+  const uploadedAttachments = {}; // item id -> {url, name}
+  if(crSelectedFiles.size){
+    submitBtn.textContent = 'Uploading attachment(s)...';
+    for(const [itemId, file] of crSelectedFiles.entries()){
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = 'client-review-uploads/'+crProjectId+'/'+itemId+'_'+Date.now()+'_'+safeName;
+      const url = await uploadToStorage(file, path);
+      if(!url){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit My Answers';
+        return; // uploadToStorage already alerted the specific error
+      }
+      uploadedAttachments[itemId] = { url, name: file.name };
+    }
+  }
+
+  submitBtn.textContent = 'Submitting...';
+
+  try{
+    const { data: freshRow, error: fetchErr } = await supabaseClient
+      .from('sow_projects').select('data').eq('id', crProjectId).single();
+    if(fetchErr) throw fetchErr;
+
+    const freshData = freshRow.data || {};
+    const list = freshData.standaloneAssumptions || [];
+    const nowStamp = Date.now();
+    list.forEach(item=>{
+      if(Object.prototype.hasOwnProperty.call(answers, item.id)){
+        item.clientResponse = answers[item.id];
+        item.respondedBy = crAudience || 'External';
+        item.respondedAt = nowStamp;
+        if(uploadedAttachments[item.id]){
+          item.clientResponseAttachmentUrl = uploadedAttachments[item.id].url;
+          item.clientResponseAttachmentName = uploadedAttachments[item.id].name;
+        }
+      }
+    });
+    freshData.standaloneAssumptions = list;
+    freshData.revisionLog = freshData.revisionLog || [];
+    freshData.revisionLog.push({ timestamp: nowStamp, entry: (crAudience||'Someone')+' submitted answers to '+itemEls.length+' clarification'+(itemEls.length===1?'':'s'), by: crAudience || 'External' });
+
+    const { error: updateErr } = await supabaseClient
+      .from('sow_projects').update({ data: freshData, updated_at: new Date().toISOString() }).eq('id', crProjectId);
+    if(updateErr) throw updateErr;
+
+    document.getElementById('crContent').innerHTML =
+      '<div class="panel"><div class="cr-success-box">' +
+        '<div class="cr-check">&#10003;</div><h2>Thank you!</h2>' +
+        '<div class="helptext" style="margin:0;">Your answers have been submitted to your project team.</div>' +
+      '</div></div>';
+  }catch(e){
+    console.error(e);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit My Answers';
+    alert('Something went wrong submitting your answers. Please try again in a moment.');
+  }
+}
+
+const clientReviewTokenFromUrl = getClientReviewToken();
+if(clientReviewTokenFromUrl){
+  // A client opened their link — show only the review page, skip the PIN gate and the
+  // rest of the app entirely. Nothing below this branch ever runs for them.
   document.getElementById('pinGateOverlay').style.display = 'none';
-  initApp();
+  document.getElementById('dashboardView').style.display = 'none';
+  document.getElementById('toolShell').style.display = 'none';
+  document.getElementById('clientReviewRoot').style.display = 'block';
+  initClientReviewMode(clientReviewTokenFromUrl);
+} else {
+  const savedUser = sessionStorage.getItem('mcd_session_user');
+  if(savedUser){
+    currentUserName = savedUser;
+    document.getElementById('pinGateOverlay').style.display = 'none';
+    initApp();
+  }
 }
 </script>
 </body>
