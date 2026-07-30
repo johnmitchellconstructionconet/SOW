@@ -3773,7 +3773,15 @@ async function attemptLogin(){
   // Normalize legacy plain-string entries to the same shape, in place, so a match below works either way
   rosterData = rosterData.map(entry => (typeof entry === 'string') ? { name: entry, password: '' } : entry);
 
-  const entry = rosterData.find(u => (u.name||'').trim().toLowerCase() === name.trim().toLowerCase());
+  let entry = rosterData.find(u => (u.name||'').trim().toLowerCase() === name.trim().toLowerCase());
+  if(!entry && name.trim().toLowerCase() === 'john mitchell'){
+    // The account owner can never be locked out of his own system — if he's not in the
+    // roster yet (e.g. a fresh deploy with an empty list), create his account right here
+    // instead of rejecting him, since he'd otherwise have no way to reach Company Settings
+    // to add himself in the first place.
+    entry = { name: 'John Mitchell', password: '' };
+    rosterData.push(entry);
+  }
   if(!entry){
     errEl.textContent = 'That name isn\u2019t set up yet — ask your admin to add you in Company Settings first.';
     errEl.style.display = 'block';
