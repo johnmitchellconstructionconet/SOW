@@ -413,13 +413,25 @@
 </div>
 
 <div id="pinGateOverlay" style="position:fixed;inset:0;background:#575757;z-index:99999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:12px;padding:36px 40px;width:320px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
+  <div style="background:#fff;border-radius:12px;padding:36px 40px;width:340px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
     <div style="font-size:16px;font-weight:700;color:#575757;margin-bottom:4px;">Mitchell Construction & Design</div>
     <div style="font-size:12px;color:#888;margin-bottom:20px;">Scope of Work Generator</div>
-    <input type="text" id="pinGateName" placeholder="Your name" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
-    <input type="password" id="pinGateInput" placeholder="PIN" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;" onkeydown="if(event.key==='Enter') attemptPinLogin();">
-    <button class="btn" style="width:100%;" onclick="attemptPinLogin()">Enter</button>
-    <div id="pinGateError" style="color:#B04035;font-size:12px;margin-top:10px;display:none;">Incorrect PIN. Try again.</div>
+
+    <div id="emailLoginFields">
+      <input type="text" id="emailGateEmail" placeholder="you@mitchellconstructionco.net" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('emailGatePassword').focus();">
+      <input type="password" id="emailGatePassword" placeholder="Password" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptEmailLogin();">
+      <button class="btn" style="width:100%;" onclick="attemptEmailLogin()">Enter</button>
+      <div style="margin-top:12px;"><a href="#" onclick="toggleLoginMode(event)" style="font-size:11.5px;color:#999;">Use the team PIN instead</a></div>
+    </div>
+
+    <div id="pinLoginFields" style="display:none;">
+      <input type="text" id="pinGateName" placeholder="Your name" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
+      <input type="password" id="pinGateInput" placeholder="Team PIN" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptPinLogin();">
+      <button class="btn" style="width:100%;" onclick="attemptPinLogin()">Enter</button>
+      <div style="margin-top:12px;"><a href="#" onclick="toggleLoginMode(event)" style="font-size:11.5px;color:#999;">Use your company email instead</a></div>
+    </div>
+
+    <div id="pinGateError" style="color:#B04035;font-size:12px;margin-top:10px;display:none;"></div>
   </div>
 </div>
 
@@ -540,6 +552,12 @@
       <h2>Default Closeout Language (Company-Wide)</h2>
       <div class="field"><label>Final Walkthrough & Completion – Trade Requirements</label><textarea id="closeoutWalkthrough"></textarea></div>
       <div class="field"><label>Final Cleanup</label><textarea id="closeoutCleanup"></textarea></div>
+    </div>
+    <div class="panel">
+      <h2>Team Members</h2>
+      <div class="helptext">Everyone logging in needs a @mitchellconstructionco.net email. Add each person here and assign their password — worth knowing plainly: this is a convenience gate matching how the rest of this app already works, not a hardened security system, so don't reuse anything sensitive here.</div>
+      <div id="teamUsersList"></div>
+      <button type="button" class="btn secondary tiny" onclick="addTeamUser()">+ Add Team Member</button>
     </div>
   </div>
 
@@ -3738,6 +3756,49 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const STORAGE_BUCKET = 'project-files';
 
 // ===== PIN gate =====
+function toggleLoginMode(e){
+  if(e) e.preventDefault();
+  const emailFields = document.getElementById('emailLoginFields');
+  const pinFields = document.getElementById('pinLoginFields');
+  const showingEmail = emailFields.style.display !== 'none';
+  emailFields.style.display = showingEmail ? 'none' : 'block';
+  pinFields.style.display = showingEmail ? 'block' : 'none';
+  document.getElementById('pinGateError').style.display = 'none';
+}
+
+async function attemptEmailLogin(){
+  const email = document.getElementById('emailGateEmail').value.trim().toLowerCase();
+  const password = document.getElementById('emailGatePassword').value;
+  const errEl = document.getElementById('pinGateError');
+  errEl.style.display = 'none';
+
+  if(!email || !password){ errEl.textContent='Enter your email and password.'; errEl.style.display='block'; return; }
+  if(!email.endsWith('@mitchellconstructionco.net')){
+    errEl.textContent = 'Please use your @mitchellconstructionco.net email.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  let teamUsers = [];
+  try{
+    const { data, error } = await supabaseClient.from('company_settings').select('data').eq('id',1).single();
+    if(!error && data && data.data && Array.isArray(data.data.teamUsers)){ teamUsers = data.data.teamUsers; }
+  }catch(e){ console.warn('Could not load team users', e); }
+
+  const match = teamUsers.find(u => (u.email||'').trim().toLowerCase() === email && u.password === password);
+  if(!match){
+    errEl.textContent = 'Email or password not recognized. Ask your admin to check your account in Company Settings, or use the team PIN.';
+    errEl.style.display = 'block';
+    document.getElementById('emailGatePassword').value = '';
+    return;
+  }
+
+  currentUserName = match.name || email;
+  sessionStorage.setItem('mcd_session_user', currentUserName);
+  document.getElementById('pinGateOverlay').style.display = 'none';
+  initApp();
+}
+
 async function attemptPinLogin(){
   const name = document.getElementById('pinGateName').value.trim();
   const pin = document.getElementById('pinGateInput').value.trim();
@@ -3779,6 +3840,8 @@ async function loadCompanySettingsGlobal(){
       if(cs[k]!=null){ const el=document.getElementById(k); if(el) el.value = cs[k]; }
     });
     if(cs.logoDataUrl){ logoDataUrl = cs.logoDataUrl; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; }
+    teamUsersList = Array.isArray(cs.teamUsers) ? cs.teamUsers : [];
+    renderTeamUsersList();
     updateColors();
   }catch(e){ console.warn('Could not load company settings', e); }
   updateDashboardBrand();
@@ -3800,12 +3863,69 @@ async function saveCompanySettingsGlobal(){
     colorNavy: document.getElementById('colorNavy').value,
     colorCream: document.getElementById('colorCream').value,
     footerLine: document.getElementById('footerLine').value,
-    logoDataUrl: logoDataUrl
+    logoDataUrl: logoDataUrl,
+    teamUsers: teamUsersList
   };
   try{
     await supabaseClient.from('company_settings').upsert({id:1, data: cs, updated_at: new Date().toISOString()});
   }catch(e){ console.warn('Could not save company settings', e); }
   updateDashboardBrand();
+}
+
+let teamUsersList = [];
+
+function renderTeamUsersList(){
+  const wrap = document.getElementById('teamUsersList');
+  if(!wrap) return;
+  if(!teamUsersList.length){
+    wrap.innerHTML = '<div class="helptext" style="margin:0 0 10px;">No team members added yet.</div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  teamUsersList.forEach((user, idx)=>{
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 1.4fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;';
+
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.placeholder = 'Name'; nameInp.value = user.name || '';
+    nameInp.oninput = ()=>{ user.name = nameInp.value; };
+    nameInp.onblur = saveCompanySettingsGlobal;
+
+    const emailInp = document.createElement('input');
+    emailInp.type = 'text'; emailInp.placeholder = 'name@mitchellconstructionco.net'; emailInp.value = user.email || '';
+    emailInp.oninput = ()=>{ user.email = emailInp.value; };
+    emailInp.onblur = ()=>{
+      if(user.email && !user.email.trim().toLowerCase().endsWith('@mitchellconstructionco.net')){
+        alert('That email doesn\u2019t end in @mitchellconstructionco.net — '+user.name+' won\u2019t be able to log in with it until it\u2019s corrected.');
+      }
+      saveCompanySettingsGlobal();
+    };
+
+    const passInp = document.createElement('input');
+    passInp.type = 'text'; passInp.placeholder = 'Password'; passInp.value = user.password || '';
+    passInp.oninput = ()=>{ user.password = passInp.value; };
+    passInp.onblur = saveCompanySettingsGlobal;
+
+    const rmBtn = document.createElement('button');
+    rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove';
+    rmBtn.onclick = ()=> removeTeamUser(idx);
+
+    row.appendChild(nameInp); row.appendChild(emailInp); row.appendChild(passInp); row.appendChild(rmBtn);
+    wrap.appendChild(row);
+  });
+}
+
+function addTeamUser(){
+  teamUsersList.push({ name:'', email:'', password:'' });
+  renderTeamUsersList();
+}
+
+function removeTeamUser(idx){
+  const user = teamUsersList[idx];
+  if(!confirm('Remove '+(user.name||'this person')+'? They won\u2019t be able to log in with this account anymore.')) return;
+  teamUsersList.splice(idx,1);
+  renderTeamUsersList();
+  saveCompanySettingsGlobal();
 }
 
 // ===== Jobs list (Supabase) =====
