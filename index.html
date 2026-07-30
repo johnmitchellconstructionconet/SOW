@@ -4348,6 +4348,15 @@ function logReviewSendFor(audience){
   return true;
 }
 
+function removeSendLogEntry(id){
+  const entry = sendLog.find(e=>e.id===id);
+  if(!entry) return;
+  if(!confirm('Remove this logged round for '+entry.audience+'? This only removes the log entry — it doesn\u2019t touch the actual link or any answers already submitted.')) return;
+  sendLog = sendLog.filter(e=>e.id!==id);
+  renderSendLog();
+  scheduleAutosave();
+}
+
 function renderSendLog(){
   const wrap = document.getElementById('sendLogList');
   if(!wrap) return;
@@ -4393,7 +4402,7 @@ function renderSendLog(){
     return '<div class="review-link-card">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:4px;">'+
         '<div class="review-link-audience" style="margin:0;">'+esc(entry.audience)+' — Round '+roundNumberById[entry.id]+'</div>'+
-        statusBadge+
+        '<div style="display:flex;align-items:center;gap:8px;">'+statusBadge+'<button type="button" class="rm-btn" onclick="removeSendLogEntry(\''+entry.id+'\')">Remove</button></div>'+
       '</div>'+
       '<div class="helptext" style="margin:0 0 8px;">Sent '+esc(stamp)+(entry.by?' by '+esc(entry.by):'')+'</div>'+
       '<ul class="clean-list" style="margin:0;">'+itemsHtml+'</ul>'+
