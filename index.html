@@ -416,11 +416,7 @@
   <div style="background:#fff;border-radius:12px;padding:36px 40px;width:320px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
     <div style="font-size:16px;font-weight:700;color:#575757;margin-bottom:4px;">Mitchell Construction & Design</div>
     <div style="font-size:12px;color:#888;margin-bottom:20px;">Scope of Work Generator</div>
-    <select id="pinGateNameSelect" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onchange="handleLoginNameSelectChange()">
-      <option value="">Your name...</option>
-      <option value="__other__">Someone else / not listed</option>
-    </select>
-    <input type="text" id="pinGateNameOther" placeholder="Your name" style="display:none;width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
+    <input type="text" id="pinGateName" placeholder="Your name" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
     <input type="password" id="pinGateInput" placeholder="Password" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptLogin();">
     <button class="btn" style="width:100%;" onclick="attemptLogin()">Enter</button>
     <div id="pinGateError" style="color:#B04035;font-size:12px;margin-top:10px;display:none;"></div>
@@ -3749,37 +3745,8 @@ const STORAGE_BUCKET = 'project-files';
 
 // ===== PIN gate =====
 function getLoginNameValue(){
-  const sel = document.getElementById('pinGateNameSelect');
-  if(sel && sel.value && sel.value !== '__other__') return sel.value;
-  const otherInp = document.getElementById('pinGateNameOther');
-  return otherInp ? otherInp.value.trim() : '';
-}
-
-function handleLoginNameSelectChange(){
-  const sel = document.getElementById('pinGateNameSelect');
-  const otherInp = document.getElementById('pinGateNameOther');
-  const showOther = sel.value === '__other__';
-  otherInp.style.display = showOther ? 'block' : 'none';
-  if(showOther) otherInp.focus();
-}
-
-async function populateLoginNameOptions(){
-  let roster = [];
-  try{
-    const { data, error } = await supabaseClient.from('company_settings').select('data').eq('id',1).single();
-    if(!error && data && data.data && Array.isArray(data.data.teamRoster)){
-      roster = data.data.teamRoster
-        .map(entry => (typeof entry === 'string') ? entry : entry.name)
-        .filter(n => n && n.trim());
-    }
-  }catch(e){ console.warn('Could not load team roster for login', e); }
-
-  const sel = document.getElementById('pinGateNameSelect');
-  if(!sel) return;
-  const otherOption = sel.querySelector('option[value="__other__"]');
-  sel.innerHTML = '<option value="">Your name...</option>';
-  roster.forEach(name=>{ const o=document.createElement('option'); o.value=name; o.textContent=name; sel.appendChild(o); });
-  sel.appendChild(otherOption ? otherOption.cloneNode(true) : (()=>{ const o=document.createElement('option'); o.value='__other__'; o.textContent='Someone else / not listed'; return o; })());
+  const inp = document.getElementById('pinGateName');
+  return inp ? inp.value.trim() : '';
 }
 
 async function attemptLogin(){
@@ -3864,7 +3831,6 @@ async function loadCompanySettingsGlobal(){
     const rawRoster = Array.isArray(cs.teamRoster) ? cs.teamRoster : [];
     teamRoster = rawRoster.map(entry => (typeof entry === 'string') ? { name: entry, password: '' } : entry);
     renderTeamRosterList();
-    populateLoginNameOptions();
     updateColors();
   }catch(e){ console.warn('Could not load company settings', e); }
   updateDashboardBrand();
@@ -3912,7 +3878,7 @@ function renderTeamRosterList(){
     const nameInp = document.createElement('input');
     nameInp.type = 'text'; nameInp.placeholder = 'Name'; nameInp.value = user.name || '';
     nameInp.oninput = ()=>{ user.name = nameInp.value; };
-    nameInp.onblur = ()=>{ saveCompanySettingsGlobal(); populateLoginNameOptions(); };
+    nameInp.onblur = saveCompanySettingsGlobal;
 
     const passInp = document.createElement('input');
     passInp.type = 'text';
@@ -3940,7 +3906,6 @@ function removeTeamRosterMember(idx){
   teamRoster.splice(idx,1);
   renderTeamRosterList();
   saveCompanySettingsGlobal();
-  populateLoginNameOptions();
 }
 
 // ===== Jobs list (Supabase) =====
@@ -5108,7 +5073,6 @@ if(clientReviewTokenFromUrl){
   document.getElementById('clientReviewRoot').style.display = 'block';
   initClientReviewMode(clientReviewTokenFromUrl);
 } else {
-  populateLoginNameOptions(); // fetch early so the dropdown is ready before anyone needs it — independent of login succeeding
   const savedUser = sessionStorage.getItem('mcd_session_user');
   if(savedUser){
     currentUserName = savedUser;
