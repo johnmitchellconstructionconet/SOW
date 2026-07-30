@@ -413,24 +413,16 @@
 </div>
 
 <div id="pinGateOverlay" style="position:fixed;inset:0;background:#575757;z-index:99999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:12px;padding:36px 40px;width:340px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
+  <div style="background:#fff;border-radius:12px;padding:36px 40px;width:320px;box-shadow:0 10px 40px rgba(0,0,0,.3);text-align:center;">
     <div style="font-size:16px;font-weight:700;color:#575757;margin-bottom:4px;">Mitchell Construction & Design</div>
     <div style="font-size:12px;color:#888;margin-bottom:20px;">Scope of Work Generator</div>
-
-    <div id="emailLoginFields">
-      <input type="text" id="emailGateEmail" placeholder="you@mitchellconstructionco.net" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('emailGatePassword').focus();">
-      <input type="password" id="emailGatePassword" placeholder="Password" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptEmailLogin();">
-      <button class="btn" style="width:100%;" onclick="attemptEmailLogin()">Enter</button>
-      <div style="margin-top:12px;"><a href="#" onclick="toggleLoginMode(event)" style="font-size:11.5px;color:#999;">Use the team PIN instead</a></div>
-    </div>
-
-    <div id="pinLoginFields" style="display:none;">
-      <input type="text" id="pinGateName" placeholder="Your name" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
-      <input type="password" id="pinGateInput" placeholder="Team PIN" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptPinLogin();">
-      <button class="btn" style="width:100%;" onclick="attemptPinLogin()">Enter</button>
-      <div style="margin-top:12px;"><a href="#" onclick="toggleLoginMode(event)" style="font-size:11.5px;color:#999;">Use your company email instead</a></div>
-    </div>
-
+    <select id="pinGateNameSelect" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onchange="handleLoginNameSelectChange()">
+      <option value="">Your name...</option>
+      <option value="__other__">Someone else / not listed</option>
+    </select>
+    <input type="text" id="pinGateNameOther" placeholder="Your name" style="display:none;width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') document.getElementById('pinGateInput').focus();">
+    <input type="password" id="pinGateInput" placeholder="Password" style="width:100%;margin-bottom:10px;padding:9px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;" onkeydown="if(event.key==='Enter') attemptLogin();">
+    <button class="btn" style="width:100%;" onclick="attemptLogin()">Enter</button>
     <div id="pinGateError" style="color:#B04035;font-size:12px;margin-top:10px;display:none;"></div>
   </div>
 </div>
@@ -555,9 +547,9 @@
     </div>
     <div class="panel">
       <h2>Team Members</h2>
-      <div class="helptext">Everyone logging in needs a @mitchellconstructionco.net email. Add each person here and assign their password — worth knowing plainly: this is a convenience gate matching how the rest of this app already works, not a hardened security system, so don't reuse anything sensitive here.</div>
-      <div id="teamUsersList"></div>
-      <button type="button" class="btn secondary tiny" onclick="addTeamUser()">+ Add Team Member</button>
+      <div class="helptext">Each person logs in with their own password now — no more shared PIN. Add someone here with a blank password and their first login sets it automatically, or type one in yourself if you'd rather assign it directly. Worth knowing plainly: this checks against data stored the same way everything else in this app already is, not a hardened security system, so nobody should reuse a real, important password here.</div>
+      <div id="teamRosterList"></div>
+      <button type="button" class="btn secondary tiny" onclick="addTeamRosterMember()">+ Add Team Member</button>
     </div>
   </div>
 
@@ -3756,63 +3748,92 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const STORAGE_BUCKET = 'project-files';
 
 // ===== PIN gate =====
-function toggleLoginMode(e){
-  if(e) e.preventDefault();
-  const emailFields = document.getElementById('emailLoginFields');
-  const pinFields = document.getElementById('pinLoginFields');
-  const showingEmail = emailFields.style.display !== 'none';
-  emailFields.style.display = showingEmail ? 'none' : 'block';
-  pinFields.style.display = showingEmail ? 'block' : 'none';
-  document.getElementById('pinGateError').style.display = 'none';
+function getLoginNameValue(){
+  const sel = document.getElementById('pinGateNameSelect');
+  if(sel && sel.value && sel.value !== '__other__') return sel.value;
+  const otherInp = document.getElementById('pinGateNameOther');
+  return otherInp ? otherInp.value.trim() : '';
 }
 
-async function attemptEmailLogin(){
-  const email = document.getElementById('emailGateEmail').value.trim().toLowerCase();
-  const password = document.getElementById('emailGatePassword').value;
+function handleLoginNameSelectChange(){
+  const sel = document.getElementById('pinGateNameSelect');
+  const otherInp = document.getElementById('pinGateNameOther');
+  const showOther = sel.value === '__other__';
+  otherInp.style.display = showOther ? 'block' : 'none';
+  if(showOther) otherInp.focus();
+}
+
+async function populateLoginNameOptions(){
+  let roster = [];
+  try{
+    const { data, error } = await supabaseClient.from('company_settings').select('data').eq('id',1).single();
+    if(!error && data && data.data && Array.isArray(data.data.teamRoster)){
+      roster = data.data.teamRoster
+        .map(entry => (typeof entry === 'string') ? entry : entry.name)
+        .filter(n => n && n.trim());
+    }
+  }catch(e){ console.warn('Could not load team roster for login', e); }
+
+  const sel = document.getElementById('pinGateNameSelect');
+  if(!sel) return;
+  const otherOption = sel.querySelector('option[value="__other__"]');
+  sel.innerHTML = '<option value="">Your name...</option>';
+  roster.forEach(name=>{ const o=document.createElement('option'); o.value=name; o.textContent=name; sel.appendChild(o); });
+  sel.appendChild(otherOption ? otherOption.cloneNode(true) : (()=>{ const o=document.createElement('option'); o.value='__other__'; o.textContent='Someone else / not listed'; return o; })());
+}
+
+async function attemptLogin(){
+  const name = getLoginNameValue();
+  const password = document.getElementById('pinGateInput').value;
   const errEl = document.getElementById('pinGateError');
   errEl.style.display = 'none';
 
-  if(!email || !password){ errEl.textContent='Enter your email and password.'; errEl.style.display='block'; return; }
-  if(!email.endsWith('@mitchellconstructionco.net')){
-    errEl.textContent = 'Please use your @mitchellconstructionco.net email.';
-    errEl.style.display = 'block';
-    return;
-  }
+  if(!name || !password){ errEl.textContent='Enter your name and password.'; errEl.style.display='block'; return; }
 
-  let teamUsers = [];
+  let rosterData, freshRow;
   try{
     const { data, error } = await supabaseClient.from('company_settings').select('data').eq('id',1).single();
-    if(!error && data && data.data && Array.isArray(data.data.teamUsers)){ teamUsers = data.data.teamUsers; }
-  }catch(e){ console.warn('Could not load team users', e); }
-
-  const match = teamUsers.find(u => (u.email||'').trim().toLowerCase() === email && u.password === password);
-  if(!match){
-    errEl.textContent = 'Email or password not recognized. Ask your admin to check your account in Company Settings, or use the team PIN.';
+    if(error) throw error;
+    freshRow = data && data.data ? data.data : {};
+    rosterData = Array.isArray(freshRow.teamRoster) ? freshRow.teamRoster : [];
+  }catch(e){
+    errEl.textContent = 'Could not check your login right now. Please try again in a moment.';
     errEl.style.display = 'block';
-    document.getElementById('emailGatePassword').value = '';
+    console.error(e);
     return;
   }
 
-  currentUserName = match.name || email;
-  sessionStorage.setItem('mcd_session_user', currentUserName);
-  document.getElementById('pinGateOverlay').style.display = 'none';
-  initApp();
-}
+  // Normalize legacy plain-string entries to the same shape, in place, so a match below works either way
+  rosterData = rosterData.map(entry => (typeof entry === 'string') ? { name: entry, password: '' } : entry);
 
-async function attemptPinLogin(){
-  const name = document.getElementById('pinGateName').value.trim();
-  const pin = document.getElementById('pinGateInput').value.trim();
-  const errEl = document.getElementById('pinGateError');
-  const TEAM_PIN = '0321';
-  if(!name || !pin){ errEl.textContent='Enter your name and the PIN.'; errEl.style.display='block'; return; }
-  if(pin !== TEAM_PIN){
-    errEl.textContent = 'Incorrect PIN. Try again.';
-    errEl.style.display='block';
-    document.getElementById('pinGateInput').value='';
+  const entry = rosterData.find(u => (u.name||'').trim().toLowerCase() === name.trim().toLowerCase());
+  if(!entry){
+    errEl.textContent = 'That name isn\u2019t set up yet — ask your admin to add you in Company Settings first.';
+    errEl.style.display = 'block';
     return;
   }
-  currentUserName = name;
-  sessionStorage.setItem('mcd_session_user', name);
+
+  if(!entry.password){
+    // First login for this person — whatever they typed becomes their password from now on.
+    entry.password = password;
+    try{
+      freshRow.teamRoster = rosterData;
+      await supabaseClient.from('company_settings').upsert({id:1, data: freshRow, updated_at: new Date().toISOString()});
+    }catch(e){
+      errEl.textContent = 'Could not save your new password right now. Please try again.';
+      errEl.style.display = 'block';
+      console.error(e);
+      return;
+    }
+  } else if(entry.password !== password){
+    errEl.textContent = 'Incorrect password. Try again.';
+    errEl.style.display = 'block';
+    document.getElementById('pinGateInput').value = '';
+    return;
+  }
+
+  currentUserName = entry.name;
+  sessionStorage.setItem('mcd_session_user', entry.name);
   document.getElementById('pinGateOverlay').style.display = 'none';
   initApp();
 }
@@ -3840,8 +3861,10 @@ async function loadCompanySettingsGlobal(){
       if(cs[k]!=null){ const el=document.getElementById(k); if(el) el.value = cs[k]; }
     });
     if(cs.logoDataUrl){ logoDataUrl = cs.logoDataUrl; const p=document.getElementById('logoPreview'); p.src=logoDataUrl; p.style.display='block'; }
-    teamUsersList = Array.isArray(cs.teamUsers) ? cs.teamUsers : [];
-    renderTeamUsersList();
+    const rawRoster = Array.isArray(cs.teamRoster) ? cs.teamRoster : [];
+    teamRoster = rawRoster.map(entry => (typeof entry === 'string') ? { name: entry, password: '' } : entry);
+    renderTeamRosterList();
+    populateLoginNameOptions();
     updateColors();
   }catch(e){ console.warn('Could not load company settings', e); }
   updateDashboardBrand();
@@ -3864,7 +3887,7 @@ async function saveCompanySettingsGlobal(){
     colorCream: document.getElementById('colorCream').value,
     footerLine: document.getElementById('footerLine').value,
     logoDataUrl: logoDataUrl,
-    teamUsers: teamUsersList
+    teamRoster: teamRoster
   };
   try{
     await supabaseClient.from('company_settings').upsert({id:1, data: cs, updated_at: new Date().toISOString()});
@@ -3872,60 +3895,52 @@ async function saveCompanySettingsGlobal(){
   updateDashboardBrand();
 }
 
-let teamUsersList = [];
+let teamRoster = [];
 
-function renderTeamUsersList(){
-  const wrap = document.getElementById('teamUsersList');
+function renderTeamRosterList(){
+  const wrap = document.getElementById('teamRosterList');
   if(!wrap) return;
-  if(!teamUsersList.length){
-    wrap.innerHTML = '<div class="helptext" style="margin:0 0 10px;">No team members added yet.</div>';
+  if(!teamRoster.length){
+    wrap.innerHTML = '<div class="helptext" style="margin:0 0 10px;">No team members added yet — the login screen will just use free-text entry until you add someone.</div>';
     return;
   }
   wrap.innerHTML = '';
-  teamUsersList.forEach((user, idx)=>{
+  teamRoster.forEach((user, idx)=>{
     const row = document.createElement('div');
-    row.style.cssText = 'display:grid;grid-template-columns:1fr 1.4fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;';
+    row.style.cssText = 'display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;';
 
     const nameInp = document.createElement('input');
     nameInp.type = 'text'; nameInp.placeholder = 'Name'; nameInp.value = user.name || '';
     nameInp.oninput = ()=>{ user.name = nameInp.value; };
-    nameInp.onblur = saveCompanySettingsGlobal;
-
-    const emailInp = document.createElement('input');
-    emailInp.type = 'text'; emailInp.placeholder = 'name@mitchellconstructionco.net'; emailInp.value = user.email || '';
-    emailInp.oninput = ()=>{ user.email = emailInp.value; };
-    emailInp.onblur = ()=>{
-      if(user.email && !user.email.trim().toLowerCase().endsWith('@mitchellconstructionco.net')){
-        alert('That email doesn\u2019t end in @mitchellconstructionco.net — '+user.name+' won\u2019t be able to log in with it until it\u2019s corrected.');
-      }
-      saveCompanySettingsGlobal();
-    };
+    nameInp.onblur = ()=>{ saveCompanySettingsGlobal(); populateLoginNameOptions(); };
 
     const passInp = document.createElement('input');
-    passInp.type = 'text'; passInp.placeholder = 'Password'; passInp.value = user.password || '';
+    passInp.type = 'text';
+    passInp.placeholder = user.password ? 'Password set' : 'Blank — they\u2019ll set it on first login';
+    passInp.value = user.password || '';
     passInp.oninput = ()=>{ user.password = passInp.value; };
     passInp.onblur = saveCompanySettingsGlobal;
 
     const rmBtn = document.createElement('button');
     rmBtn.type = 'button'; rmBtn.className = 'rm-btn'; rmBtn.textContent = 'Remove';
-    rmBtn.onclick = ()=> removeTeamUser(idx);
+    rmBtn.onclick = ()=> removeTeamRosterMember(idx);
 
-    row.appendChild(nameInp); row.appendChild(emailInp); row.appendChild(passInp); row.appendChild(rmBtn);
+    row.appendChild(nameInp); row.appendChild(passInp); row.appendChild(rmBtn);
     wrap.appendChild(row);
   });
 }
 
-function addTeamUser(){
-  teamUsersList.push({ name:'', email:'', password:'' });
-  renderTeamUsersList();
+function addTeamRosterMember(){
+  teamRoster.push({ name:'', password:'' });
+  renderTeamRosterList();
 }
 
-function removeTeamUser(idx){
-  const user = teamUsersList[idx];
-  if(!confirm('Remove '+(user.name||'this person')+'? They won\u2019t be able to log in with this account anymore.')) return;
-  teamUsersList.splice(idx,1);
-  renderTeamUsersList();
+function removeTeamRosterMember(idx){
+  if(!confirm('Remove '+(teamRoster[idx].name||'this person')+' from the login list? They won\u2019t be able to log in anymore.')) return;
+  teamRoster.splice(idx,1);
+  renderTeamRosterList();
   saveCompanySettingsGlobal();
+  populateLoginNameOptions();
 }
 
 // ===== Jobs list (Supabase) =====
@@ -5093,6 +5108,7 @@ if(clientReviewTokenFromUrl){
   document.getElementById('clientReviewRoot').style.display = 'block';
   initClientReviewMode(clientReviewTokenFromUrl);
 } else {
+  populateLoginNameOptions(); // fetch early so the dropdown is ready before anyone needs it — independent of login succeeding
   const savedUser = sessionStorage.getItem('mcd_session_user');
   if(savedUser){
     currentUserName = savedUser;
