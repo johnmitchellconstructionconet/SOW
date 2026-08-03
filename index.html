@@ -530,6 +530,16 @@
   .side{
     background:var(--espresso);color:#e9e2d6;
     display:flex;flex-direction:column;overflow:hidden;border-radius:0 0 0 12px;
+    /* Sticks to the top of the viewport as the page scrolls, instead of scrolling away
+       with the rest of the grid — held in place for as long as .main (the taller grid
+       track) still has content below, so it stays visible all the way to the bottom of
+       the Selections grid. align-self:start stops it from stretching to .main's full
+       height, which sticky positioning needs in order to have room to move at all. */
+    position:sticky;top:0;align-self:start;height:100vh;
+    /* Restores the top offset the removed branding block used to provide, so the
+       progress bar/nav still line up with the topbar + first section card in the main
+       column instead of starting higher now that there's no header text above it. */
+    padding-top:40px;
   }
 #tab_selections .brand{padding:22px 22px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
 #tab_selections .brand .mark{font-family:var(--serif);font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-soft)}
@@ -1004,10 +1014,6 @@
 <div class="app">
   <!-- SIDEBAR -->
   <aside class="side" id="side">
-    <div class="brand">
-      <div class="name">Selections</div>
-      <div class="sub">Mitchell Construction &amp; Design</div>
-    </div>
     <div class="progresswrap">
       <div class="lab"><span>Overall complete</span><span id="pctLabel">0%</span></div>
       <div class="bar"><i id="overallBar" style="width:0%"></i></div>
